@@ -9,9 +9,9 @@ class tx_snisupportchat_ajax {
 	var $lastLogRow = 0; // the last row uid of log messages
 	/** tradem 2012-04-11 Added to control typing indiator */
 	var $useTypingIndicator = 1; // controls if typing indicator should show up or not, defaults to true (1)
-			
+
 	function init() {
-		global $BE_USER,$TYPO3_DB;		
+		global $BE_USER,$TYPO3_DB;
 		$this->chatsPid = $BE_USER->userTS["sni_supportchat."]["chatsPid"];
 		if($BE_USER->userTS["sni_supportchat."]["showLogBox"]!="") {
 			$this->logging = $BE_USER->userTS["sni_supportchat."]["showLogBox"];
@@ -29,10 +29,10 @@ class tx_snisupportchat_ajax {
 		}
 		$this->uid = intval(t3lib_div::_GP("chatUid")) ? intval(t3lib_div::_GP("chatUid")) : 0;
 		$chatMarket = new chatMarket($this->logging,$this->lastLogRow);
-		$chatMarket->initChat($this->chatsPid,$BE_USER->user["uid"],1,$this->useTypingIndicator);		
+		$chatMarket->initChat($this->chatsPid,$BE_USER->user["uid"],1,$this->useTypingIndicator);
 		switch($this->cmd) {
 			case 'doAll':
-				// get all chats,messages,time,be_user 
+				// get all chats,messages,time,be_user
 				$msgToSend = t3lib_div::_GP("msgToSend");
 				$lockChats = t3lib_div::_GP("lockChat");
 				$destroyChats = t3lib_div::_GP("destroyChat");
@@ -49,12 +49,12 @@ class tx_snisupportchat_ajax {
 					)
 				);
 				$xml = tx_chat_functions::convert2xml($xmlArray);
-				$chatMarket->printResponse($xml); 
-			break;	
-		}			
+				$chatMarket->printResponse($xml);
+			break;
+		}
 		return ;
 	}
-	
+
 	/**
 	 * Set Response if no Be-User is logged in
 	 * @return XML
@@ -65,26 +65,23 @@ class tx_snisupportchat_ajax {
 				"time" => tx_chat_functions::renderTstamp(time()),
 			)
 		);
-        return ($xmlArray);
+	return ($xmlArray);
 	}
-
 }
 
 	require_once ('conf.php');
 	require_once ($BACK_PATH.'init.php');
-	require_once(PATH_typo3.'sysext/lang/lang.php');
 	require_once(t3lib_extMgm::extPath('sni_supportchat').'lib/class.tx_chatMarket.php');
 
-	define(TYPO3_PROCEED_IF_NO_USER,1);	  
+	define(TYPO3_PROCEED_IF_NO_USER,1);
 	$LANG = t3lib_div::makeInstance('language');
 	$LANG->init($BE_USER->uc['lang']);
 	$LANG->includeLLFile('EXT:sni_supportchat/mod1/locallang.xml');
 	$SOBE = new tx_snisupportchat_ajax();
-	if($BE_USER->user["uid"]) {			
+	if($BE_USER->user["uid"]) {
 		$SOBE->init();
-	}	
+	}
 	else {
 		$SOBE->noAccess();
 	}
-			
 ?>

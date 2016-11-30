@@ -33,9 +33,7 @@
 unset($MCONF);
 require ("conf.php");
 require ($BACK_PATH."init.php");
-require ($BACK_PATH."template.php");
 $LANG->includeLLFile("EXT:sni_supportchat/mod1/locallang.xml");
-require_once (PATH_t3lib."class.t3lib_scbase.php");
 
 require_once(t3lib_extMgm::extPath('sni_supportchat').'lib/class.tx_chat.php');
 
@@ -46,7 +44,7 @@ $BE_USER->modAccess($MCONF,1);	// This checks permissions and exits if the users
 class tx_snisupportchat_module1 extends t3lib_SCbase {
 	var $pageinfo;
 	var $jsCodeForLoadedChats;
-	var $chatsPid; // the page id where chats and messages are stored 
+	var $chatsPid; // the page id where chats and messages are stored
 	var $ajaxGetAllFreq = 3; // the period of the AJAX Request
 	var $timeToInactivateChat = 15; // the time to inactivate a chat in minutes
 	var $defLang = "gb"; // the default language for the Be-User
@@ -64,18 +62,18 @@ class tx_snisupportchat_module1 extends t3lib_SCbase {
 		global $BE_USER,$LANG,$BACK_PATH,$TCA_DESCR,$TCA,$CLIENT,$TYPO3_CONF_VARS;
 
 		if($BE_USER->userTS["sni_supportchat."]["defLang"]) {
-			$this->defLang = $BE_USER->userTS["sni_supportchat."]["defLang"];	
+			$this->defLang = $BE_USER->userTS["sni_supportchat."]["defLang"];
 		}
 		$this->chatsPid = $BE_USER->userTS["sni_supportchat."]["chatsPid"];
 		if(!$this->chatsPid) {
-			die('You must insert the BE-User TS-Config Var "sni_supportchat.chatsPid" !');				
+			die('You must insert the BE-User TS-Config Var "sni_supportchat.chatsPid" !');
 		}
-		
+
 		/** 2012-04-11 Added to control typing indiator if it works. */
 		if (isset($BE_USER->userTS["sni_supportchat."]["useTypingIndicator"])) {
 			$this->useTypingIndicator = intval($BE_USER->userTS["sni_supportchat."]["useTypingIndicator"]);
 		}
-						
+
 		if($BE_USER->userTS["sni_supportchat."]["ajaxGetAllFreq"]) {
 			$this->ajaxGetAllFreq = $BE_USER->userTS["sni_supportchat."]["ajaxGetAllFreq"];
 		}
@@ -88,7 +86,7 @@ class tx_snisupportchat_module1 extends t3lib_SCbase {
 		if($BE_USER->userTS["sni_supportchat."]["showLogBox"]!="") {
 			$this->showLogBox = $BE_USER->userTS["sni_supportchat."]["showLogBox"];
 		}
-        $this->beUserName = $BE_USER->user["realName"] ? $BE_USER->user["realName"] : $BE_USER->user["username"];
+		$this->beUserName = $BE_USER->user["realName"] ? $BE_USER->user["realName"] : $BE_USER->user["username"];
 
 		parent::init();
 	}
@@ -126,7 +124,7 @@ class tx_snisupportchat_module1 extends t3lib_SCbase {
 		$this->doc->backPath = $BACK_PATH;
 
 		// Render content:
-		$headerSection = $this->doc->getHeader("pages",$this->pageinfo,$this->pageinfo["_thePath"],50);			
+		$headerSection = $this->doc->getHeader("pages",$this->pageinfo,$this->pageinfo["_thePath"],50);
 		$this->content.=$headerSection;
 		$this->content.=$this->doc->header($LANG->getLL("title"));
 		if($this->playAlert) {
@@ -134,17 +132,17 @@ class tx_snisupportchat_module1 extends t3lib_SCbase {
 			$this->content .= '
 				<object id="beep_alert" class="flash" type="application/x-shockwave-flash" data="../js/flashbeep_alert.swf" width="1" height="1">
 					<param name="movie" value="../js/flashbeep_alert.swf" />
-				</object>		
-				<p class="alert"><input type="checkbox" checked="checked" id="alert_check" /> '.$LANG->getLL("playAlert").'</p>			
+				</object>
+				<p class="alert"><input type="checkbox" checked="checked" id="alert_check" /> '.$LANG->getLL("playAlert").'</p>
 			';
-		}		
-		$this->content.=$this->doc->spacer(20);		
+		}
+		$this->content.=$this->doc->spacer(20);
 		$chat = new chat();
 		$chat->initChat($this->chatsPid,"");
-		$chat->destroyInactiveChats($this->timeToInactivateChat);	
-//        tx_chat_functions::destroyInactiveChats($this->timeToInactivateChat,$this->chatsPid);
-		$this->moduleContent();									
-				
+		$chat->destroyInactiveChats($this->timeToInactivateChat);
+		// tx_chat_functions::destroyInactiveChats($this->timeToInactivateChat,$this->chatsPid);
+		$this->moduleContent();
+
 			// JavaScript
 		$this->doc->JScode = '
 			<script language="javascript" type="text/javascript">
@@ -154,7 +152,7 @@ class tx_snisupportchat_module1 extends t3lib_SCbase {
 				}
 			</script>
 		';
-		$this->doc->JScode .= $this->addJsInHeader();			
+		$this->doc->JScode .= $this->addJsInHeader();
 		$this->doc->postCode='
 			<script language="javascript" type="text/javascript">
 				script_ended = 1;
@@ -173,10 +171,10 @@ class tx_snisupportchat_module1 extends t3lib_SCbase {
 	 *
 	 * @return	void
 	 */
-	function printContent()	{	
+	function printContent()	{
 		global $TYPO3_DB,$LANG,$BACK_PATH,$BE_USER;
-		
-		$this->content.=$this->doc->endPage();		
+
+		$this->content.=$this->doc->endPage();
 		echo $this->content;
 	}
 
@@ -188,18 +186,18 @@ class tx_snisupportchat_module1 extends t3lib_SCbase {
 	function moduleContent()	{
 		global $LANG;
 	    // page/be_user TSconfig settings:
-		$modTSconfig = t3lib_BEfunc::getModTSconfig($id,"mod.".$GLOBALS["MCONF"]["name"]);			
+		$modTSconfig = t3lib_BEfunc::getModTSconfig($id,"mod.".$GLOBALS["MCONF"]["name"]);
 		//render Chat Boxes Wrap
-		$this->content.='<div id="chatboxes_wrap">';		
-		$this->content.='</div>';		
+		$this->content.='<div id="chatboxes_wrap">';
+		$this->content.='</div>';
 		$this->content.='<hr class="clearer" />';
-        if($this->showLogBox) {
-            $this->content.=$this->doc->spacer(5);
+		if($this->showLogBox) {
+			$this->content.=$this->doc->spacer(5);
 			$this->content.='<p class="log_title">Log:</p>';
-            $this->content.='<div id="logBox">&nbsp;</div>';
-        }
+			$this->content.='<div id="logBox">&nbsp;</div>';
+		}
 	}
-	
+
 	/**
 	 * Adds the complete JS Code
 	 * @return Complete Java Code
@@ -209,18 +207,18 @@ class tx_snisupportchat_module1 extends t3lib_SCbase {
 		$frequency = $this->ajaxGetAllFreq * 1000;
 		$useTypingIndicator = $this->useTypingIndicator;
 		$table="sys_language";
-		$res = $TYPO3_DB->exec_SELECTquery("uid,flag,title",$table,'1');		
+		$res = $TYPO3_DB->exec_SELECTquery("uid,flag,title",$table,'1');
 		$jsCode = '
 			<link rel="stylesheet" type="text/css" href="'.t3lib_div::createVersionNumberedFilename('chat.css').'" />
 			<script type="text/javascript" src="../js/mootools-1.2.6-core-yc.js"></script>
-            <script type="text/javascript" src="../js/mootools-1.2.5.1-more.js"></script>
+			<script type="text/javascript" src="../js/mootools-1.2.5.1-more.js"></script>
 			<script type="text/javascript" src="'.t3lib_div::createVersionNumberedFilename('../js/Element.Forms.js').'"></script>
 			<script type="text/javascript" src="'.t3lib_div::createVersionNumberedFilename('../js/UvumiDropdown-compressed.js').'"></script>
-            <script type="text/javascript" src="'.t3lib_div::createVersionNumberedFilename('../js/smilies.js').'"></script>
-			<script type="text/javascript" src="'.t3lib_div::createVersionNumberedFilename('../js/sni_supportchat_be.js').'"></script> 
+			<script type="text/javascript" src="'.t3lib_div::createVersionNumberedFilename('../js/smilies.js').'"></script>
+			<script type="text/javascript" src="'.t3lib_div::createVersionNumberedFilename('../js/sni_supportchat_be.js').'"></script>
 			<script type="text/javascript">
-            /*<![CDATA[*/
-            <!--
+			/*<![CDATA[*/
+			<!--
 				var LL = {
 					"options": "'.addslashes($LANG->getLL("options")).'",
 					"text_pieces": "'.addslashes($LANG->getLL("text_pieces")).'",
@@ -246,7 +244,7 @@ class tx_snisupportchat_module1 extends t3lib_SCbase {
 				var fixText = {
 					'.$this->createFixTextJsObj().'
 				}
-				
+
 				var theRequest = null;
 				var timer = null;
 				var strftime = "";
@@ -254,13 +252,13 @@ class tx_snisupportchat_module1 extends t3lib_SCbase {
 				window.addEvent("domready", function() {
 					initChat('.$frequency.','.$useTypingIndicator.');
 				});
-            // -->
-            /*]]>*/
+			// -->
+			/*]]>*/
 			</script>
 		';
 		return($jsCode);
 	}
-	
+
 	function createFixTextJsObj() {
 		global $BE_USER;
 		$fixText = $BE_USER->userTS["sni_supportchat."]["fixText."];

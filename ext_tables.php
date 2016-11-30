@@ -5,14 +5,14 @@ t3lib_extMgm::allowTableOnStandardPages("tx_snisupportchat_chats");
 
 $TCA["tx_snisupportchat_chats"] = Array (
 	"ctrl" => Array (
-		'title' => 'LLL:EXT:sni_supportchat/locallang_db.xml:tx_snisupportchat_chats',		
-		'label' => 'be_user',	
+		'title' => 'LLL:EXT:sni_supportchat/locallang_db.xml:tx_snisupportchat_chats',
+		'label' => 'be_user',
 		'tstamp' => 'tstamp',
 		'crdate' => 'crdate',
 		'cruser_id' => 'cruser_id',
-		"default_sortby" => "ORDER BY crdate DESC",	
-		"delete" => "deleted",	
-		"enablecolumns" => Array (		
+		"default_sortby" => "ORDER BY crdate DESC",
+		"delete" => "deleted",
+		"enablecolumns" => Array (
 			"disabled" => "hidden",
 		),
 		"dynamicConfigFile" => t3lib_extMgm::extPath($_EXTKEY)."tca.php",
@@ -28,12 +28,12 @@ t3lib_extMgm::allowTableOnStandardPages("tx_snisupportchat_messages");
 
 $TCA["tx_snisupportchat_messages"] = Array (
 	"ctrl" => Array (
-		'title' => 'LLL:EXT:sni_supportchat/locallang_db.xml:tx_snisupportchat_messages',		
-		'label' => 'name',	
+		'title' => 'LLL:EXT:sni_supportchat/locallang_db.xml:tx_snisupportchat_messages',
+		'label' => 'name',
 		'tstamp' => 'tstamp',
 		'crdate' => 'crdate',
 		'cruser_id' => 'cruser_id',
-		"default_sortby" => "ORDER BY crdate DESC",	
+		"default_sortby" => "ORDER BY crdate DESC",
 		"dynamicConfigFile" => t3lib_extMgm::extPath($_EXTKEY)."tca.php",
 		"iconfile" => t3lib_extMgm::extRelPath($_EXTKEY)."icon_tx_snisupportchat_messages.gif",
 	),
@@ -52,7 +52,6 @@ t3lib_extMgm::addPlugin(Array('LLL:EXT:sni_supportchat/locallang_db.xml:tt_conte
 t3lib_extMgm::addStaticFile($_EXTKEY,'pi1/static/Sni_SupportChat_TS/', 'Sni Support Chat TS');
 
 if (TYPO3_MODE=="BE")	{
-		
 	t3lib_extMgm::addModule("user","txsnisupportchatM1","",t3lib_extMgm::extPath($_EXTKEY)."mod1/");
 }
 ?>
