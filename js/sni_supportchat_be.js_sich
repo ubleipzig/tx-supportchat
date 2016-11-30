@@ -1,0 +1,708 @@
+// called on domready, create the chat
+function initChat(freq) {
+// 	var theChatMarket = new chatMarket(freq);
+}
+
+/**
+* Handler Object for all Chats
+*/
+var chatMarket = new Class({
+	"initialize": function(freq) {
+		this.freq = freq; // the period for the request
+		this.chats = Array(); // Array to gather the Chat Objects, key=the chat uid, value = the chat object
+		this.lastRowQuery = ""; // the last row GetVar Array: key => chatUid, value => lastRow
+		this.msgToSendQuery = ""; 
+		this.lockChatQuery = "";
+		this.destroyChatQuery = "";
+		this.lastLogRow = 0; // the last log row uid 
+		this.log = new log();
+		this.beUserStorage = new beUserMarket(); // the current logged in be-users
+		theRequest = new Request({
+			"url": "ajaxResponse.php",
+			"link": "chain",
+			"onComplete": this.getAllDone.bind(this)
+		}); // the unique request 
+		this.getAll.attempt("",this); // start the chat Market
+	},
+	"getAll": function() {
+		/* periodically called function which does all (get Chats,messages, send messages, destroy chats, lock/unlock chats) */
+		$clear(timer); // just to be sure
+		this.getChatsPostData(); // get all dyn handle data as query strings
+		theRequest.send({
+			"data": "cmd=doAll"+this.lastRowQuery+"&lastLogRow="+this.lastLogRow+this.msgToSendQuery+this.lockChatQuery+this.destroyChatQuery,
+			"method": "post"
+		});
+	},
+	"getAllDone": function(respText,respXML) {
+		/* the onComplete function of the unique AJAX Request */
+        if(respXML) {
+			var root = respXML.getElementsByTagName("phparray");
+			var handle = root[0].childNodes[0].nodeName;
+			switch (handle) {
+				case 'fromDoAll':
+					root = respXML.getElementsByTagName("fromDoAll");
+					strftime = root[0].childNodes[0].firstChild.nodeValue; // update Time
+                    /* online BE-Users / for now only to list them in the menu */
+					this.beUserStorage.resetUpdate();
+                    if(root[0].childNodes[4]) {
+                        var beUsers = root[0].childNodes[4].getElements("numIndex");
+                        if(beUsers.length > 0) {
+							for (var i=0; i<beUsers.length; i++) {
+								var uid = this.getTextNode(beUsers[i].childNodes[0].firstChild);
+								var name = this.getTextNode(beUsers[i].childNodes[1].firstChild);
+								this.beUserStorage.addUser(uid,name);
+							}
+                        }
+						else {
+							this.beUserStorage.empty();
+						}
+                    }
+					if(root[0].childNodes[1]) {
+						/* chats */
+						var chats = root[0].childNodes[1].getElements("chatIndex");
+						if(chats.length>0) {
+							for (var i=0; i<chats.length; i++) {
+								item = chats[i];
+								var lastRow = this.getTextNode(item.childNodes[1].firstChild);
+								var uid = item.childNodes[0].firstChild.nodeValue;
+								if(this.chats[uid]) {
+									// just update lastRow, strftime and Be-Users if they has changed
+									this.chats[uid].updateLastRow(lastRow);
+	                                this.chats[uid].updateBeUsers(this.beUserStorage);
+								}
+								else {
+									// create a chat object
+									var crdate = this.getTextNode(item.childNodes[2].firstChild);
+									var language = this.getTextNode(item.childNodes[3].firstChild);
+									var surfer_ip = this.getTextNode(item.childNodes[4].firstChild);
+									var be_user = this.getTextNode(item.childNodes[5].firstChild);
+									var lImg = this.getTextNode(item.childNodes[6].firstChild);
+									var lLabel = this.getTextNode(item.childNodes[7].firstChild);
+									this.chats[uid] = new chat(uid,crdate,language,be_user,lastRow,surfer_ip,lImg,lLabel);
+	                                this.chats[uid].updateBeUsers(this.beUserStorage,1); // force create the be-users select
+								}	
+								if(item.childNodes[8]) {
+									// messages
+									var messages = item.childNodes[8].getElementsByTagName("numIndex");
+									if(messages.length>0) {
+										for (var j=0; j<messages.length; j++) {
+											var item = messages[j];
+											var msgCrdate = this.getTextNode(item.childNodes[0].firstChild);
+											var msgCode = this.getTextNode(item.childNodes[1].firstChild);
+											var msgFromSupportler = this.getTextNode(item.childNodes[2].firstChild);
+											var msgToSupportler = this.getTextNode(item.childNodes[3].firstChild);
+											var msgName = this.getTextNode(item.childNodes[4].firstChild);
+											var msgMessage = this.getTextNode(item.childNodes[5].firstChild);
+											var msg = new message(msgCrdate,msgCode,msgFromSupportler,msgToSupportler,msgName,msgMessage);
+											this.chats[uid].addMessage(msg);
+										}
+									}
+								}
+								this.chats[uid].draw(); // draw the chat (messages or whole Chat, depends..)
+								if(item.getElement("from_lock_chat")) {
+									// last request was also a lockChat request
+									var code = item.getElement("from_lock_chat");
+									var locked = this.getTextNode(code.firstChild);
+									this.chats[uid].removeLoadingImg();
+									this.chats[uid].lockChatDone(locked);
+								}
+								if(item.getElement("from_destroy_chat")) {
+									// last request was also a destroy chat request
+				                    this.removeChat(uid);
+								}
+							}
+						}
+					}
+					/* Log Messages */
+					if(root[0].childNodes[2]) {
+                        var logMsg = root[0].childNodes[2].getElements("numIndex");
+						if(logMsg.length > 0) {
+							for (var i=0; i<logMsg.length; i++) {
+								var crdate = this.getTextNode(logMsg[i].childNodes[0].firstChild);
+								var msg = this.getTextNode(logMsg[i].childNodes[1].firstChild);
+								this.log.addLogMessage(crdate,msg);	
+							}
+						}
+					}
+					this.lastLogRow = this.getTextNode(root[0].childNodes[3].firstChild);
+					/* watch if chats should be destroyed, if for example an other BE-User has locked the chat */
+					if(chats) {
+						this.chats.each(function(item,index) {
+							var toDelete = 1;
+							for (var i=0; i<chats.length; i++) {
+								if(index == chats[i].childNodes[0].firstChild.nodeValue) {
+									toDelete = 0;
+								}
+							}
+						    if(toDelete) {
+								this.removeChat(index);
+							}
+						}.bind(this));
+					}
+				break;	
+				case "fromNoAccess":
+					alert("You don't have access to this module, please try to re-login in typo3 or contact your sys-admin!");
+				break;
+			}	
+	        timer = this.getAll.delay(this.freq,this); // call getAll function periodically
+		}	
+		else {
+			document.getElement("body").empty();
+			document.getElement("body").set("html",respText);
+		}
+	},
+	"getTextNode": function(node) {
+		/* just to get node.nodeValue */
+		if(node) {
+			return (node.nodeValue);
+		}
+		else {
+			return "";
+		}
+	},
+	"getChatsPostData": function() {
+		/* create all postVars from Arrays for the next Request (send messages, lock/unlock chats, destroy chats) and empty the arrays */
+		this.lastRowQuery = "";
+		this.msgToSendQuery = "";
+		this.lockChatQuery = "";
+		this.destroyChatQuery = "";
+		this.chats.each(function(item,index) {
+			// last Row
+			if(this.chats[index].lastRow) {
+            	this.lastRowQuery += "&lastRowArray["+index+"]="+this.chats[index].lastRow;
+			}
+			// send messages
+			this.chats[index].msgToSend.each(function(itemM,indexM) {
+				if(itemM!="") {
+					this.msgToSendQuery += "&msgToSend["+index+"]["+indexM+"]="+itemM;
+				}	
+			}.bind(this));
+			// delete the msgToSend Array
+			this.chats[index].msgToSend.empty();
+			// lock / unlock Chat 
+			if($chk(this.chats[index].lockReq)) {
+				this.lockChatQuery += "&lockChat["+index+"]="+this.chats[index].lockReq;	
+				this.chats[index].lockReq = null;
+			}
+			// destroy Chat
+			if(this.chats[index].destroyReq) {
+				this.destroyChatQuery += "&destroyChat["+index+"]=1";
+			}
+			this.chats[index].destroyReq = 0;
+		}.bind(this));
+	},
+	"removeChat": function(uid) {
+		/* destroys a chat local (HTML and JS Object) */
+		this.chats[uid].removeChat();
+		delete(this.chats[uid]);
+	}
+});
+
+
+
+/**
+* Chat Object without any request
+*/
+var chat = new Class({
+	"Implements": Options,
+	"options": {
+
+	},
+	"initialize": function(uid,crdate,language,be_user,lastRow,surferIp,lImg,lLabel,options) {
+		this.setOptions(options);
+		this.uid = uid;
+		this.crdate = crdate;
+		this.language = language;
+		this.lLabel = lLabel;
+		this.lImg = lImg;
+		this.lastRow = lastRow;
+		this.chatVisible = false;
+		this.messagesToDraw = Array(); // Array for messages to draw
+		this.setHtmlIds(); // set all html ids
+		this.surferIp = surferIp;
+		this.lockReq = null; // if set to 0 or 1 then the chat will send at the next request the lock / unlock request
+		this.destroyReq = 0;
+		this.msgToSend = Array();
+		if(be_user) {
+			this.chatLocked = 1;
+		}
+		else {
+			this.chatLocked = 0;
+		}	
+		this.hotkeyFixText = Array(); // fixText for Hotkeys [0] = text for Alt+0
+        // play alert sound for every new chat
+        if($("beep_alert")) {
+            if($("alert_check").checked) {
+				try {
+	                $("beep_alert").play(1);
+				}
+				catch(e) {
+					// no flash??
+				}
+            }
+        }
+	},
+    "createMessage": function(e) {
+		/* function called from onEnter Event, add local message and gather message in msgToSend Array */
+        var msg = $(this.idTextarea).get("value");
+        if(msg) {
+	        var msgObj = new message(strftime,"beuser",0,0,LL.username,msg.stripScripts());
+	        $(this.idChatbox).adopt(msgObj.getNode()); // insert message local
+    	    this.scrollToBottom.delay(100,this);
+			this.msgToSend.include(msg); // gather message in array for next request            
+            $(this.idTextarea).set("value","");
+        }
+        $(this.idTextarea).focus();
+        e.stop();
+    },
+	"addMessage": function(msg) {
+		/* includes the message html code in the messages array which will be drawed on the next draw() call */
+		this.messagesToDraw.include(msg.getNode());
+	},
+	"draw": function() {
+		/* draws the chat --> if the chat isn't visible then draw the whole chat, else draw only messages ecc. */
+		if(!this.chatVisible) {
+			// draw the whole chat	
+			var wrap = new Element("div",{
+				"id": this.idChatboxWrap,
+				"class": "chat_single_wrap"
+			});
+			var topDiv = new Element("div",{
+				"class": "top"
+			});
+			var close = new Element("a",{
+				"id": this.idClose,
+				"class": "chat_close",
+				"html": "&nbsp"
+			});
+			var ul = new Element("ul", {
+				"id": this.idNaviTop
+			});
+			var li1 = new Element("li", {
+				"text": LL.options
+			});
+			var li1Ul = new Element("ul");
+			var li1UlLi1 = new Element("li", {
+				"text": LL.options_lock,
+				"id": this.idLock
+			});
+			var li1UlLi2 = new Element("li", {
+				"text": LL.options_assume,
+				"id": this.idAssume,
+				"class": "last"
+			});
+			if(this.beUserSelectNode) {
+				li1UlLi2.adopt(this.beUserSelectNode); // The Navi for all current logged in be-users
+				this.beUserSelectNode = null;
+			}
+			li1Ul.adopt(li1UlLi1, li1UlLi2 );
+			li1.adopt(li1Ul);
+			var li2 = new Element("li", {
+				"text": LL.text_pieces,
+			});
+			var li2Ul = new Element("ul");
+			li2.adopt(this.addFixTextMenu()); // add the fix Texts
+			ul.adopt(li1,li2);
+			topDiv.adopt(close,ul);
+			if(this.lImg || this.lLabel) {
+				var lang = "<img src=\""+this.lImg+"\" alt=\""+this.lLabel+"\" title=\""+this.lLabel+"\" height=\"10\" />";
+			}
+			else {
+				var lang = this.language;
+			}	
+			var title = new Element("h3", {
+				"html": "<p>Chatbox: ID "+this.uid+", "+LL.created_at+" "+this.crdate+"</p><p>Surfer: "+this.surferIp+", "+LL.language+": "+lang+"</p>"
+			});
+			var chatbox = new Element("div", {
+				"id": this.idChatbox,
+				"class": "single_chatbox"
+			});
+			// add welcome message
+			var welcomeMsg = new message(strftime,"system",0,0,LL.system,LL.welcomeMsg);
+			this.addMessage(welcomeMsg);
+			if(this.messagesToDraw.length>0) {
+				// append the messages to the chatbox
+				this.messagesToDraw.each(function(item,index) {
+					chatbox.adopt(item);	
+				}); 
+			}
+			var textBoxLabel = new Element("p", {
+				"text": LL.type_youre_message,
+				"class": "descr"
+			});
+			var textArea = new Element("textarea", {
+				"id": this.idTextarea
+			});
+			var assumeIcon = new Element("a",{
+				"id": this.idAssumeIcon,
+				"class": "status_icon lock_it",
+				"html": "&nbsp;"
+			});
+			var status = new Element("p", {
+				"id": this.idStatus,
+				"class": "chatbox_status",
+				"text": LL.status_unlocked
+			});
+			wrap.adopt(topDiv,title,chatbox,textBoxLabel,textArea,assumeIcon,status);
+			// insert in html with opacity tween
+			wrap.setStyle("opacity",0);
+			$(this.idChatboxOuter).adopt(wrap);
+			this.opacityTween = new Fx.Tween(this.idChatboxWrap,{"property": "opacity", "duration": "short"}).start(1);
+			this.chatVisible = 1;
+			if(this.chatLocked) {
+				// the chat is locked, change Status and Icon
+				this.lockChatDone(1);
+			}
+			// create the foldout navi 
+			this.naviMenu = new UvumiDropdown(this.idNaviTop);
+	        this.scrollDownAni = new Fx.Scroll(this.idChatbox, {
+    	        "duration": "short",
+        	    "link": "cancel"
+       		});
+			this.scrollToBottom.delay(100,this);
+			this.addEvents();
+		}
+		else {
+			// draw new messages and be-users if any
+            if(this.messagesToDraw.length>0) {
+                // append the messages to the chatbox
+				for (var i=0; i<this.messagesToDraw.length; i++) {
+                    $(this.idChatbox).adopt(this.messagesToDraw[i]);
+                }
+				// play alert sound on every message
+				if($("beep_alert")) {
+					if($("alert_check").checked) {
+						try {
+							$("beep_alert").play(4);
+						}
+						catch(e) {
+							// no flash?
+						}
+					}
+				}
+				this.scrollToBottom.delay(100,this);
+            }
+			if(this.beUserSelectNode) {
+				// delete the old select Menu and adopt the new one
+				if($(this.idAssume).getElement("ul")) {
+					$(this.idAssume).getElement("ul").dispose();
+				}
+				$(this.idAssume).adopt(this.beUserSelectNode);
+				this.beUserSelectNode = null; // we have changed the html, delete the node
+	            // re-create the foldout navi
+				delete(this.naviMenu);
+    	        this.naviMenu = new UvumiDropdown(this.idNaviTop);
+			}
+		}
+		this.messagesToDraw.empty(); // clear the messages variable
+	},
+	"updateLastRow": function(lastRow) {
+		this.lastRow = lastRow;
+	},
+	"lockChat": function() {
+		/* Lock / unlock the chat for the current BE-User, show loading image, send the request */
+		if(!this.loading) {
+			this.addLoadingImg();
+			if(!this.chatLocked) {
+				// lock it
+				this.lockReq = 1;
+			}
+			else {
+				// unlock it
+				this.lockReq = 0;
+			}
+		}
+	},
+	"lockChatDone": function(locked) {
+		/* called if lock chat was completed by last request or if chat which was locked is now newly created, just set chatLocked variable and change symbols and status text */
+		if(locked=="1") {
+			// the chat was successfully locked
+            $(this.idAssumeIcon).removeClass("lock_it");
+            $(this.idAssumeIcon).addClass("unlock_it");
+            $(this.idStatus).set("text",LL.status_locked);
+			$(this.idLock).set("text",LL.options_unlock);
+            this.chatLocked = 1;
+		}
+		else {
+			// the chat was successfully unlocked
+			$(this.idAssumeIcon).removeClass("unlock_it");
+			$(this.idAssumeIcon).addClass("lock_it");
+			$(this.idStatus).set("text",LL.status_unlocked);
+            $(this.idLock).set("text",LL.options_lock);
+			this.chatLocked = 0;
+		}
+	},
+	"addEvents": function() {
+	    /* add all events we are using in a single chatbox */
+		$(this.idTextarea).addEvents({
+			"enterButtonDown": this.createMessage.bind(this),
+			"keypress": function(e) {
+				if(e.alt) {
+					// Alt keypressed
+					if(e.key>0 && e.key<9) {
+						if(this.hotkeyFixText[e.key]) {
+							this.addFixText(this.hotkeyFixText[e.key]);
+						}
+					}
+					e.stop();
+				}
+			}.bind(this),
+			"keyup": function(e) {
+				if(e.code==18) {
+    		        $(this.idFixTextUl).removeClass("visible");
+	        	    $(this.idFixTextUl).addClass("invisible");
+					e.stop();
+				}
+			}.bind(this)
+		});
+		$(this.idClose).addEvents({
+			"click": this.destroyChat.bind(this) 
+		});
+		$(this.idAssumeIcon).addEvents({
+			"click": this.lockChat.bind(this)
+		});
+		$(this.idLock).cloneEvents($(this.idAssumeIcon));
+	},
+	"setHtmlIds": function() {
+		/* set all HTML id's */
+		this.idChatboxWrap = "chatBoxWrap_"+this.uid;
+		this.idAssumeIcon = "assumeChat_"+this.uid;
+		this.idChatbox = "chatBox_"+this.uid;
+		this.idTextarea = "chatTextarea_"+this.uid;
+		this.idChatboxOuter = "chatboxes_wrap";
+		this.idClose = "chatClose_"+this.uid;
+		this.idLock = "chatLock_"+this.uid;
+		this.idAssume = "chatAssume_"+this.uid;
+		this.idStatus = "chatStatus_"+this.uid;
+		this.idNaviTop = "chatsNaviTop_"+this.uid;
+		this.idFixTextUl = "chatsFixTextUl_"+this.uid;
+		this.idAssumeOk = "popUpAssumeOk_"+this.uid;
+		this.idAssumeAbort = "popUpAssumeAbort_"+this.uid;
+	},
+	"addFixText": function(text) {
+		/* inserts the @param text at the current Cursor position in Textarea of current chatbox */
+		$(this.idTextarea).insertAtCursor(text);	 
+	},
+	"addFixTextMenu": function() {
+	    /* creates the ul Navi for Fix Texts from global Var fixText, only called by draw (create whole chat) */
+		var ul = new Element("ul", {
+			"id": this.idFixTextUl
+		});
+		if(fixText[this.language]) {
+			var count = 1;
+			for (var i in fixText[this.language]) {
+				var	li = new Element("li", {
+					"events": {
+						"click": this.addFixText.bind(this,fixText[this.language][i])
+					}
+				});	
+				if (count < 10) {
+					li.set("text",fixText[this.language][i]+" [Alt+"+count+"]");
+					this.hotkeyFixText[count] = fixText[this.language][i];
+				}
+				else {
+					li.set("text",fixText[this.language][i]);
+				}
+				count ++;
+				ul.adopt(li);
+			}
+		}
+		else {
+			var li = new Element("li", {
+				"text": LL.noFixTextInThisLanguage
+			});
+			ul.adopt(li);
+		}
+		ul.getLast("li").addClass("last");
+		return (ul);
+	},
+	"updateBeUsers": function(beUserStorage,forceUpdate) {
+		/* updates the Be Users if neccesarry */
+		if(beUserStorage.toUpdate() || forceUpdate) {
+			var tmp = beUserStorage.getUsers();
+            var ul = new Element("ul", {
+                "class": "invisible"
+            });
+			if(tmp.length > 0) {
+				for (var i in tmp) {
+					if(typeof(tmp[i])=="string") {
+						var li = new Element("li", {
+							"events": {
+								"click": this.assumeChatToUser.bind(this,i)
+							},
+							"text": tmp[i]
+						});
+						ul.adopt(li);
+					}
+				}
+			}
+			if(!li) {
+				// show entry that no be-user is online
+				var li = new Element("li", {
+					"class": "unclickable",
+					"text": LL.noBeUserOnline
+				});
+				ul.adopt(li);
+			}
+			ul.getLast("li").addClass("last");
+			this.beUserSelectNode = ul;
+		}
+	},
+	/* stickyWin with message why */
+	"assumeChatToUser": function(beUserUid) {
+		/* @todo implement this */		
+	},
+	"addLoadingImg": function() {
+		this.loading = 1;
+		$(this.idAssumeIcon).addClass("loading");
+	},
+	"removeLoadingImg": function() {
+		this.loading = 0;
+		$(this.idAssumeIcon).removeClass("loading");	
+	},
+	"scrollToBottom": function() {
+		// scroll to bottom of textbox smoothly
+		this.scrollDownAni.toBottom();
+	},
+    "destroyChat": function() {
+		/* destroy the chat on next Request */
+        // write system chat destroyed message
+        var msgObj = new message(strftime,"system",0,0,LL.system,LL.chatDestroyedMsg);
+        this.addLoadingImg();
+        $(this.idChatbox).adopt(msgObj.getNode());
+        this.scrollToBottom.delay(100,this);
+        $(this.idTextarea).removeEvents();
+        $(this.idClose).removeEvents();
+		this.destroyReq = 1;
+    },
+	"removeChat": function() {
+	    /* start an opacity tween and then remove the chat from HTML */
+		this.opacityTween.addEvents({
+			"onComplete": function(el) {
+				el.dispose();
+			}	
+		});
+		this.opacityTween.start(0);
+	}
+});
+
+/**
+* Class for a single Message
+*/
+var message = new Class({
+	"initialize": function(crdate,code,fromSupportler,toSupportler,name,message) {
+		this.crdate = crdate;
+		this.code = code;
+		this.fromSupportler = fromSupportler;
+		this.toSupportler = toSupportler;
+		this.name = name;
+		this.message = message;
+	},
+	"getNode": function() {
+		// create the message HTML nodes
+		var msg = new Element("p");
+		var date = new Element("span", {
+			"class": "date",
+			"text": this.crdate+" > "
+		});
+		var name = new Element("span", {
+			"text": this.name+" > "
+		});
+		switch (this.code) {
+			case "beuser":
+				name.addClass("be_user_message");
+			break;
+			case "feuser":
+				name.addClass("fe_user_message");
+			break;
+			default:
+				name.addClass("system_message");
+		}
+		var message = new Element("span", {
+			"class": "message",
+			"html": this.message
+		});
+		msg.adopt(date,name,message);
+		return (msg);
+	}
+});
+
+var log = new Class({
+	"initialize": function() {
+		this.idLogBox = "logBox"
+		this.scrollDownAni = new Fx.Scroll(this.idLogBox, {
+			"duration": "short",
+			"link": "cancel"
+		});
+	},
+	"addLogMessage": function(crdate,message) {
+		var msg = new logMessage(crdate,message);
+		$(this.idLogBox).adopt(msg.getNode());
+		this.scrollToBottom.delay(100,this);
+	},
+	"scrollToBottom": function() {
+		this.scrollDownAni.toBottom();
+	}
+});
+
+var logMessage = new Class({
+	"initialize": function(crdate,message) {
+		this.crdate = crdate;
+		this.message = message;
+	},
+	"getNode": function() {
+		var msg = new Element("p");
+		var date = new Element("span", {
+			"class": "date",
+			"text": this.crdate+" > "
+		});
+		var text = new Element("span", {
+			"class": "log-message",
+			"text": this.message
+		});
+		msg.adopt(date,text);
+		return (msg);
+	}
+});
+
+var beUserMarket = new Class({
+	"initialize": function() {
+		this.beUsers = Array();	
+		this.somethingChanged = 0;
+	},
+	"resetUpdate": function() {
+		this.somethingChanged = 0;	
+	},
+	"addUser": function(uid,name) {
+		if(!this.beUsers[uid]) {
+			this.somethingChanged = 1;
+			this.beUsers[uid] = name;
+		}
+	},
+	"getUsers": function() {
+		return (this.beUsers);
+	},
+	"toUpdate": function() {
+		return (this.somethingChanged);
+	},
+	"empty": function() {
+		if(this.beUsers.length>0) {
+			delete (this.beUsers);
+			this.beUsers = Array();
+			this.somethingChanged = 1;
+		}
+	}
+});
+
+Element.Events.enterButtonDown = {
+    base: 'keypress', //we set a base type
+    condition: function(event){ //and a function to perform additional checks.
+        if(event.code == 13) {
+			// 13 = ENTER
+            return (true);
+        }
+        else {
+            return (false);
+        }
+    }
+};

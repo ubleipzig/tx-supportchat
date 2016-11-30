@@ -1,0 +1,56 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<title></title>
+		<meta name="author" content="Georg Schönweger" >
+		<meta name="generator" content="screem 0.16.1" >
+		<meta name="description" content="" >
+		<meta name="keywords" content="" >
+		<meta http-equiv="content-type" content="text/html; charset=UTF-8" >
+		<meta http-equiv="Content-Script-Type" content="text/javascript" >
+		<meta http-equiv="Content-Style-Type" content="text/css" >
+	</head>
+	<body>
+		<!-- ###CHAT_BOX### -->
+		<h2 id="chaterror">###ERROR###</h2>
+		<div id="chatboxouter" style="###CHATBOX_STYLE###">
+			<h2 id="###TITLE_ID###">###TITLE###</h2>
+			<div id="###CHAT_BOX_ID###">
+				###MESSAGE###
+			</div>
+			<div class="bottom-cont">
+			    <!-- icon from: http://schollidesign.deviantart.com/gallery/#/d1qpw1n -->
+			    <form action="###EXPORT_ACTION_URL###" method="post" target="my_iframe" id="exportForm">
+                    <input type="image" src="typo3conf/ext/sni_supportchat/pics/save.png" id="exportButton" style="float:right;border:0px;" title="###EXPORT_TEXT###"/><input type="hidden" name="data" value="" id="data1" />
+                </form>
+                <iframe name="my_iframe" src="about:blank" style="display:none"></iframe>
+                <!-- icon from GNOME Empathy 3.4 iconset: http://ftp.acc.umu.se/pub/GNOME/sources/empathy/3.4/ -->
+			    <img src="typo3conf/ext/sni_supportchat/pics/typing.png" id="typingPen" style="display:none;float:right;border:0px;margin-right:5px;" />
+				<p class="sni-message-label">###MESSAGE_LABEL###</p>
+                <p><textarea id="###TEXTBOX_ID###"></textarea></p>
+                <p class="sni-close"><input type="submit" id="###CLOSE_ID###" value="###CLOSE_LABEL###" /></p>
+                <p class="sni-send-message"><input type="submit" id="###SEND_ID###" value="###SEND_LABEL###" /></p>
+			</div>	
+		</div>							
+		<!-- ###CHAT_BOX### -->		
+	
+		<!-- ###SHOW_SUPPORT_LOGO### -->
+            <div class="box">
+                <h5>###TITLE###</h5>
+                <div class="supportchat">
+                    ###IMAGE###
+                </div>
+            </div>
+		<!-- ###SHOW_SUPPORT_LOGO### -->
+		
+		<!-- ###NO_JS_OR_COOKIES_ENABLED### -->
+			<h3>###TITLE###</h3>
+			<p>###TEXT###</p>
+		<!-- ###NO_JS_OR_COOKIES_ENABLED### -->	
+		
+		<!-- ###CHAT_BOX_OFFLINE### -->			
+			<h2>###TITLE###</h2>
+			<p>###MESSAGE###</p>
+		<!-- ###CHAT_BOX_OFFLINE### -->		
+	</body>
+</html>

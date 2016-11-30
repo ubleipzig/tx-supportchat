@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3locallang>
+	<meta type="array">
+		<type>database</type>
+		<description>Language labels for database tables/fields belonging to extension 'sni_supportchat'</description>
+	</meta>
+	<data type="array">
+		<languageKey index="default" type="array">
+			<label index="tx_snisupportchat_chats">Chats</label>
+			<label index="tx_snisupportchat_chats.be_user">BE User</label>
+			<label index="tx_snisupportchat_chats.session">Session ID</label>
+			<label index="tx_snisupportchat_chats.active">Active</label>
+                        <label index="tx_snisupportchat_chats.language_uid">Language Uid</label>
+
+			<label index="tx_snisupportchat_chats.last_row_uid">Last Row Uid</label>
+			<label index="tx_snisupportchat_messages">Messages</label>
+			<label index="tx_snisupportchat_messages.chat_pid">Chat Pid</label>
+			<label index="tx_snisupportchat_messages.name">Name</label>
+			<label index="tx_snisupportchat_messages.message">Message</label>
+			<label index="tt_content.list_type_pi1">Support Chat</label>
+			<label index="tx_snisupportchat_internal_messages.chat">Chat</label>
+			<label index="tx_snisupportchat_internal_messages.from_be_user">From BE-User</label>			
+			<label index="tx_snisupportchat_internal_messages.to_be_user">To BE-User</label>			
+			<label index="tx_snisupportchat_internal_messages.message">Message</label>			
+			<label index="tx_snisupportchat_internal_messages.active">Active</label>	
+			<label index="tx_snisupportchat_internal_messages">Internal - Messages</label>	
+			<label index="tx_snisupportchat_internal_messages.to_do">To Do (toAssume:Assume the Chat to another BE-User)</label>	
+			<label index="tx_snisupportchat_chats.surfer_ip">Surfer IP</label>
+		</languageKey>
+	</data>
+</T3locallang>
