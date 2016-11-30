@@ -62,7 +62,7 @@
             <label index="status_msg_online">Online</label>
         </languageKey>
         <languageKey index="de">
-            <label index="chat-username">Gast</label>
+        <label index="chat-username">Gast</label>
             <label index="chatbox-close">Chat beenden</label>
             <label index="chatbox-entry-welcome">Herzlich willkommen im Chat der UBL! Bitte beachten Sie, dass die Verbindung unverschlüsselt übertragen wird.</label>
             <label index="chatbox-messagelabel">Geben Sie Ihre Nachricht hier ein:</label>
@@ -105,7 +105,7 @@
             <label index="system-chat-destroyed">La ringraziamo per il contatto. La sessione é terminata.</label>
             <label index="system-supportler-joined-chat">Lei é collegato con il consulente %s.</label>
             <label index="system-supportler-leaved-chat">Il consulente %s ha lasciato questo chat.</label>
-            <label index="chat-offlinelenguage-title">Mi dispiace</label>
+            <label index="chat-offline-title">Mi dispiace</label>
             <label index="chat-offline-message">Il Chat é temporaneamente offline.</label>
             <label index="system-name">Systema</label>
             <label index="system-chat-byebye">Grazie per averci contattato</label>

@@ -1,0 +1,33 @@
+{
+  "name": "ubl/sni_supportchat",
+  "description": "A Support Chat for Typo3",
+  "type": "typo3-cms-extension",
+  "keywords": ["TYPO3 CMS", "support", "chat"],
+  "license": ["GPL-2.0+"],
+  "version": "1.2.0",
+  "require": {
+    "typo3/cms": ">=4.5,<6.3"
+  },
+  "authors": [
+    {
+      "name": "Georg Schoenweger",
+      "email": "Georg.Schoenweger@gmail.com",
+      "role": "Developer"
+    },
+    {
+      "name": "André Lahmann",
+      "email": "andre.lahmann@uni-leipzig.de",
+      "role": "Developer"
+    },
+    {
+      "name": "Frank Morgner",
+      "email": "frank.morgner@uni-leipzig.de",
+      "role": "Developer"
+    },
+    {
+      "name": "Ulf Seltmann",
+      "email": "ulf.seltmann@uni-leipzig.de",
+      "role": "Maintainer"
+    }
+  ]
+}
