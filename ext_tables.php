@@ -5,7 +5,7 @@ t3lib_extMgm::allowTableOnStandardPages("tx_snisupportchat_chats");
 
 $TCA["tx_snisupportchat_chats"] = Array (
 	"ctrl" => Array (
-		'title' => 'LLL:EXT:sni_supportchat/locallang_db.xml:tx_snisupportchat_chats',
+		'title' => 'LLL:EXT:' . $_EXTKEY . '/locallang_db.xml:tx_snisupportchat_chats',
 		'label' => 'be_user',
 		'tstamp' => 'tstamp',
 		'crdate' => 'crdate',
@@ -28,7 +28,7 @@ t3lib_extMgm::allowTableOnStandardPages("tx_snisupportchat_messages");
 
 $TCA["tx_snisupportchat_messages"] = Array (
 	"ctrl" => Array (
-		'title' => 'LLL:EXT:sni_supportchat/locallang_db.xml:tx_snisupportchat_messages',
+		'title' => 'LLL:EXT:' . $_EXTKEY . '/locallang_db.xml:tx_snisupportchat_messages',
 		'label' => 'name',
 		'tstamp' => 'tstamp',
 		'crdate' => 'crdate',
@@ -47,7 +47,7 @@ t3lib_div::loadTCA('tt_content');
 $TCA['tt_content']['types']['list']['subtypes_excludelist'][$_EXTKEY.'_pi1']='layout,select_key';
 
 
-t3lib_extMgm::addPlugin(Array('LLL:EXT:sni_supportchat/locallang_db.xml:tt_content.list_type_pi1', $_EXTKEY.'_pi1'),'list_type');
+t3lib_extMgm::addPlugin(Array('LLL:EXT:' . $_EXTKEY . '/locallang_db.xml:tt_content.list_type_pi1', $_EXTKEY.'_pi1'),'list_type');
 
 t3lib_extMgm::addStaticFile($_EXTKEY,'pi1/static/Sni_SupportChat_TS/', 'Sni Support Chat TS');
 

@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.0">
+	<file source-language="en" target-language="de" datatype="plaintext" original="messages" date="2016-12-05T18:20:51Z" product-name="sni_supportchat">
+		<header/>
+		<body>
+			<trans-unit id="chat-username" xml:space="preserve">
+				<source>Guest</source>
+				<target>Gast</target>
+			</trans-unit>
+
+			<trans-unit id="chatbox-close" xml:space="preserve">
+				<source>Close the window</source>
+				<target>Chat beenden</target>
+			</trans-unit>
+
+			<trans-unit id="chatbox-entry-welcome" xml:space="preserve">
+				<source>Welcome to the Support Chat!</source>
+				<target>Herzlich willkommen im Chat!</target>
+			</trans-unit>
+
+			<trans-unit id="chatbox-messagelabel" xml:space="preserve">
+				<source>Type your message here:</source>
+				<target>Geben Sie Ihre Nachricht hier ein:</target>
+			</trans-unit>
+
+			<trans-unit id="chatbox-sendmessage" xml:space="preserve">
+				<source>Send</source>
+				<target>Absenden</target>
+			</trans-unit>
+
+			<trans-unit id="chatbox-export" xml:space="preserve">
+				<source>Export chat as txt-file.</source>
+				<target>Chat als TXT-Datei exportieren.</target>
+			</trans-unit>
+
+			<trans-unit id="chatbox-title-be-user-ok" xml:space="preserve">
+				<source>You are now connected with the Supportler %s.</source>
+				<target>Sie sind jetzt verbunden mit Mitarbeiter %s.</target>
+			</trans-unit>
+
+			<trans-unit id="chatbox-welcome" xml:space="preserve">
+				<source>Welcome to the Support Chat!</source>
+				<target>Herzlich Willkommen im Chat!</target>
+			</trans-unit>
+
+			<trans-unit id="new-chatbox-message-for-be-user" xml:space="preserve">
+				<source>A new Chatbox with Uid: %s was created!</source>
+				<target>Eine neue Chatbox (uid: %s) wurde erzeugt!</target>
+			</trans-unit>
+
+			<trans-unit id="noJsOrCookies-text" xml:space="preserve">
+				<source>You must activate Javascript and accept Cookies!</source>
+				<target>Der Chat erfordert Javascript und Cookies!</target>
+			</trans-unit>
+
+			<trans-unit id="noJsOrCookies-title" xml:space="preserve">
+				<source>Error</source>
+				<target>Fehler</target>
+			</trans-unit>
+
+			<trans-unit id="support-logo-header" xml:space="preserve">
+				<source>LIVE Support Chat</source>
+			</trans-unit>
+
+			<trans-unit id="system-chat-destroyed" xml:space="preserve">
+				<source>I'm sorry, the Chat was inactivated by an Admin!</source>
+				<target>Entschuldigung, der Chat wurde deaktiviert!</target>
+			</trans-unit>
+
+			<trans-unit id="system-supportler-joined-chat" xml:space="preserve">
+				<source>The Supportler %s joined the Chat.</source>
+				<target>Mitarbeiter %s hat den Chat betreten.</target>
+			</trans-unit>
+
+			<trans-unit id="system-supportler-leaved-chat" xml:space="preserve">
+				<source>The Supportler %s leaved the Chat.</source>
+				<target>Mitarbeiter %s hat den Chat verlassen.</target>
+			</trans-unit>
+
+			<trans-unit id="chat-offline-title" xml:space="preserve">
+				<source>I'm sorry</source>
+				<target>Entschuldigung.</target>
+			</trans-unit>
+
+			<trans-unit id="chat-offline-message" xml:space="preserve">
+				<source>The chat is currently offline.</source>
+				<target>Der Chat ist derzeit offline.</target>
+			</trans-unit>
+
+			<trans-unit id="system-name" xml:space="preserve">
+				<source>System</source>
+			</trans-unit>
+
+			<trans-unit id="system-chat-byebye" xml:space="preserve">
+				<source>Thank you for chatting with us.</source>
+				<target>Vielen Dank, dass Sie unseren Chat benutzt haben.</target>
+			</trans-unit>
+
+			<trans-unit id="system-chat-byebye-alert" xml:space="preserve">
+				<source>The chat session was terminated!\nThank you for chatting with us.</source>
+				<target>Der Chat wurde beendet!\nVielen Dank, dass Sie unseren Chat benutzt haben.</target>
+			</trans-unit>
+
+			<trans-unit id="chatTimeout" xml:space="preserve">
+				<source>The chat is now inactive, no message was send for a long time!</source>
+				<target>Der Chat wurde wegen Inaktivität beendet.</target>
+			</trans-unit>
+
+			<trans-unit id="chatDestroyedByAdmin" xml:space="preserve">
+				<source>The chat was destroyed by an Admin. Thank you for chatting with us!</source>
+				<target>Der Chat wurde geschlossen. Vielen Dank, dass Sie unseren Chat benutzt haben!</target>
+			</trans-unit>
+			<trans-unit id="chatNoAccess" xml:space="preserve">
+				<source>You don't have access! If you think this is an error please contact the site administrator.</source>
+				<target>Sie haben keinen Zugriff.</target>
+			</trans-unit>
+
+			<trans-unit id="status_msg_offline" xml:space="preserve">
+				<source>Offline</source>
+			</trans-unit>
+
+			<trans-unit id="status_msg_online" xml:space="preserve">
+				<source>Online</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>
+

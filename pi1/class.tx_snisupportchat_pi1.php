@@ -1,4 +1,8 @@
 <?php
+
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility as lu;
+
 /***************************************************************
 *  Copyright notice
 *
@@ -40,16 +44,24 @@ class tx_snisupportchat_pi1 extends tslib_pibase {
 	var $pi_checkCHash = TRUE;
 
 	/**
+	 * @var \TYPO3\CMS\Extbase\Object\ObjectManager
+	 * @inject
+	 */
+	protected $objectManager;
+
+	/**
 	 * The main method of the PlugIn
 	 *
 	 * @param	string		$content: The PlugIn content
 	 * @param	array		$conf: The PlugIn configuration
 	 * @return	The content that is displayed on the website
 	 */
-	function main($content,$conf)	{
+	function main($content,$conf) {
 		$this->conf=$conf;
 		$this->pi_setPiVarDefaults();
-		$this->pi_loadLL();
+		$this->extConf = $this->getObjectManager()->get('\\TYPO3\\CMS\\Extensionmanager\\Utility\\ConfigurationUtility')
+			->getCurrentConfiguration($this->extKey);
+
 		$this->templateCode = $this->cObj->fileResource($this->conf["templateFile"]);
 		$this->checkPids = $this->checkForOnlineOfflinePages(true);
 		/** tradem 2012-04-11 Sets typing indicator */
@@ -89,6 +101,11 @@ class tx_snisupportchat_pi1 extends tslib_pibase {
 		return $this->pi_wrapInBaseClass($content);
 	}
 
+	public function getObjectManager() {
+		if (!$this->objectManager) $this->objectManager = GeneralUtility::makeInstance('\TYPO3\CMS\ExtBase\Object\ObjectManager');
+		return $this->objectManager;
+	}
+
 	/**
 	 * Render template with message that the Chat is offline
 	 *
@@ -97,8 +114,8 @@ class tx_snisupportchat_pi1 extends tslib_pibase {
 	function showChatIsOfflineMessage() {
 		$out = $this->cObj->getSubpart($this->templateCode, '###CHAT_BOX_OFFLINE###');
 		$markerArray = Array(
-			"###TITLE###" => $this->pi_getLL("chat-offline-title"),
-			"###MESSAGE###" => $this->pi_getLL("chat-offline-message"),
+			"###TITLE###" => lu::translate("chat-offline-title", $this->extKey),
+			"###MESSAGE###" => lu::translate("chat-offline-message", $this->extKey),
 		);
 		$content = $this->cObj->substituteMarkerArrayCached($out,$markerArray);
 		return ($content);
@@ -111,19 +128,19 @@ class tx_snisupportchat_pi1 extends tslib_pibase {
 	function generateChatBox() {
 		$out = $this->cObj->getSubpart($this->templateCode, '###CHAT_BOX###');
 		$markerArray = Array(
-			"###TITLE###" => $this->pi_getLL("chatbox-welcome"),
+			"###TITLE###" => lu::translate('chatbox-welcome', $this->extKey),
 			"###TITLE_ID###" => 'chatboxTitle',
 			"###CHATBOX_STYLE###" => "display: none;",
-			"###SEND_LABEL###" => $this->pi_getLL("chatbox-sendmessage"),
-			"###MESSAGE_LABEL###" => $this->pi_getLL("chatbox-messagelabel"),
+			"###SEND_LABEL###" => lu::translate("chatbox-sendmessage", $this->extKey),
+			"###MESSAGE_LABEL###" => lu::translate("chatbox-messagelabel", $this->extKey),
 			"###CHAT_BOX_ID###" => "snisupportchatbox",
 			"###TEXTBOX_ID###" => "sniTextbox",
 			"###SEND_ID###" => "sniSendMessage",
 			"###MESSAGE###" => "",
 			"###CLOSE_ID###" => "sniChatClose",
-			"###CLOSE_LABEL###" => $this->pi_getLL("chatbox-close"),
-			"###ERROR###" => $this->pi_getLL("noJsOrCookies-text"),
-			"###EXPORT_TEXT###" => $this->pi_getLL("chatbox-export"),
+			"###CLOSE_LABEL###" => lu::translate("chatbox-close", $this->extKey),
+			"###ERROR###" => lu::translate("noJsOrCookies-text", $this->extKey),
+			"###EXPORT_TEXT###" => lu::translate("chatbox-export", $this->extKey),
 			"###EXPORT_ACTION_URL###" => $this->getAbsUrl('index.php?eID=tx_snisupportchat_pi1&cmd=createChatLog')
 		);
 		$content = $this->cObj->substituteMarkerArrayCached($out,$markerArray);
@@ -190,7 +207,7 @@ class tx_snisupportchat_pi1 extends tslib_pibase {
 		$freq = $this->conf["getMessagesInSeconds"]*1000;
 		/* tradem 2012-04-11 Added JS-Variable for typing indicator */
 		$useTypingIndicator =  $this->useTypingIndicator;
-		$chatUsername = $GLOBALS["TSFE"]->fe_user->user["uid"] ? ($GLOBALS["TSFE"]->fe_user->user["first_name"] ? ($GLOBALS["TSFE"]->fe_user->user["first_name"]." ".$GLOBALS["TSFE"]->fe_user->user["last_name"]) : addslashes($GLOBALS["TSFE"]->fe_user->user["name"])) : addslashes($this->pi_getLL("chat-username"));
+		$chatUsername = $GLOBALS["TSFE"]->fe_user->user["uid"] ? ($GLOBALS["TSFE"]->fe_user->user["first_name"] ? ($GLOBALS["TSFE"]->fe_user->user["first_name"]." ".$GLOBALS["TSFE"]->fe_user->user["last_name"]) : addslashes($GLOBALS["TSFE"]->fe_user->user["name"])) : addslashes(lu::translate("chat-username", $this->extKey));
 		$GLOBALS['TSFE']->additionalHeaderData['tx_snisupportchat_pi1'] = '
 			<script type="text/javascript" src="'.t3lib_extMgm::siteRelPath('sni_supportchat').'js/mootools-1.2.6-core-yc.js"></script>
 			<script type="text/javascript" src="'.t3lib_extMgm::siteRelPath('sni_supportchat').'js/mootools-1.2.5.1-more.js"></script>
@@ -207,17 +224,17 @@ class tx_snisupportchat_pi1 extends tslib_pibase {
 				var timeFormated = "'.strftime($this->conf["strftime"],time()).'";
 				var useTypingIndicator = '.$useTypingIndicator.'; // tradem 2012-04-11 Added JS-Variable for typing indicator
 				var diffLang = {
-					\'chatboxTitleBeUserOk\': \''.addslashes($this->pi_getLL("chatbox-title-be-user-ok")).'\',
-					\'chatboxWelcome\': \''.addslashes($this->pi_getLL("chatbox-welcome")).'\',
+					\'chatboxTitleBeUserOk\': \''.addslashes(lu::translate("chatbox-title-be-user-ok", $this->extKey)).'\',
+					\'chatboxWelcome\': \''.addslashes(lu::translate('chatbox-welcome', $this->extKey)).'\',
 					\'chatUsername\': \''.$chatUsername.'\',
-					\'systemByeBye\': \''.addslashes($this->pi_getLL("system-chat-byebye")).'\',
-					\'systemSupportlerJoinedChat\': \''.addslashes($this->pi_getLL("system-supportler-joined-chat")).'\',
-					\'systemSupportlerLeavedChat\': \''.addslashes($this->pi_getLL("system-supportler-leaved-chat")).'\',
-					\'chatWelcome\': \''.addslashes($this->pi_getLL("chatbox-entry-welcome")).'\',
-					\'system\': \''.addslashes($this->pi_getLL("system-name")).'\',
-					\'chatTimeout\': \''.addslashes($this->pi_getLL("chatTimeout")).'\',
-					\'chatDestroyedByAdmin\': \''.addslashes($this->pi_getLL("chatDestroyedByAdmin")).'\',
-					\'chatNoAccess\': \''.addslashes($this->pi_getLL("chatNoAccess")).'\'
+					\'systemByeBye\': \''.addslashes(lu::translate("system-chat-byebye", $this->extKey)).'\',
+					\'systemSupportlerJoinedChat\': \''.addslashes(lu::translate("system-supportler-joined-chat", $this->extKey)).'\',
+					\'systemSupportlerLeavedChat\': \''.addslashes(lu::translate("system-supportler-leaved-chat", $this->extKey)).'\',
+					\'chatWelcome\': \''.addslashes(lu::translate('chatbox-entry-welcome', $this->extKey)).'\',
+					\'system\': \''.addslashes(lu::translate("system-name", $this->extKey)).'\',
+					\'chatTimeout\': \''.addslashes(lu::translate("chatTimeout", $this->extKey)).'\',
+					\'chatDestroyedByAdmin\': \''.addslashes(lu::translate("chatDestroyedByAdmin", $this->extKey)).'\',
+					\'chatNoAccess\': \''.addslashes(lu::translate("chatNoAccess", $this->extKey)).'\'
 				};
 				window.addEvent("domready", function() {
 					initChat("'.$this->getAbsUrl('index.php?eID=tx_snisupportchat_pi1').'");
@@ -225,7 +242,7 @@ class tx_snisupportchat_pi1 extends tslib_pibase {
 				window.onbeforeunload = function() {
 					chat.destroyChat();
 					if(typeof(close_button_flag) == \'undefined\') {
-					    alert("'.str_replace('\\\\', '\\', addslashes($this->pi_getLL("system-chat-byebye-alert"))).'");
+					    alert("'.str_replace('\\\\', '\\', addslashes(lu::translate("system-chat-byebye-alert", $this->extKey))).'");
 					}
 				}
 			// -->
@@ -246,9 +263,9 @@ class tx_snisupportchat_pi1 extends tslib_pibase {
 		// get the offline Variant
 		$image = '<img src="'.tx_chat_functions::getPath($this->conf["offlineLogo"]).'" alt="Support Chat Offline" title="Support Chat Offline" />';
 		$markerArray = Array(
-			"###TITLE###" => $this->pi_getLL("support-logo-header"),
+			"###TITLE###" => lu::translate("support-logo-header", $this->extKey),
 			"###IMAGE###" => $this->cObj->stdWrap($image,$this->conf["offlineLogo."]["stdWrap."]),
-			"###STATUS_MSG###" => $this->pi_getLL("status_msg_offline")
+			"###STATUS_MSG###" => lu::translate("status_msg_offline", $this->extKey)
 		);
 		if($chatIsOnline[$this->conf["chatPluginPid"]]) {
 			$onlineClass = "";
@@ -269,9 +286,9 @@ class tx_snisupportchat_pi1 extends tslib_pibase {
 		);
 		$openChatLink = $this->getAbsUrl($this->cObj->typolink("",$linkConf));
 		$markerArray = Array(
-			"###TITLE###" => $this->pi_getLL("support-logo-header"),
+			"###TITLE###" => lu::translate("support-logo-header", $this->extKey),
 			"###IMAGE###" => '<a href="'.$this->pi_getPageLink($this->conf["chatNotSupportedPage"]).'" onclick="sniSupportchatOpenWindow(\''.$openChatLink.'\',\'snisupportchatwindow\',\''.$this->conf["chatWindowJsParams"].'\'); return false;" target="_blank">'.$image.'</a>',
-			"###STATUS_MSG###" => $this->pi_getLL("status_msg_online")
+			"###STATUS_MSG###" => lu::translate("status_msg_online", $this->extKey)
 		);
 		$online = '<div '.$onlineClass.' id="tx_snisupportchat_pi1_onlineLogo_'.$this->conf["chatPluginPid"].'">'.$this->cObj->substituteMarkerArrayCached($out,$markerArray).'</div>';
 		$content = $online.$offline;
@@ -316,8 +333,8 @@ class tx_snisupportchat_pi1 extends tslib_pibase {
 	function noJsOrCookie() {
 		$out = $this->cObj->getSubpart($this->templateCode, '###NO_JS_OR_COOKIES_ENABLED###');
 		$markerArray = Array(
-			"###TITLE###" => $this->pi_getLL("noJsOrCookies-title"),
-			"###TEXT###" => $this->pi_getLL("noJsOrCookies-text"),
+			"###TITLE###" => lu::translate("noJsOrCookies-title", $this->extKey),
+			"###TEXT###" => lu::translate("noJsOrCookies-text", $this->extKey),
 		);
 		$content = $this->cObj->substituteMarkerArrayCached($out,$markerArray);
 		return ($content);
