@@ -34,11 +34,6 @@ class tx_chat_functions {
 			}
 		}
 
-		// todo: what is this?
-		$retArray = [
-			"756" => True
-		];
-
 		return ($retArray);
 	}
 
