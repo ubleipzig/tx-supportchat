@@ -1,7 +1,7 @@
 <?php
 if (!defined ('TYPO3_MODE')) 	die ('Access denied.');
 
-t3lib_extMgm::allowTableOnStandardPages("tx_snisupportchat_chats");
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::allowTableOnStandardPages("tx_snisupportchat_chats");
 
 $TCA["tx_snisupportchat_chats"] = Array (
 	"ctrl" => Array (
@@ -15,8 +15,8 @@ $TCA["tx_snisupportchat_chats"] = Array (
 		"enablecolumns" => Array (
 			"disabled" => "hidden",
 		),
-		"dynamicConfigFile" => t3lib_extMgm::extPath($_EXTKEY)."tca.php",
-		"iconfile" => t3lib_extMgm::extRelPath($_EXTKEY)."icon_tx_snisupportchat_chats.gif",
+		"dynamicConfigFile" => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath($_EXTKEY)."tca.php",
+		"iconfile" => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extRelPath($_EXTKEY)."icon_tx_snisupportchat_chats.gif",
 	),
 	"feInterface" => Array (
 		"fe_admin_fieldList" => "hidden, be_user, session, active, last_row_uid",
@@ -24,7 +24,7 @@ $TCA["tx_snisupportchat_chats"] = Array (
 );
 
 
-t3lib_extMgm::allowTableOnStandardPages("tx_snisupportchat_messages");
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::allowTableOnStandardPages("tx_snisupportchat_messages");
 
 $TCA["tx_snisupportchat_messages"] = Array (
 	"ctrl" => Array (
@@ -34,8 +34,8 @@ $TCA["tx_snisupportchat_messages"] = Array (
 		'crdate' => 'crdate',
 		'cruser_id' => 'cruser_id',
 		"default_sortby" => "ORDER BY crdate DESC",
-		"dynamicConfigFile" => t3lib_extMgm::extPath($_EXTKEY)."tca.php",
-		"iconfile" => t3lib_extMgm::extRelPath($_EXTKEY)."icon_tx_snisupportchat_messages.gif",
+		"dynamicConfigFile" => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath($_EXTKEY)."tca.php",
+		"iconfile" => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extRelPath($_EXTKEY)."icon_tx_snisupportchat_messages.gif",
 	),
 	"feInterface" => Array (
 		"fe_admin_fieldList" => "chat_pid, name, message",
@@ -43,15 +43,32 @@ $TCA["tx_snisupportchat_messages"] = Array (
 );
 
 
-t3lib_div::loadTCA('tt_content');
+// \TYPO3\CMS\Core\Utility\GeneralUtility::loadTCA('tt_content');
 $TCA['tt_content']['types']['list']['subtypes_excludelist'][$_EXTKEY.'_pi1']='layout,select_key';
 
 
-t3lib_extMgm::addPlugin(Array('LLL:EXT:sni_supportchat/locallang_db.xml:tt_content.list_type_pi1', $_EXTKEY.'_pi1'),'list_type');
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPlugin(Array('LLL:EXT:sni_supportchat/locallang_db.xml:tt_content.list_type_pi1', $_EXTKEY.'_pi1'),'list_type');
 
-t3lib_extMgm::addStaticFile($_EXTKEY,'pi1/static/Sni_SupportChat_TS/', 'Sni Support Chat TS');
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addStaticFile($_EXTKEY,'pi1/static/Sni_SupportChat_TS/', 'Sni Support Chat TS');
 
 if (TYPO3_MODE=="BE")	{
-	t3lib_extMgm::addModule("user","txsnisupportchatM1","",t3lib_extMgm::extPath($_EXTKEY)."mod1/");
+	 \TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerModule(
+		$_EXTKEY,
+		'user',          // Main area
+		'mod1',         // Name of the module
+		'',             // Position of the module
+		array(          // Allowed controller action combinations
+				'Blog' => 'index,show,new,create,delete,deleteAll,edit,update,populate',
+				'Post' => 'index,show,new,create,delete,edit,update',
+				'Comment' => 'create,delete,deleteAll',
+		),
+		array(          // Additional configuration
+				'access'    => 'user,group',
+				'icon'      => 'EXT:' . $_EXTKEY . '/ext_icon.gif',
+				'labels'    => 'LLL:EXT:' . $_EXTKEY . '/Resources/Private/Language/locallang_mod.xml',
+		)
+	);
+
+//	\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addModule("user","txsnisupportchatM1","",\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath($_EXTKEY)."mod1/");
 }
 ?>
