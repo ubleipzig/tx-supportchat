@@ -1,9 +1,9 @@
 
 
-plugin.tx_snisupportchat_pi1.CSS_editor = Plugin: "tx_snisupportchat_pi1"
-plugin.tx_snisupportchat_pi1.CSS_editor.selector = .tx-snisupportchat-pi1
-plugin.tx_snisupportchat_pi1.CSS_editor.exampleWrap = <HR><strong>Plugin: "tx_snisupportchat_pi1"</strong><HR><div class="tx-snisupportchat-pi1"> | </div>
-plugin.tx_snisupportchat_pi1.CSS_editor.ch {
+plugin.tx_supportchat_pi1.CSS_editor = Plugin: "tx_supportchat_pi1"
+plugin.tx_supportchat_pi1.CSS_editor.selector = .tx-supportchat-pi1
+plugin.tx_supportchat_pi1.CSS_editor.exampleWrap = <HR><strong>Plugin: "tx_supportchat_pi1"</strong><HR><div class="tx-supportchat-pi1"> | </div>
+plugin.tx_supportchat_pi1.CSS_editor.ch {
 	P = Text
 	P.selector = P
 	P.attribs = BODYTEXT

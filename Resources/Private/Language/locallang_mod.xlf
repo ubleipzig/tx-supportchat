@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.0">
+	<file source-language="en" datatype="plaintext" original="messages" date="2020-01-17T13:20:51Z" product-name="supportchat">
+		<header/>
+		<body>
+		    <trans-unit id="mlang_tabs_tab" xml:space="preserve">
+                <source>Support Chat</source>
+            </trans-unit>
+            <trans-unit id="mlang_labels_tablabel" xml:space="preserve">
+                <source>Support chat module</source>
+            </trans-unit>
+            <trans-unit id="mlang_labels_tabdescr" xml:space="preserve">
+                <source>Backend module of support chat</source>
+            </trans-unit>
+		</body>
+	</file>
+</xliff>

@@ -1,8 +1,11 @@
 <?php
 // Exit, if script is called directly (must be included via eID in index_ts.php)
 if (!defined ('PATH_typo3conf')) die ('Could not access this script directly!');
-        
-require_once(t3lib_extMgm::extPath('sni_supportchat').'lib/class.tx_chat.php');
+
+use \TYPO3\CMS\Core\Utility\GeneralUtility;
+
+use \Ubl\Supportchat\Library\Chat;
+use \Ubl\Supportchat\Library\ChatHelper;
 
 class ajaxResponse {
 	var $uid = 0; // the chat uid from getVar
@@ -15,40 +18,40 @@ class ajaxResponse {
 	/** */	
 
 	function init() {
-		$feUserObj = tslib_eidtools::initFeUser();
+		$feUserObj = \TYPO3\CMS\Frontend\Utility\EidUtility::initFeUser();
 		$this->identification = $feUserObj->id;      
-		$this->uid = intval(t3lib_div::_GET("chat")) ? intval(t3lib_div::_GET("chat")) : 0;
-		$this->lang = intval(t3lib_div::_GET("L")) ? intval(t3lib_div::_GET("L")) : 0;
-		$this->pid = intval(t3lib_div::_GET("pid")) ? intval(t3lib_div::_GET("pid")) : 0;
+		$this->uid = intval(GeneralUtility::_GET("chat")) ? intval(GeneralUtility::_GET("chat")) : 0;
+		$this->lang = intval(GeneralUtility::_GET("L")) ? intval(GeneralUtility::_GET("L")) : 0;
+		$this->pid = intval(GeneralUtility::_GET("pid")) ? intval(GeneralUtility::_GET("pid")) : 0;
 		/** 2012-04-11 tradem Initialize useTypingIndicator */
-		$this->useTypingIndicator = intval(t3lib_div::_GET("useTypingIndicator")) ? intval(t3lib_div::_GET("useTypingIndicator")) : 0; 
-		if(t3lib_div::_GP("cmd")) {
-			$this->cmd = t3lib_div::_GP("cmd");
+		$this->useTypingIndicator = intval(GeneralUtility::_GET("useTypingIndicator")) ? intval(GeneralUtility::_GET("useTypingIndicator")) : 0;
+		if(GeneralUtility::_GP("cmd")) {
+			$this->cmd = GeneralUtility::_GP("cmd");
 		}
         // initialize the chat Object 
-		$lastRow = intval(t3lib_div::_GP("lastRow")) ? intval(t3lib_div::_GP("lastRow")) : 0;
-        $chat = new chat();
+		$lastRow = intval(GeneralUtility::_GP("lastRow")) ? intval(GeneralUtility::_GP("lastRow")) : 0;
+        $chat = new Chat();
 		
 		/** tradem 2012-04-13 Pass useTypingIndicator and log.*/
-		$chat->initChat($this->pid,$this->identification,0,$this->useTypingIndicator);			
+		$chat->initChat($this->pid, $this->identification,0, $this->useTypingIndicator);
 		// $chat->writeLog("Frontend: ajaxResponse.php setting useTypingIndicator=[".$this->useTypingIndicator."]");
 		if($this->uid) {
 			$chat->loadChatFromDB($this->uid,$lastRow);
 		}
 		switch ($this->cmd) {
 			case "checkIfOnline":
-				$chatPids = t3lib_div::_GET("chatPids");
+				$chatPids = GeneralUtility::_GET("chatPids");
 				$onlineArray = $chat->checkIfChatIsOnline($chatPids);
-                $xml = $chat->convert2xml($onlineArray);
-				$chat->printResponse($xml);
+                $xml = ChatHelper::convert2xml($onlineArray);
+				ChatHelper::printResponse($xml);
 			break;
 			case "createChat":
 				$chatUid = $chat->createChat($this->lang);
-				$chat->printResponse($chatUid);
+				ChatHelper::printResponse($chatUid);
 			break;
 			case "destroyChat":
 				if($chat->hasUserRights()) {
-					$chat->destroyChat();					
+					$chat->destroyChat();
 				}
 			break;
 			case "getAll":
@@ -58,16 +61,16 @@ class ajaxResponse {
                     $fields = "crdate,code,name,message";
                     $msgArray = $chat->getMessages($fields);
                     // store new messages in DB
-                    $msgToSend = t3lib_div::_POST("msgToSend");
-                    $chat->saveTypingStatus(t3lib_div::_GP("isTyping"));
+                    $msgToSend = GeneralUtility::_POST("msgToSend");
+                    $chat->saveTypingStatus(GeneralUtility::_GP("isTyping"));
                     if($msgToSend) {
-                        $userName = htmlspecialchars(t3lib_div::_POST("chatUsername"));
-                        for($i=0; $i<sizeOf($msgToSend); $i++) {
-                            $chat->insertMessage($msgToSend[$i],"feuser",$userName);
+                        $userName = htmlspecialchars(GeneralUtility::_POST("chatUsername"));
+                        for($i=0; $i < sizeOf($msgToSend); $i++) {
+                            $chat->insertMessage($msgToSend[$i], "feuser",$userName);
                         }
                     }
-					$xmlArray = Array(
-						"time" => $chat->renderTstamp(time()),
+					$xmlArray = array(
+						"time" => ChatHelper::renderTstamp(time()),
 						"lastRow" => $chat->lastRow,
 						"messages" => $msgArray,
                         "status" => $chat->getTypingStatus()
@@ -75,17 +78,17 @@ class ajaxResponse {
 				}
                 else {
                     /* why no access */
-                    $xmlArray = Array(
-                        "time" => $chat->renderTstamp(time()),
+                    $xmlArray = array(
+                        "time" => ChatHelper::renderTstamp(time()),
                         "status" => $chat->chatStatus()
                     );
                 }
-                $xml = $chat->convert2xml($xmlArray);
-                $chat->printResponse($xml);
+                $xml = ChatHelper::convert2xml($xmlArray);
+                ChatHelper::printResponse($xml);
 			break;            
 		    case "createChatLog":
-		        $this->data = is_string(t3lib_div::_POST("data")) ? t3lib_div::_POST("data") : NULL;
-		        if(isset($this->data) && is_string($this->data)) {
+		        $this->data = is_string(GeneralUtility::_POST("data")) ? GeneralUtility::_POST("data") : null;
+		        if (isset($this->data) && is_string($this->data)) {
 		            //clean up posted data
 		            $this->data = htmlspecialchars_decode(strip_tags(str_replace('</p>', "\r\n", trim($this->data))));
                     //add intro-text
@@ -102,4 +105,3 @@ class ajaxResponse {
 
 $ajax = new ajaxResponse;
 $ajax->init();
-?>

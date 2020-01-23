@@ -1,7 +1,7 @@
 <?php
 
 ########################################################################
-# Extension Manager/Repository config file for ext "sni_supportchat".
+# Extension Manager/Repository config file for ext "supportchat".
 #
 # Auto generated 17-02-2014 23:59
 #
@@ -20,12 +20,11 @@ $EM_CONF[$_EXTKEY] = array(
 	'conflicts' => '',
 	'priority' => '',
 	'loadOrder' => '',
-	'module' => 'mod1',
 	'state' => 'stable',
 	'uploadfolder' => 0,
 	'createDirs' => '',
 	'modify_tables' => '',
-	'clearcacheonload' => 0,
+	'clearcacheonload' => 1,
 	'lockType' => '',
 	'author' => 'Georg Schoenweger',
 	'author_email' => 'Georg.Schoenweger@gmail.com',
@@ -41,6 +40,19 @@ $EM_CONF[$_EXTKEY] = array(
 		'suggests' => array(
 		),
 	),
+    'autoload' =>
+        array(
+            'psr-4' =>
+                array(
+                    'Ubl\\Supportchat\\' => 'Classes',
+                ),
+        ),
+    'autoload-dev' =>
+        array(
+            'psr-4' =>
+                array(
+                    'Ubl\\Supportchat\\Tests' => 'Tests',
+                ),
+        ),
 );
 
-?>

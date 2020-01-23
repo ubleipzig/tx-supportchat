@@ -1,7 +1,7 @@
 #
-# Table structure for table 'tx_snisupportchat_chats'
+# Table structure for table 'tx_supportchat_chats'
 #
-CREATE TABLE tx_snisupportchat_chats (
+CREATE TABLE tx_supportchat_chats (
 	uid int(11) NOT NULL auto_increment,
 	pid int(11) DEFAULT '0' NOT NULL,
 	tstamp int(11) DEFAULT '0' NOT NULL,
@@ -24,9 +24,9 @@ CREATE TABLE tx_snisupportchat_chats (
 
 
 #
-# Table structure for table 'tx_snisupportchat_messages'
+# Table structure for table 'tx_supportchat_messages'
 #
-CREATE TABLE tx_snisupportchat_messages (
+CREATE TABLE tx_supportchat_messages (
 	uid int(11) NOT NULL auto_increment,
 	pid int(11) DEFAULT '0' NOT NULL,
 	tstamp int(11) DEFAULT '0' NOT NULL,
@@ -46,9 +46,9 @@ CREATE TABLE tx_snisupportchat_messages (
 );
 
 #
-# Table structure for table 'tx_snisupportchat_log'
+# Table structure for table 'tx_supportchat_log'
 #
-CREATE TABLE tx_snisupportchat_log (
+CREATE TABLE tx_supportchat_log (
 	uid int(11) NOT NULL auto_increment,
 	pid int(11) DEFAULT '0' NOT NULL,
 	tstamp int(11) DEFAULT '0' NOT NULL,
