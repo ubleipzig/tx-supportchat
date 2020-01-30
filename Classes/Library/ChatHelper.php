@@ -31,10 +31,12 @@ use \TYPO3\CMS\Core\Utility\GeneralUtility;
 class ChatHelper {
 
 	/**
-	* Checks if the chat is online
+	 * Checks if the chat is online
      *
-	* @return array ("chatsPluginPid" => boolen(on- or offline), ...)
-	*/
+     * @param array $pids
+     *
+	 * @return array ("chatsPluginPid" => boolen(on- or offline), ...)
+	 */
 	public static function checkIfChatIsOnline($pids)
     {
 	    global $TYPO3_DB;

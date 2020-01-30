@@ -10,6 +10,8 @@
 * moves translation to Resources/Private/Language
 * refactoring translation from *.xml to *.xlf
 * moves assets to Resources
+* replaces pi1 frontend to Classes/Controller/SupportChatController
+* moves ajaxResponse.php to Classes/Ajax/FrontendListener
 
 **Implemented enhancements:**
 

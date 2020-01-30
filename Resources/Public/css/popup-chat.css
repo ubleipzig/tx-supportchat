@@ -1,0 +1,88 @@
+.tx-supportchat h2 {
+    font-size: 1em;
+    background: rgb(2, 19, 61);
+    min-height:3rem;
+    color: #ffffff;
+    margin: 0 0 0.3rem;
+    padding: 0.75rem 0.5rem;
+}
+.tx-supportchat p {
+    border-top: 0.0625rem solid #ccc;
+    min-height: 4rem;
+    margin: 0;
+    padding: 0.5rem;
+}
+.tx-supportchat-pi1 p:first-of-type {
+    border-top: none;
+}
+.tx-supportchat #supportchatbox {
+    background: #ffffff;
+    color: #000000;
+    height: 300px;
+    overflow: auto;
+}
+.tx-supportchat textarea {
+    width: 100%;
+    height: 100px;
+    border: none;
+    margin: 0 .5rem .5rem 0;
+}
+.tx-supportchat p.message-label {
+    font-size: .9rem;
+    margin: 0;
+    padding: .5rem 0 0 .5rem;
+    min-height: 2rem;
+    max-height: 2rem;
+    color: #9c8f8f;
+    border-top: 0.0625rem solid #ccc;
+    border-bottom: none;
+}
+.tx-supportchat p.send-message {
+    text-align: right;
+    margin: 0.2em 0;
+    padding: 0;
+    border: none;
+}
+.tx-supportchat input {
+    background: #ffffff;
+    border: 0.0625rem solid #ccc;
+    color: #000;
+}
+.tx-supportchat span.date {
+    font-size: 0.9em;
+    color: #9c8f8f;
+}
+.tx-supportchat span.system-message {
+    color: rgb(64, 77, 109);
+    text-transform: uppercase;
+}
+/* Style for Username */
+.tx-supportchat span {
+    font-size: .9rem;
+    color: rgb(64, 77, 109);
+    text-transform: uppercase;
+}
+.tx-supportchat span.supportler-message {
+    color: rgb(64, 77, 109);
+    text-transform: uppercase;
+}
+.tx-supportchat span.message {
+    color: #000;
+    font-size: 1em;
+    text-transform: none;
+}
+.tx-supportchat p.close {
+    float: left;
+    width: 50%;
+    text-align: left;
+    margin: 0.2em 0;
+    padding: 0;
+    border: none;
+}
+.tx-supportchat .hidden {
+    display: none;
+}
+.message:before {
+    content: "\A";
+    white-space: pre;
+}

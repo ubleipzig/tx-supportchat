@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+	<file source-language="en" datatype="plaintext" original="messages" date="2018-11-24T09:35:38Z" product-name="slug">
+		<header/>
+		<body>
+			<trans-unit id="tx_supportchat_chats.be_user">
+                <source>Backend user</source>
+            </trans-unit>
+            <trans-unit id="tx_supportchat_chats.session">
+                <source>Session id</source>
+            </trans-unit>
+            <trans-unit id="tx_supportchat_chats.active">
+                <source>Active</source>
+            </trans-unit>
+            <trans-unit id="tx_supportchat_chats.language_uid">
+                <source>Language uid</source>
+            </trans-unit>
+            <trans-unit id="tx_supportchat_chats.last_row_uid">
+                <source>Last row uid</source>
+            </trans-unit>
+            <trans-unit id="tx_supportchat_chats.surfer_ip">
+                <source>Surfer ip address</source>
+            </trans-unit>
+            <trans-unit id="tx_supportchat_messages">
+                <source>Messages</source>
+            </trans-unit>
+			<trans-unit id="tx_supportchat_messages.chat_pid">
+                <source>Chat pid</source>
+            </trans-unit>
+            <trans-unit id="tx_supportchat_messages.name">
+                <source>Name</source>
+            </trans-unit>
+            <trans-unit id="tx_supportchat_messages.message">
+                <source>Messages</source>
+            </trans-unit>
+            <trans-unit id="tx_supportchat_internal_messages">
+                <source>Internal messages</source>
+            </trans-unit>
+            <trans-unit id="tx_supportchat_internal_messages.chat">
+                <source>Chat</source>
+            </trans-unit>
+            <trans-unit id="tx_supportchat_internal_messages.from_be_user">
+                <source>From backend user</source>
+            </trans-unit>
+            <trans-unit id="tx_supportchat_internal_messages.to_be_user">
+                <source>To backend user</source>
+            </trans-unit>
+            <trans-unit id="tx_supportchat_internal_messages.message">
+                <source>Message</source>
+            </trans-unit>
+            <trans-unit id="tx_supportchat_internal_messages.active">
+                <source>Active</source>
+            </trans-unit>
+            <trans-unit id="tx_supportchat_internal_messages.to_do">
+                <source>To Do (toAssume:Left over chat to other backend user)</source>
+            </trans-unit>
+            <trans-unit id="tt_content.list_type_pi1">
+                <source>Support chat</source>
+            </trans-unit>
+			<trans-unit id="tx_slug_domain_model_page">
+				<source>Page</source>
+			</trans-unit>
+			<trans-unit id="tx_slug_domain_model_page.slug_lock">
+				<source>Slug Lock</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

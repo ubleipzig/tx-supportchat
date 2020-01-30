@@ -5,7 +5,7 @@ if (!defined ('TYPO3_MODE')) 	die ('Access denied.');
 
 $TCA["tx_supportchat_chats"] = array(
     "ctrl" => array(
-        'title' => 'LLL:EXT:' . $_EXTKEY . '/locallang_db.xml:tx_supportchat_chats',
+        'title' => 'LLL:EXT:' . $_EXTKEY . '/Resources/Private/language/locallang_db.xlf:tx_supportchat_chats',
         'label' => 'be_user',
         'tstamp' => 'tstamp',
         'crdate' => 'crdate',
@@ -28,7 +28,7 @@ $TCA["tx_supportchat_chats"] = array(
 
 $TCA["tx_supportchat_messages"] = array(
     "ctrl" => array(
-        'title' => 'LLL:EXT:' . $_EXTKEY . '/locallang_db.xml:tx_supportchat_messages',
+        'title' => 'LLL:EXT:' . $_EXTKEY . '/Resources/Private/Language/locallang_db.xlf:tx_supportchat_messages',
         'label' => 'name',
         'tstamp' => 'tstamp',
         'crdate' => 'crdate',
@@ -47,12 +47,12 @@ $TCA["tx_supportchat_messages"] = array(
 $TCA['tt_content']['types']['list']['subtypes_excludelist'][$_EXTKEY . '_pi1'] = 'layout,select_key';
 
 
-\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPlugin(
+/*\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPlugin(
     array('LLL:EXT:' . $_EXTKEY . '/locallang_db.xml:tt_content.list_type_pi1', $_EXTKEY . '_pi1'),
     'list_type'
-);
+);*/
 
-\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addStaticFile($_EXTKEY, 'pi1/static/SupportChat_TS/', 'Support Chat TS');
+//\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addStaticFile($_EXTKEY, 'pi1/static/SupportChat_TS/', 'Support Chat TS');
 
 if (TYPO3_MODE == "BE") {
 

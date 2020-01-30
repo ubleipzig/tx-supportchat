@@ -36,9 +36,9 @@ use Ubl\Supportchat\Library\ChatHelper;
 use Ubl\Supportchat\Library\ChatMarket;
 
 /**
- * Class AbstractController
+ * Class SupportChatModuleController
  *
- * Provides common methods to use in all controllers
+ * Support Chat backend action controller
  *
  * @package Ubl\SupportChat\Controller
  */
