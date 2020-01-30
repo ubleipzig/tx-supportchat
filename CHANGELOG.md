@@ -12,6 +12,7 @@
 * moves assets to Resources
 * replaces pi1 frontend to Classes/Controller/SupportChatController
 * moves ajaxResponse.php to Classes/Ajax/FrontendListener
+* compiles definitions for tables at Configuration/TCA
 
 **Implemented enhancements:**
 

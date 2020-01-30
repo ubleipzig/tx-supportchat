@@ -15,3 +15,5 @@ if( !defined( 'TYPO3_MODE' ) ) {
     'Configuration/TypoScript/',
     'SupportChat configuration'
 );
+
+$GLOBALS['TCA']['tt_content']['types']['list']['subtypes_excludelist']['supportchat'] = 'layout,select_key';
