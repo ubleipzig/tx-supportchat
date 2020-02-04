@@ -93,10 +93,11 @@ class ChatMarket extends Chat {
 	 * Get all chats and messages and return it as an array, store msg's to DB if any,
      * lock/unlock a chat or destroy one
 	 *
-     * @param array the last rows
-	 * @param array Messages to save in DB
-	 * @param array Chats which should be locked/unlocked
-	 * @param array Chats which should be destroyed
+     * @param array $lastRowArray   The last rows
+	 * @param array $msgToSend      Messages to save in DB
+	 * @param array $lockChats      Chats which should be locked/unlocked
+	 * @param array $destroyChats   Chats which should be destroyed
+     * @param boolean $typingStatus
      *
 	 * @return array $retArray  Chats with data
      * @access public
@@ -194,7 +195,7 @@ class ChatMarket extends Chat {
      */
 	public function getBeUsers()
     {
-		global $TYPO3_DB,$BE_USER;
+		global $TYPO3_DB, $BE_USER;
 		// get SelectBox with all be_user
 		$table="be_sessions";
 		$res = $TYPO3_DB->exec_SELECTquery("ses_userid", $table, '1');
