@@ -113,8 +113,8 @@ class SupportChatController extends BaseAbstractController
      *
      * @return	The content that is displayed on the website
      */
-    public function indexAction()	{
-
+    public function indexAction()
+    {
         $this->checkPids = $this->checkForOnlineOfflinePages(true);
         /** tradem 2012-04-11 Sets typing indicator */
         $this->useTypingIndicator = $this->loadUsingTypingIndicator();
@@ -219,22 +219,22 @@ class SupportChatController extends BaseAbstractController
     {
         if($this->settings["usePrototype"] || $this->settings["useMootools"]) {
             if($this->settings["addPrototype"] && $this->settings["usePrototype"]) {
-                $content = '<script type="text/javascript" src="'.ExtensionManagementUtility::extRelPath('supportchat').'Resources/Public/js/prototype.js"></script>';
+                $content = '<script type="text/javascript" src="'.ExtensionManagementUtility::siteRelPath('supportchat').'Resources/Public/js/prototype.js"></script>';
             }
             if($this->settings["addMootools"] && $this->settings["useMootools"]) {
-                $content = '<script type="text/javascript" src="'.ExtensionManagementUtility::extRelPath('supportchat').'Resources/Public/js/mootools-1.2.6-core-yc.js"></script>';
+                $content = '<script type="text/javascript" src="'.ExtensionManagementUtility::siteRelPath('supportchat').'Resources/Public/js/mootools-1.2.6-core-yc.js"></script>';
             }
             $jsCheckPids = $this->checkForOnlineOfflinePages();
 
             if($jsCheckPids) {
                 if($this->settings["usePrototype"]) {
-                    $content .= '<script type="text/javascript" src="'.GeneralUtility::createVersionNumberedFilename(ExtensionManagementUtility::extRelPath('supportchat') . 'Resources/Public/js/supportchatIsOnline.js').'"></script>';
+                    $content .= '<script type="text/javascript" src="'.GeneralUtility::createVersionNumberedFilename(ExtensionManagementUtility::siteRelPath('supportchat') . 'Resources/Public/js/supportchatIsOnline.js').'"></script>';
                     $onLoad = '
 						Event.observe(window, "load", function() { initOnlineCheck("'.$this->getAbsUrl('index.php?eID=tx_supportchat').'"); });
 					';
                 }
                 else {
-                    $content .= '<script type="text/javascript" src="'.GeneralUtility::createVersionNumberedFilename(ExtensionManagementUtility::extRelPath('supportchat') . 'Resources/Public/js/supportchatIsOnline_Mootools.js').'"></script>';
+                    $content .= '<script type="text/javascript" src="'.GeneralUtility::createVersionNumberedFilename(ExtensionManagementUtility::siteRelPath('supportchat') . 'Resources/Public/js/supportchatIsOnline_Mootools.js').'"></script>';
                     $onLoad = '
 						window.addEvent("domready",function() { initOnlineCheck("'.$this->getAbsUrl('index.php?eID=tx_supportchat').'"); });
 					';
@@ -284,10 +284,10 @@ class SupportChatController extends BaseAbstractController
                 : addslashes($GLOBALS["TSFE"]->fe_user->user["name"]))
             : addslashes(Localization::translate("chat-username", $this->extKey));
         $jsInHeader = '
-			<script type="text/javascript" src="'.ExtensionManagementUtility::extRelPath('supportchat').'Resources/Public/js/mootools-1.2.6-core-yc.js"></script>
-			<script type="text/javascript" src="'.ExtensionManagementUtility::extRelPath('supportchat').'Resources/Public/js/mootools-1.2.5.1-more.js"></script>
-			<script type="text/javascript" src="'.GeneralUtility::createVersionNumberedFilename(ExtensionManagementUtility::extRelPath('supportchat').'Resources/Public/js/smilies.js').'"></script>
-			<script type="text/javascript" src="'.GeneralUtility::createVersionNumberedFilename(ExtensionManagementUtility::extRelPath('supportchat').'Resources/Public/js/supportchat.js').'"></script>
+			<script type="text/javascript" src="'.ExtensionManagementUtility::siteRelPath('supportchat').'Resources/Public/js/mootools-1.2.6-core-yc.js"></script>
+			<script type="text/javascript" src="'.ExtensionManagementUtility::siteRelPath('supportchat').'Resources/Public/js/mootools-1.2.5.1-more.js"></script>
+			<script type="text/javascript" src="'.GeneralUtility::createVersionNumberedFilename(ExtensionManagementUtility::siteRelPath('supportchat').'Resources/Public/js/smilies.js').'"></script>
+			<script type="text/javascript" src="'.GeneralUtility::createVersionNumberedFilename(ExtensionManagementUtility::siteRelPath('supportchat').'Resources/Public/js/supportchat.js').'"></script>
 			<script type="text/javascript">
 			/*<![CDATA[*/
 			<!--

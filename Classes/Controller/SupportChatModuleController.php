@@ -201,7 +201,7 @@ class SupportChatModuleController extends BaseAbstractController
 				function jumpToUrl(URL)	{
 					document.location = URL;
 				}
-				let assetsPath = "' . ExtensionManagementUtility::extRelPath('supportchat') . 'Resources/Public/' . '"
+				let assetsPath = "' . ExtensionManagementUtility::siteRelPath('supportchat') . 'Resources/Public/' . '"
 			</script>
 		';
         $this->doc->JScode .= $this->addJsInHeader();
@@ -338,13 +338,13 @@ class SupportChatModuleController extends BaseAbstractController
         //$table = "sys_language";
         //$res = $TYPO3_DB->exec_SELECTquery("uid, flag, title", $table, '1');
         $jsCode = '
-			<link rel="stylesheet" type="text/css" href="' . GeneralUtility::createVersionNumberedFilename(ExtensionManagementUtility::extRelPath('supportchat') . 'Resources/Public/css/module-chat.css') . '" />
-			<script type="text/javascript" src="' . ExtensionManagementUtility::extRelPath('supportchat') . 'Resources/Public/js/mootools-1.2.6-core-yc.js"></script>
-			<script type="text/javascript" src="' . ExtensionManagementUtility::extRelPath('supportchat') . 'Resources/Public/js/mootools-1.2.5.1-more.js"></script>
-			<script type="text/javascript" src="' . GeneralUtility::createVersionNumberedFilename(ExtensionManagementUtility::extRelPath('supportchat').'Resources/Public/js/Element.Forms.js') . '"></script>
-			<script type="text/javascript" src="' . GeneralUtility::createVersionNumberedFilename(ExtensionManagementUtility::extRelPath('supportchat').'Resources/Public/js/UvumiDropdown-compressed.js') . '"></script>
-			<script type="text/javascript" src="' . GeneralUtility::createVersionNumberedFilename(ExtensionManagementUtility::extRelPath('supportchat').'Resources/Public/js/smilies.js') . '"></script>
-			<script type="text/javascript" src="' . GeneralUtility::createVersionNumberedFilename(ExtensionManagementUtility::extRelPath('supportchat').'Resources/Public/js/supportchat_be.js') . '"></script>
+			<link rel="stylesheet" type="text/css" href="' . GeneralUtility::createVersionNumberedFilename(ExtensionManagementUtility::siteRelPath('supportchat') . 'Resources/Public/css/module-chat.css') . '" />
+			<script type="text/javascript" src="' . ExtensionManagementUtility::siteRelPath('supportchat') . 'Resources/Public/js/mootools-1.2.6-core-yc.js"></script>
+			<script type="text/javascript" src="' . ExtensionManagementUtility::siteRelPath('supportchat') . 'Resources/Public/js/mootools-1.2.5.1-more.js"></script>
+			<script type="text/javascript" src="' . GeneralUtility::createVersionNumberedFilename(ExtensionManagementUtility::siteRelPath('supportchat').'Resources/Public/js/Element.Forms.js') . '"></script>
+			<script type="text/javascript" src="' . GeneralUtility::createVersionNumberedFilename(ExtensionManagementUtility::siteRelPath('supportchat').'Resources/Public/js/UvumiDropdown-compressed.js') . '"></script>
+			<script type="text/javascript" src="' . GeneralUtility::createVersionNumberedFilename(ExtensionManagementUtility::siteRelPath('supportchat').'Resources/Public/js/smilies.js') . '"></script>
+			<script type="text/javascript" src="' . GeneralUtility::createVersionNumberedFilename(ExtensionManagementUtility::siteRelPath('supportchat').'Resources/Public/js/supportchat_be.js') . '"></script>
 			<script type="text/javascript">
 			/*<![CDATA[*/
 			<!--
