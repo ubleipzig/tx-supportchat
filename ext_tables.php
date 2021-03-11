@@ -20,10 +20,4 @@ if (TYPO3_MODE == "BE") {
 
     $GLOBALS['TBE_STYLES']['skins'][$_EXTKEY]['stylesheetDirectories'] =
         ['EXT:' . $_EXTKEY . '/Resources/Public/css/module-chat.css'];
-
-    \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addStaticFile(
-        $_EXTKEY,
-        'Configuration/TypoScript/',
-        'Support Chat TS'
-    );
 }

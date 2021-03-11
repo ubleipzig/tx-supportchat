@@ -1,5 +1,14 @@
 # Change Log
 
+## [v2.0.2](https://github.com/ubleipzig/tx-supportchat/tree/v2.0.2)
+
+[Full Changelog](https://github.com/ubleipzig/tx-vufind-auth/compare/2.0.1...2.0.2)
+
+**Fixes**
+
+* removes duplicated entry of _addStaticFile_ supportchat and defines it at newly created Configuration/TCA/Overrides/sys_template.php  
+* removes Configuration/TCA/Overrides/pages.php
+
 ## [v2.0.1](https://github.com/ubleipzig/tx-supportchat/tree/v2.0.1)
 
 [Full Changelog](https://github.com/ubleipzig/tx-vufind-auth/compare/2.0.0...2.0.1)
