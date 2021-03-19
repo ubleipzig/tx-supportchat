@@ -10,32 +10,32 @@ p.alert input {vertical-align: middle; }
 
 .chat_single_wrap { font-size: 1em; color: #000000; }
 .chat_single_wrap { width: 30%; float: left; background: #e1dfdb; border: 1px solid #b9b7b4; margin: 0 2% 2% 0; }
-.chat_single_wrap .top { background: transparent url(../img/2dots.gif) repeat-x bottom; height: 22px; }
-.chat_single_wrap .top a.chat_close { display: block; width: 15px; height: 15px; float: right; background: transparent url(../img/close.jpg) no-repeat; margin: 2px 4px 0 0; cursor: pointer; }
+.chat_single_wrap .top { background: transparent url(../../Images/2dots.gif) repeat-x bottom; height: 22px; }
+.chat_single_wrap .top a.chat_close { display: block; width: 15px; height: 15px; float: right; background: transparent url(../../Images/close.jpg) no-repeat; margin: 2px 4px 0 0; cursor: pointer; }
 .chat_single_wrap .top ul { list-style-type: none; margin: 0; padding: 0; }
 .chat_single_wrap .top ul li { cursor: pointer; padding: 0 4px; line-height: 20px; margin: 0; border-right: 1px solid #b9b7b4; white-space: nowrap; }
 .chat_single_wrap .top ul li ul { margin: 0; border-top: 1px solid #b9b7b4; }
-.chat_single_wrap .top ul li ul li { background: #e1dfdb url(../img/2dots.gif) repeat-x bottom; }
+.chat_single_wrap .top ul li ul li { background: #e1dfdb url(../../Images/2dots.gif) repeat-x bottom; }
 .chat_single_wrap .top ul li ul li ul li { white-space: nowrap; background: #e1dfdb; border: none; border-bottom: 1px solid #b9b7b4; }
 .chat_single_wrap .top li.last { background-image: none; border-bottom: 1px solid #b9b7b4; }
 .chat_single_wrap .top ul li.unclickable { font-style: italic; color: #000000; }
 
-.chat_single_wrap h3 { margin: 0; background: #b9bfca url(../img/title_bg.jpg) repeat-x top; padding: 2px 4px; color: #ffffff; }
+.chat_single_wrap h3 { margin: 0; background: #b9bfca url(../../Images/title_bg.jpg) repeat-x top; padding: 2px 4px; color: #ffffff; }
 .chat_single_wrap h3 p { margin: 0; padding: 0; color: #ffffff; }
 .chat_single_wrap h3 p img { vertical-align: middle; }
 .chat_single_wrap .single_chatbox { padding: 0 4px; height: 175px; overflow: auto; background: #ffffff; }
-.chat_single_wrap p.descr { padding: 7px 4px 2px 4px; margin: 0; background: transparent url(../img/2dots.gif) repeat-x top; }
+.chat_single_wrap p.descr { padding: 7px 4px 2px 4px; margin: 0; background: transparent url(../../Images/2dots.gif) repeat-x top; }
 .chat_single_wrap textarea { width: 100%; padding: 2px 4px; margin: 0; height: 50px; border: none; border-top: 1px solid #b9b7b4; border-bottom: 1px solid #b9b7b4; }
 .chat_single_wrap p.chatbox_status { line-height: 15px; padding: 2px 4px; margin: 0; border-top: 1px solid #f6f2ee; font-style: italic; }
 .chat_single_wrap a.status_icon { display: block; width: 15px; height: 15px; float: right; cursor: pointer; margin: 3px 4px 3px 4px;}
-.chat_single_wrap a.lock_it { background: transparent url(../img/unencrypted.jpg) no-repeat center center; }
-.chat_single_wrap a.unlock_it { background: transparent url(../img/encrypted.jpg) no-repeat center center; }
+.chat_single_wrap a.lock_it { background: transparent url(../../Images/unencrypted.jpg) no-repeat center center; }
+.chat_single_wrap a.unlock_it { background: transparent url(../../Images/encrypted.jpg) no-repeat center center; }
 
 /*added for typing icon*/
 .chat_single_wrap img.typing { display:inline;float:right;border:0px;margin:3px 5px 0px 0px;}
 .chat_single_wrap img.not_typing { display:none;float:right;border:0px;margin:3px 5px 0px 0px;}
 
-.chat_single_wrap a.loading { background: transparent url(../img/loading.gif) no-repeat center center; }
+.chat_single_wrap a.loading { background: transparent url(../../Images/loading.gif) no-repeat center center; }
 .chat_single_wrap h3 p span.snillo { color: #000; }
 
 .single_chatbox span.date { color: #9C8F8F; }

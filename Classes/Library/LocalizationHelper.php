@@ -35,7 +35,7 @@ class LocalizationHelper
      * @var array $languageObject
      * @access private
      */
-    private $languageObject = array();
+    private $languageObject = [];
 
     /**
      * Gets flag identifier for any given language uid

@@ -12,3 +12,4 @@ plugin.tx_supportchat {
 		storagePid =
 	}
 }
+

@@ -23,6 +23,7 @@
 
 namespace Ubl\Supportchat\Controller;
 
+use TYPO3\CMS\Backend\Template\Components\ButtonBar;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -174,63 +175,20 @@ class SupportChatModuleController extends BaseAbstractController
      */
     public function indexAction()
     {
-        global $BACK_PATH;
-
-        // Draw the header.
-        $this->doc = GeneralUtility::makeInstance("TYPO3\\CMS\\Backend\\Template\\DocumentTemplate");
-        $this->doc->backPath = $BACK_PATH;
-
-        if (isset($this->playAlert) && $this->playAlert == 1) {
-            // Add the Alert SWF File
-            $contentPlayAlert = '
-				<object id="beep_alert" class="flash" type="application/x-shockwave-flash" data="'. ExtensionManagementUtility::extRelPath('supportchat') .'Resources/Public/img/flash/flashbeep_alert.swf" width="1" height="1">
-					<param name="movie" value="' . ExtensionManagementUtility::extRelPath('supportchat') . 'Resources/Public/img/flash/flashbeep_alert.swf" />
-				</object>
-				<p class="alert"><input type="checkbox" checked="checked" id="alert_check" /> ' . $this->translate("module.playAlert") . '</p>
-			';
-        }
-
         $chat = new Chat();
         $chat->initChat($this->chatsPid, "");
         $chat->destroyInactiveChats($this->timeToInactivateChat);
 
-        // JavaScript
-        $this->doc->JScode = '
-			<script language="javascript" type="text/javascript">
-				script_ended = 0;
-				function jumpToUrl(URL)	{
-					document.location = URL;
-				}
-				let assetsPath = "' . ExtensionManagementUtility::siteRelPath('supportchat') . 'Resources/Public/' . '"
-			</script>
-		';
-        $this->doc->JScode .= $this->addJsInHeader();
-        $this->doc->postCode = '
-			<script language="javascript" type="text/javascript">
-				script_ended = 1;
-				if (top.fsMod) top.fsMod.recentIds["web"] = 0;
-			</script>
-		';
+        $content = $this->getAudioAlertViewSnippet(); // $contentPlayAlert;
+        $content .= $this->moduleContent();
+        $content .= $this->addJsInlineCode();
 
-        $this->content = $this->doc->startPage($this->translate("title"));
-        $this->content .= $this->doc->header($this->translate("title"));
-        $this->content .= $contentPlayAlert;
-        $this->content .= '<div style="padding-top: 20px;"></div>';
-        $this->content .= $this->moduleContent();
-        $this->menuConfig();
-
-        // ShortCut
-        if ($this->getBackendUser()->mayMakeShortcut()) {
-            $this->content .= '<div style="padding-top: 20px;"></div>';
-            $shortCutIcon = $this->doc->makeShortcutIcon(
-                "id",
-                implode(",", array_keys($this->MOD_MENU)),
-                $this->getBackendUser()->groupData['modules']
-            );
-            $this->content .= $this->doc->section("", $shortCutIcon);
-        }
-        $this->content .= $this->doc->endPage();
-        $this->view->assign('content', $this->content);
+        $this->view->assignMultiple([
+            'content' => $content,
+            'moduleUrl' => BackendUtility::getModuleUrl($this->request->getPluginName()),
+            'frequencyOfChatRequest' => $this->ajaxGetAllFreq,
+            'isTypeIndicator' => $this->useTypingIndicator
+        ]);
     }
 
     /**
@@ -244,15 +202,15 @@ class SupportChatModuleController extends BaseAbstractController
         global $BE_USER;
 
         if (!$BE_USER->user["uid"]) {
-            $xmlArray = array(
-                "fromNoAccess" => array(
+            $xmlArray = [
+                "fromNoAccess" => [
                     "time" => ChatHelper::renderTstamp(time()),
-                )
-            );
+                ]
+            ];
             return ($xmlArray);
         }
         $this->chatsPid = $BE_USER->userTS["supportchat."]["chatsPid"];
-        if($BE_USER->userTS["supportchat."]["showLogBox"]!="") {
+        if ($BE_USER->userTS["supportchat."]["showLogBox"]!="") {
             $this->logging = $BE_USER->userTS["supportchat."]["showLogBox"];
         }
         /** tradem 2012-04-12 Added to control typing indiator if it works. */
@@ -260,8 +218,8 @@ class SupportChatModuleController extends BaseAbstractController
             $this->useTypingIndicator = $BE_USER->userTS["supportchat."]["useTypingIndicator"];
         }
         $this->lastRowArray = (GeneralUtility::_GP("lastRowArray"))
-            ? GeneralUtility::_GP("lastRowArray") : array();
-        if(GeneralUtility::_GP("cmd")) {
+            ? GeneralUtility::_GP("lastRowArray") : [];
+        if (GeneralUtility::_GP("cmd")) {
             $this->cmd = GeneralUtility::_GP("cmd");
         }
         $this->lastLogRow = (intval(GeneralUtility::_GP("lastLogRow")))
@@ -283,16 +241,16 @@ class SupportChatModuleController extends BaseAbstractController
                 $destroyChats = GeneralUtility::_GP("destroyChat");
                 /*added for typingStatus*/
                 $typingStatus = GeneralUtility::_GP("typingStatus");
-                $xmlArray = array(
-                    "fromDoAll" => array(
+                $xmlArray = [
+                    "fromDoAll" => [
                         "time" => ChatHelper::renderTstamp(time()),
                         /*added for typingStatus*/
                         "chats" => $chatMarket->doAll($this->lastRowArray, $msgToSend, $lockChats, $destroyChats, $typingStatus),
                         "log" => $chatMarket->getLogMessages(),
                         "lastLogRow" => $chatMarket->lastLogRow,
                         "beUsers" => $chatMarket->getBeUsers(),
-                    )
-                );
+                    ]
+                ];
                 $xml = ChatHelper::convert2xml($xmlArray);
                 ChatHelper::printResponse($xml);
                 break;
@@ -301,50 +259,41 @@ class SupportChatModuleController extends BaseAbstractController
     }
 
     /**
-     * Generates the module content
+     * Set alert sound to cache
      *
-     * @return    void
+     * @params string $alertSound
+     *
+     * @return boolean
+     * @access public
      */
-    private function moduleContent()
+    public function setAlertSoundAction()
     {
-        // page/be_user TSconfig settings:
-        // @deprecated seems to have no proper function at codes FM
-        $modTSconfig = BackendUtility::getModTSconfig(
-            $this->id,
-            "mod." . $GLOBALS["MCONF"]["name"]
-        );
+            if ($alertSound = (GeneralUtility::_GP("alertSound"))) {
+                $this->getBackendUser()->getSessionData('tx_supportchat');
+                $sessionData['alertsound'] = $alertSound;
+                $this->getBackendUser()->setAndSaveSessionData('tx_supportchat', $sessionData);
+                return ChatHelper::printResponse(
+                    json_encode([
+                        "sound" => $alertSound,
+                        "success" => "true"
+                    ]),
+                    true
+                );
+            } else {
+                return false;
+            }
 
-        // render Chat Boxes Wrap
-        $content = '<div id="chatboxes_wrap">';
-        $content .= '</div>';
-        $content .= '<hr class="clearer" />';
-        if (isset($this->showLogBox) && $this->showLogBox == 1) {
-            $content .= '<div style="padding-top: 5px;"></div>';
-            $content .= '<p class="log_title">Log:</p>';
-            $content .= '<div id="logBox">&nbsp;</div>';
-        }
-        return $content;
     }
 
     /**
-     * Adds the complete JS Code
+     * Return inline javacode
      *
-     * @return Complete Java Code
+     * @return string $jsCode
+     * @access private
      */
-    private function addJsInHeader()
+    private function addJsInlineCode()
     {
-        //@deprecated lines below are uncommented due to $res seems to be not used at method
-        //global $TYPO3_DB;
-        //$table = "sys_language";
-        //$res = $TYPO3_DB->exec_SELECTquery("uid, flag, title", $table, '1');
         $jsCode = '
-			<link rel="stylesheet" type="text/css" href="' . GeneralUtility::createVersionNumberedFilename(ExtensionManagementUtility::siteRelPath('supportchat') . 'Resources/Public/css/module-chat.css') . '" />
-			<script type="text/javascript" src="' . ExtensionManagementUtility::siteRelPath('supportchat') . 'Resources/Public/js/mootools-1.2.6-core-yc.js"></script>
-			<script type="text/javascript" src="' . ExtensionManagementUtility::siteRelPath('supportchat') . 'Resources/Public/js/mootools-1.2.5.1-more.js"></script>
-			<script type="text/javascript" src="' . GeneralUtility::createVersionNumberedFilename(ExtensionManagementUtility::siteRelPath('supportchat').'Resources/Public/js/Element.Forms.js') . '"></script>
-			<script type="text/javascript" src="' . GeneralUtility::createVersionNumberedFilename(ExtensionManagementUtility::siteRelPath('supportchat').'Resources/Public/js/UvumiDropdown-compressed.js') . '"></script>
-			<script type="text/javascript" src="' . GeneralUtility::createVersionNumberedFilename(ExtensionManagementUtility::siteRelPath('supportchat').'Resources/Public/js/smilies.js') . '"></script>
-			<script type="text/javascript" src="' . GeneralUtility::createVersionNumberedFilename(ExtensionManagementUtility::siteRelPath('supportchat').'Resources/Public/js/supportchat_be.js') . '"></script>
 			<script type="text/javascript">
 			/*<![CDATA[*/
 			<!--
@@ -380,11 +329,32 @@ class SupportChatModuleController extends BaseAbstractController
 				window.addEvent("domready", function() {
 					initChat(' . $this->ajaxGetAllFreq . ',' . $this->useTypingIndicator . ');
 				});
-			// -->
+			//-->
 			/*]]>*/
 			</script>
 		';
         return ($jsCode);
+    }
+
+    /**
+     * Create buttons
+     *
+     * @return void
+     * @access private
+     */
+    private function createButtons()
+    {
+        $buttonBar = $this->view->getModuleTemplate()->getDocHeaderComponent()->getButtonBar();
+
+        // Shortcut
+        if ($this->getBackendUser()->mayMakeShortcut()) {
+            $shortcutButton = $buttonBar->makeShortcutButton()
+                ->setModuleName('tx_supportchat_M1')
+                ->setGetVariables(['route', 'module', 'id'])
+                ->setDisplayName('Shortcut');
+            $buttonBar->addButton($shortcutButton, ButtonBar::BUTTON_POSITION_RIGHT);
+        }
+
     }
 
     /**
@@ -416,6 +386,43 @@ class SupportChatModuleController extends BaseAbstractController
     }
 
     /**
+     * Returns the audio alert html snippet
+     *
+     * @return
+     * @access private
+     */
+    private function getAudioAlertViewSnippet()
+    {
+        if (isset($this->playAlert) && $this->playAlert == 1) {
+            $sounds = array_diff(
+                scandir(ExtensionManagementUtility::extPath('supportchat') . 'Resources/Public/media'),
+                ['..','.']
+            );
+            $options = '';
+            $sessionData = $this->getSessionData('tx_supportchat');
+            $alertSound = ($sessionData['alertsound']) ? $sessionData['alertsound'] : $sounds[0];
+            foreach ($sounds as $sound) {
+                $options .= '<option value="' . $sound . '" ' . (($sound == $alertSound) ? 'selected="selected"' : '') . '>'. pathinfo($sound, PATHINFO_FILENAME) .'</option>';
+            }
+            $snippetPlayAlert = '
+				<audio id="beep_alert" class="flash" width="1" height="1">
+					<source src="' . GeneralUtility::getIndpEnv('TYPO3_SITE_URL')
+                        . ExtensionManagementUtility::siteRelPath('supportchat')
+                        . 'Resources/Public/media/'. $alertSound . '" type="audio/ogg"
+					/>
+				</audio>
+				<p class="alert">
+				    <select id="alert-select" name="alert-select">
+				        ' . $options . '
+                    </select>
+				    <input type="checkbox" checked="checked" id="alert_check" /> ' . $this->translate("module.playAlert") . '
+                </p>
+			';
+        }
+        return ($snippetPlayAlert) ? $snippetPlayAlert : '';
+    }
+
+    /**
      * Returns the LanguageService
      *
      * @return LanguageService
@@ -436,20 +443,45 @@ class SupportChatModuleController extends BaseAbstractController
         /** @var BackendTemplateView $view */
         parent::initializeView($view);
         $view->getModuleTemplate()->getDocHeaderComponent()->setMetaInformation([]);
+        $pageRenderer = $this->view->getModuleTemplate()->getPageRenderer();
+        $pageRenderer->setTitle($this->translate("title"));
+        $pathToCssLibrary = GeneralUtility::getIndpEnv('TYPO3_SITE_URL') . ExtensionManagementUtility::siteRelPath('supportchat') . 'Resources/Public/Css/Backend/';
+        $pageRenderer->addCssFile($pathToCssLibrary . 'module-chat.css');
+        $pageRenderer->addJsInlineCode(
+            'assets',
+            'script_ended = 0;
+            function jumpToUrl(URL)	{
+                document.location = URL;
+            }
+            let assetsPath = "' . GeneralUtility::getIndpEnv('TYPO3_SITE_URL') . ExtensionManagementUtility::siteRelPath('supportchat') . 'Resources/Public/' . '"'
+        );
+        $pageRenderer->loadRequireJsModule('TYPO3/CMS/Supportchat/SupportchatBackendAlert');
+        $pathToJsLibrary = GeneralUtility::getIndpEnv('TYPO3_SITE_URL') . ExtensionManagementUtility::siteRelPath('supportchat') . 'Resources/Public/JavaScript/';
+        $pageRenderer->addJsFile($pathToJsLibrary . 'MootoolsCore.js');
+        $pageRenderer->addJsFile($pathToJsLibrary . 'MootoolsMore.js');
+        $pageRenderer->addJsFile($pathToJsLibrary . 'ElementForms.js');
+        $pageRenderer->addJsFile($pathToJsLibrary . 'UvumiDropdown.js');
+        $pageRenderer->addJsFile($pathToJsLibrary . 'Smileys.js');
+        $pageRenderer->addJsFile($pathToJsLibrary . 'SupportchatBackend.js');
+
+        $this->createButtons();
+        $this->menuConfig();
     }
 
     /**
      * Menu config
      *
      * @deprecated
+     * @access private
      */
-    protected function menuConfig()	{
-        $this->MOD_MENU = array (
-            'function' => array (
+    private function menuConfig()
+    {
+        $this->MOD_MENU = [
+            'function' => [
                 '1' => $GLOBALS['LANG']->getLL('function1'),
-            )
-        );
-        $MCONF = array();
+            ]
+        ];
+        $MCONF = [];
         $MCONF['name'] = $this->getBackendUser()->groupData['modules'];
         $MCONF['script'] = '_DISPATCH';
         $MCONF['_'] = 'mod.php?M=' .  $this->getBackendUser()->groupData['modules'];
@@ -457,5 +489,31 @@ class SupportChatModuleController extends BaseAbstractController
         if (!$this->MCONF['name']) {
             $this->MCONF = $MCONF;
         }
+    }
+
+    /**
+     * Generates the module content
+     *
+     * @return string
+     */
+    private function moduleContent()
+    {
+        // page/be_user TSconfig settings:
+        // @deprecated seems to have no proper function at codes FM
+        $modTSconfig = BackendUtility::getModTSconfig(
+            $this->id,
+            "mod." . $GLOBALS["MCONF"]["name"]
+        );
+
+        // render Chat Boxes Wrap
+        $content = '<div id="chatboxes_wrap">';
+        $content .= '</div>';
+        $content .= '<hr class="clearer" />';
+        if (isset($this->showLogBox) && $this->showLogBox == 1) {
+            $content .= '<div style="padding-top: 5px;"></div>';
+            $content .= '<p class="log_title">Log:</p>';
+            $content .= '<div id="logBox">&nbsp;</div>';
+        }
+        return $content;
     }
 }

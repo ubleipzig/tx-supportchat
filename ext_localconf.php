@@ -4,13 +4,13 @@ if (!defined ('TYPO3_MODE')) 	die ('Access denied.');
 \TYPO3\CMS\Extbase\Utility\ExtensionUtility::configurePlugin(
     'Ubl.' . $_EXTKEY,
     'tx_supportchat',
-    array(
+    [
         'SupportChat' => 'index'
-    ),
+    ],
     // non cache actions
-    array(
+    [
         'SupportChat' => 'index'
-    )
+    ]
 );
 
 $TYPO3_CONF_VARS['FE']['eID_include']['tx_supportchat']

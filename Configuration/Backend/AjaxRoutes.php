@@ -6,5 +6,9 @@ return [
     'chat_response' => [
         'path' => '/supportchat/chat-response',
         'target' => \Ubl\Supportchat\Controller\SupportChatModuleController::class . '::getChatAction'
+    ],
+    'alert_sound' => [
+        'path' => '/supportchat/alert-sound',
+        'target' => \Ubl\Supportchat\Controller\SupportChatModuleController::class . '::setAlertSoundAction'
     ]
 ];

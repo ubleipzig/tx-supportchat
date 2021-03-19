@@ -40,7 +40,7 @@ class ChatHelper {
 	public static function checkIfChatIsOnline($pids)
     {
 	    global $TYPO3_DB;
-	    $table="pages";
+	    $table = "pages";
 
 		// security
 		$pid = explode(',',$pids);
@@ -50,15 +50,16 @@ class ChatHelper {
 		}
 		$pids = substr($pids,1);
 		$res = $TYPO3_DB->exec_SELECTquery("uid, hidden", $table, 'uid IN ('.$pids.')');
-		$retArray = array();
+		$retArray = [];
 		while ($row = $TYPO3_DB->sql_fetch_assoc($res)) {
 			$retArray[$row["uid"]] = $row["hidden"] ? 0 : 1;
 		}
 		// Hook for your own chatIsOnline function
-		$hookObjectsArr = array();
+		$hookObjectsArr = [];
 		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['supportchat/checkIfOnline'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['supportchat/checkIfOnline'] as $classRef) {
-				$hookObjectsArr[] = &GeneralUtility::getUserObj($classRef);
+                $userObj = GeneralUtility::getUserObj($classRef);
+                $hookObjectsArr[] = &$userObj;
 			}
 		}
 
@@ -136,28 +137,48 @@ class ChatHelper {
 	 * @param string $str String to check
      *
 	 * @return string $str With activated links
+     * @access public
 	 */
 	public static function activateHtmlLinks($str)
     {
 		// uncommented due ticket issue #4560
 		// $str = str_replace("http://www.","www.",$str);
 		// $str = str_replace("www.","http://www.",$str);
-		$str = preg_replace("/([\w]+:\/\/[\w-?&;#~=\.\/\@]+[\w\/])/i","<a href=\"$1\" target=\"_blank\">$1</a>", $str);
-		$str = preg_replace("/([\w-?&;#~=\.\/]+\@(\[?)[a-zA-Z0-9\-\.]+\.([a-zA-Z]{2,3}|[0-9]{1,3})(\]?))/i","<a href=\"mailto:$1\">$1</a>",$str);
+		$str = preg_replace(
+		    "/([\w]+:\/\/[\w-?&;#~=\.\/\@]+[\w\/])/i",
+            "<a href=\"$1\" target=\"_blank\">$1</a>",
+            $str
+        );
+		$str = preg_replace(
+		    "/([\w-?&;#~=\.\/]+\@(\[?)[a-zA-Z0-9\-\.]+\.([a-zA-Z]{2,3}|[0-9]{1,3})(\]?))/i",
+            "<a href=\"mailto:$1\">$1</a>",
+            $str
+        );
 		return $str;
 	}
 
 	/**
-	* Prints the content for AJAX Request
-	*/
-	public static function printResponse($content) {
+	 * Prints the content for AJAX Request. Default for xml content.
+     *
+     * @param string $content   Content to print
+     * @param boolean $json     Content in JSON
+     *
+     * @return string $content
+     * @access public
+	 */
+	public static function printResponse($content, $json = false)
+    {
 		ob_clean();
 		header('Expires: Mon, 26 Jul 1990 05:00:00 GMT');
 		header('Last-Modified: ' . gmdate( "D, d M Y H:i:s" ) . 'GMT');
 		header('Cache-Control: no-cache, must-revalidate');
 		header('Pragma: no-cache');
 		header('Content-Length: '.strlen($content));
-		header('Content-Type: text/xml');
+        if ($json) {
+            header('Content-Type: ' . 'application/json');
+        } else {
+            header('Content-Type: ' . 'text/xml');
+        }
 		print $content;
 	}
 }

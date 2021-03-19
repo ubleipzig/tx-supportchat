@@ -8,7 +8,7 @@ function initOnlineCheck(url) {
 
 var AjaxChatCheck = {
 	timer:'',
-	checkIfOnline:function(pids,url) {
+	checkIfOnline: function(pids, url) {
 		this.timer = new Ajax.PeriodicalUpdater(
 			"",
 			url+"&cmd=checkIfOnline&chatPids="+pids, {
@@ -19,20 +19,20 @@ var AjaxChatCheck = {
 					for(var i=0; i<els.length; i++) {
 						var chatUid = els[i].getAttribute("index");
 						var isOnline = els[i].childNodes[0].nodeValue;
-	                    onlineChat = $("tx_supportchat_pi1_onlineLogo_"+chatUid);
-    	                offlineChat = $("tx_supportchat_pi1_offlineLogo_"+chatUid);
+								onlineChat = $("tx_supportchat_onlineLogo_"+chatUid);
+								offlineChat = $("tx_supportchat_offlineLogo_"+chatUid);
 						if(isOnline == 1 && onlineChat.className == "hidden") {
-	                        offlineChat.className = "hidden";
-    	                    offlineChat.style.display = "none";
-        	                onlineChat.className = "";
-            	            onlineChat.style.display = "inline";
+								offlineChat.className = "hidden";
+								offlineChat.style.display = "none";
+								onlineChat.className = "";
+								onlineChat.style.display = "inline";
 						}
 						else {
-                        	if(isOnline==0 && offlineChat.className == "hidden") {
-	                            onlineChat.className = "hidden";
-    	                        onlineChat.style.display = "none";
-        	                    offlineChat.className = "";
-            	                offlineChat.style.display = "inline";
+							if(isOnline==0 && offlineChat.className == "hidden") {
+									onlineChat.className = "hidden";
+									onlineChat.style.display = "none";
+									offlineChat.className = "";
+									offlineChat.style.display = "inline";
 							}
 						}
 					}
@@ -41,7 +41,7 @@ var AjaxChatCheck = {
 			}
 		);
 	},
-	logout:function() {
+	logout: function() {
 		if(this.timer) this.timer.stop;
 	}
 }

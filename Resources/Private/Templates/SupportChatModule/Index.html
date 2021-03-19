@@ -1,8 +1,21 @@
-<f:layout name="Default" />
+<html xmlns:f="https://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+<f:layout name="Backend/Default" />
+
 <f:section name="headline">
     <h1>Support Chat</h1>
 </f:section>
 
 <f:section name="content">
     <f:format.raw>{content}</f:format.raw>
+    <script language="javascript" type="text/javascript">
+      var moduleUrl = '{f:format.raw(value: moduleUrl)}';
+      var frequencyOfChatRequest = '{f:format.raw(value: frequencyOfChatRequest)}';
+      var isTypeIndicator = '{f:format.raw(value: isTypeIndicator)}';
+
+      script_ended = 1;
+      if (top.fsMod) {
+        top.fsMod.recentIds["web"] = 0;
+      }
+    </script>
 </f:section>
+</html>

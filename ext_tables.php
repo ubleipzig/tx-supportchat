@@ -8,14 +8,14 @@ if (TYPO3_MODE == "BE") {
         'user',          // Main area
         'tx_supportchat_M1',  // Name of the module
         '',             // Position of the module
-        array(          // Allowed controller action combinations
+        [          // Allowed controller action combinations
             'SupportChatModule' => 'index'
-        ),
-        array(          // Additional configuration
+        ],
+        [          // Additional configuration
             'access' => 'user,group',
             'icon' => 'EXT:' . $_EXTKEY . '/Resources/Public/Icons/moduleicon.gif',
             'labels' => 'LLL:EXT:' . $_EXTKEY . '/Resources/Private/Language/locallang_mod.xlf',
-        )
+        ]
     );
 
     $GLOBALS['TBE_STYLES']['skins'][$_EXTKEY]['stylesheetDirectories'] =

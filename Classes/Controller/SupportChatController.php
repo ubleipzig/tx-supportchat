@@ -190,7 +190,7 @@ class SupportChatController extends BaseAbstractController
      */
     public function displayChatBox()
     {
-        return $this->view->assignMultiple(array(
+        return $this->view->assignMultiple([
             'isChatbox' => true,
             'title' => 'chatbox-welcome',
             'title-id' => 'chatboxTitle',
@@ -207,57 +207,41 @@ class SupportChatController extends BaseAbstractController
             'export-text' => 'chatbox-export',
             'export-action-url' =>
                 $this->getAbsUrl('index.php?eID=tx_supportchat_pi1&cmd=createChatLog')
-        ));
+        ]);
     }
 
     /**
      * Adds the JS Code for the SupportLogo to the Header
      *
+     * @return void     Assign javascript 'headerJS' to view
      * @access public
+     *
      */
     public function addJsInHeaderForCheckIfChatIsOnline()
     {
-        if($this->settings["usePrototype"] || $this->settings["useMootools"]) {
-            if($this->settings["addPrototype"] && $this->settings["usePrototype"]) {
-                $content = '<script type="text/javascript" src="'.ExtensionManagementUtility::siteRelPath('supportchat').'Resources/Public/js/prototype.js"></script>';
-            }
-            if($this->settings["addMootools"] && $this->settings["useMootools"]) {
-                $content = '<script type="text/javascript" src="'.ExtensionManagementUtility::siteRelPath('supportchat').'Resources/Public/js/mootools-1.2.6-core-yc.js"></script>';
-            }
-            $jsCheckPids = $this->checkForOnlineOfflinePages();
+        $onload = '';
 
-            if($jsCheckPids) {
-                if($this->settings["usePrototype"]) {
-                    $content .= '<script type="text/javascript" src="'.GeneralUtility::createVersionNumberedFilename(ExtensionManagementUtility::siteRelPath('supportchat') . 'Resources/Public/js/supportchatIsOnline.js').'"></script>';
-                    $onLoad = '
-						Event.observe(window, "load", function() { initOnlineCheck("'.$this->getAbsUrl('index.php?eID=tx_supportchat').'"); });
-					';
-                }
-                else {
-                    $content .= '<script type="text/javascript" src="'.GeneralUtility::createVersionNumberedFilename(ExtensionManagementUtility::siteRelPath('supportchat') . 'Resources/Public/js/supportchatIsOnline_Mootools.js').'"></script>';
-                    $onLoad = '
-						window.addEvent("domready",function() { initOnlineCheck("'.$this->getAbsUrl('index.php?eID=tx_supportchat').'"); });
-					';
-                }
-            }
-            else {
-                // no online/offline check in FE
-                $onLoad = '';
-            }
-            $content .= '
-				<script type="text/javascript">
-				/*<![CDATA[*/
-				<!--
-					var globFreq = '.$this->settings["checkIfChatIsOnline"].';
-					var checkPids = "'.$jsCheckPids.'";
-					'.$onLoad.'
-				// -->
-				/*]]>*/
-				</script>
+        $content = '<script type="text/javascript" src="' . ExtensionManagementUtility::siteRelPath('supportchat') . 'Resources/Public/Javascript/Prototype.js"></script>';
+        $jsCheckPids = $this->checkForOnlineOfflinePages();
+
+        if ($jsCheckPids) {
+            $content .= '<script type="text/javascript" src="'.GeneralUtility::createVersionNumberedFilename(ExtensionManagementUtility::siteRelPath('supportchat') . 'Resources/Public/JavaScript/SupportchatIsOnline.js').'"></script>';
+            $onLoad = '
+	    		Event.observe(window, "load", function() { initOnlineCheck("'.$this->getAbsUrl('index.php?eID=tx_supportchat').'"); });
 			';
         }
+        $content .= '
+            <script type="text/javascript">
+            /*<![CDATA[*/
+            <!--
+                var globFreq = '.$this->settings["checkIfChatIsOnline"].';
+                var checkPids = "'.$jsCheckPids.'";
+                '.$onLoad.'
+            //-->
+            /*]]>*/
+            </script>
+        ';
         $this->view->assign('headerJs', $content);
-        return;
     }
 
     /**
@@ -284,10 +268,10 @@ class SupportChatController extends BaseAbstractController
                 : addslashes($GLOBALS["TSFE"]->fe_user->user["name"]))
             : addslashes(Localization::translate("chat-username", $this->extKey));
         $jsInHeader = '
-			<script type="text/javascript" src="'.ExtensionManagementUtility::siteRelPath('supportchat').'Resources/Public/js/mootools-1.2.6-core-yc.js"></script>
-			<script type="text/javascript" src="'.ExtensionManagementUtility::siteRelPath('supportchat').'Resources/Public/js/mootools-1.2.5.1-more.js"></script>
-			<script type="text/javascript" src="'.GeneralUtility::createVersionNumberedFilename(ExtensionManagementUtility::siteRelPath('supportchat').'Resources/Public/js/smilies.js').'"></script>
-			<script type="text/javascript" src="'.GeneralUtility::createVersionNumberedFilename(ExtensionManagementUtility::siteRelPath('supportchat').'Resources/Public/js/supportchat.js').'"></script>
+			<script type="text/javascript" src="'.ExtensionManagementUtility::siteRelPath('supportchat').'Resources/Public/JavaScript/MootoolsCore.js"></script>
+			<script type="text/javascript" src="'.ExtensionManagementUtility::siteRelPath('supportchat').'Resources/Public/JavaScript/MootoolsMore.js"></script>
+			<script type="text/javascript" src="'.GeneralUtility::createVersionNumberedFilename(ExtensionManagementUtility::siteRelPath('supportchat').'Resources/Public/JavaScript/Smileys.js').'"></script>
+			<script type="text/javascript" src="'.GeneralUtility::createVersionNumberedFilename(ExtensionManagementUtility::siteRelPath('supportchat').'Resources/Public/JavaScript/Supportchat.js').'"></script>
 			<script type="text/javascript">
 			/*<![CDATA[*/
 			<!--
@@ -325,7 +309,6 @@ class SupportChatController extends BaseAbstractController
 			</script>
 		';
         $this->view->assign('headerJs', $jsInHeader);
-        return;
     }
 
     /**
@@ -351,34 +334,34 @@ class SupportChatController extends BaseAbstractController
         // get the offline Variant
         $image = '<img src="'.ChatHelper::getPath($this->settings["offlineLogo"]).'" alt="Support Chat Offline" title="Support Chat Offline" />';
 
-        $offlineOnline[] = array (
+        $offlineOnline[] = [
             'offlineOnlineClass' => $offlineClass,
             'ChatPluginPid' => $this->settings['chatPluginPid'],
             'offlineOnlineTitle' => 'support-logo-header',
             'offlineOnlineImage' => $image,
             'offlineOnlineStatusMsg' => 'status_msg_offline'
-        );
+        ];
 
         // get the online Variant
         $image = '<img src="'.ChatHelper::getPath($this->settings["onlineLogo"]).'" alt="Support Chat Online" title="Support Chat Online" />';
-        $linkConf = array(
+        $linkConf = [
             "parameter" => $this->settings["chatPluginPid"],
             "linkAccessRestrictedPages" => 1,
             "additionalParams" => "&tx_supportchat[cmd]=openChat",
             "returnLast" => "url"
-        );
+        ];
         $openChatLink = $this->getAbsUrl($this->cObj->typoLink("", $linkConf));
 
         $link = $this->controllerContext->getUriBuilder()->reset()->setTargetPageUid($this->settings["chatNotSupportedPage"])->buildFrontendUri();
         $link = '<a href="'.$link.'" onclick="supportChatOpenWindow(\''.$openChatLink.'\',\'supportchatwindow\',\''.$this->conf["chatWindowJsParams"].'\'); return false;" target="_blank">'.$image.'</a>';
 
-        $offlineOnline[] = array (
+        $offlineOnline[] = [
             'offlineOnlineClass' => $onlineClass,
             'ChatPluginPid' => $this->settings['chatPluginPid'],
             'offlineOnlineTitle' => 'support-logo-header',
             'offlineOnlineImage' => $link,
             'offlineOnlineStatusMsg' => 'status_msg_online'
-        );
+        ];
 
         return $this->view->assign('offlineOnline', $offlineOnline);
     }
@@ -459,7 +442,7 @@ class SupportChatController extends BaseAbstractController
     {
         $isAbsRelPrefix = !empty($GLOBALS['TSFE']->absRefPrefix);
         $isBaseURL  = !empty($GLOBALS['TSFE']->baseUrl);
-        if($isBaseURL) {
+        if ($isBaseURL) {
             $url = $GLOBALS['TSFE']->baseUrlWrap($link);
         } else if ($isAbsRelPrefix) {
             $url = GeneralUtility::locationHeaderUrl($link);

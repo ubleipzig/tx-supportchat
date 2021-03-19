@@ -1,5 +1,32 @@
 # Change Log
 
+## [v2.1.0](https://github.com/ubleipzig/tx-supportchat/tree/v2.1.0)
+
+[Full Changelog](https://github.com/ubleipzig/tx-vufind-auth/compare/2.0.2...2.1.0)
+
+**New requirements**
+
+* supports Typo3 v7 only
+* PHP 7 at minimum
+
+**Implemented enhancements:**
+
+* backend user can select alert sound saved at cache
+
+**Refactoring**
+
+* replaces short syntax for arrays
+* adjusts directory structure of Resources to common practise of Typo3 
+* removes parallel javascripts libraries for SupportChatIsOnline.js
+  * uses now prototype only as (transition) library for rewriting script later
+  * removes addProttype and usePrototype at Configuration/TypoScript/setup.txt
+
+**Fixes**
+
+* adds html5 audio element for alert sound and removes flash artefacts
+* fixes several image paths for e.g. online/offline images 
+* fixes false call of method Classes/Ajax/Frontendlistener.php cmd -> checkIfOnline
+
 ## [v2.0.2](https://github.com/ubleipzig/tx-supportchat/tree/v2.0.2)
 
 [Full Changelog](https://github.com/ubleipzig/tx-vufind-auth/compare/2.0.1...2.0.2)

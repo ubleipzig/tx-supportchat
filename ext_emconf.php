@@ -10,12 +10,12 @@
 # writing. "version" and "dependencies" must not be touched!
 ########################################################################
 
-$EM_CONF[$_EXTKEY] = array(
+$EM_CONF[$_EXTKEY] = [
 	'title' => 'Support Chat',
 	'description' => 'A Support Chat for Typo3',
 	'category' => 'misc',
 	'shy' => 0,
-	'version' => '2.0.2',
+	'version' => '2.1.0',
 	'dependencies' => '',
 	'conflicts' => '',
 	'priority' => '',
@@ -31,28 +31,28 @@ $EM_CONF[$_EXTKEY] = array(
 	'author_company' => 'www.profi-web.it',
 	'CGLcompliance' => '',
 	'CGLcompliance_note' => '',
-	'constraints' => array(
-		'depends' => array(
-			'typo3' => '4.5.0-7.6.99',
-		),
-		'conflicts' => array(
-		),
-		'suggests' => array(
-		),
-	),
+	'constraints' => [
+		'depends' => [
+			'typo3' => '7.0.0-7.6.99',
+		],
+		'conflicts' => [
+		],
+		'suggests' => [
+		],
+	],
     'autoload' =>
-        array(
+        [
             'psr-4' =>
-                array(
+                [
                     'Ubl\\Supportchat\\' => 'Classes',
-                ),
-        ),
+                ],
+        ],
     'autoload-dev' =>
-        array(
+        [
             'psr-4' =>
-                array(
+                [
                     'Ubl\\Supportchat\\Tests' => 'Tests',
-                ),
-        ),
-);
+                ],
+        ],
+];
 

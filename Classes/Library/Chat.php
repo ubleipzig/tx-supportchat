@@ -93,7 +93,7 @@ class Chat
      * @var array $db
      * @access protected
      */
-    protected $db = array();
+    protected $db = [];
 
     /**
      * Initialize data needed for every chat object
@@ -209,7 +209,7 @@ class Chat
     public function createChat($feLanguageId)
     {
         $table = "tx_supportchat_chats";
-        $insertData = array(
+        $insertData = [
             "pid" => $this->pid,
             "crdate" => time(),
             "session" => $this->identification,
@@ -219,9 +219,9 @@ class Chat
             "be_user" => '',
             "status" => '',
             "assume_to_be_user" => ''
-        );
+        ];
         // Hook for example adding a call by Asterisk to youre Supportlers or manipulating the DB entry
-        $hookObjectsArr = array();
+        $hookObjectsArr = [];
         if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['supportchat/createChat'])) {
             foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['supportchat/createChat'] as $classRef) {
                 $hookObjectsArr[] = GeneralUtility::getUserObj($classRef);
@@ -261,7 +261,7 @@ class Chat
             'chat_pid='.$this->uid.' AND uid > '.$this->lastRow,"",
             "crdate"
         );
-        $data = array();
+        $data = [];
         $fieldArray = explode(",",$fields);
         $i=0;
         while ($row = $TYPO3_DB->sql_fetch_assoc($res)) {
@@ -300,20 +300,20 @@ class Chat
         $message = ChatHelper::activateHtmlLinks($message);
 
         /* DEPRECATED HOOK since 26.11.11 - use preInsertMessage instead */
-        $hookObjectsArr = array();
+        $hookObjectsArr = [];
         if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['supportchat/prePostMessage'])) {
             foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['supportchat/prePostMessage'] as $classRef) {
                 $hookObjectsArr[] = GeneralUtility::getUserObj($classRef);
             }
         }
-        foreach($hookObjectsArr as $hookObj)    {
+        foreach ($hookObjectsArr as $hookObj)    {
             if (method_exists($hookObj, 'prePostMessage')) {
                 $message = $hookObj->prePostMessage($message,$this);
                 // DEPRECATED HOOK since 26.11.11 - use preInsertMessage instead
             }
         }
 
-        $insertData = array(
+        $insertData = [
             "crdate" => time(),
             "tstamp"=> time(),
             "pid" => $this->pid,
@@ -323,17 +323,17 @@ class Chat
             "chat_pid" => $this->uid,
             "name" => $name,
             "message" => $message
-        );
+        ];
 
         // Hook for own processing of posted message
-        $hookObjectsArr = array();
+        $hookObjectsArr = [];
         if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['supportchat/insertMessage'])) {
             foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['supportchat/insertMessage'] as $classRef) {
                 $hookObjectsArr[] = GeneralUtility::getUserObj($classRef);
             }
         }
 
-        foreach($hookObjectsArr as $hookObj) {
+        foreach ($hookObjectsArr as $hookObj) {
             if (method_exists($hookObj, 'preInsertMessage')) {
                 $message = $hookObj->preInsertMessage($insertData,$this);
             }
@@ -342,10 +342,10 @@ class Chat
         $table = "tx_supportchat_messages";
         $TYPO3_DB->exec_INSERTquery($table,$insertData);
         $messageId = $TYPO3_DB->sql_insert_id();
-        if($messageId > $this->lastRow) {
+        if ($messageId > $this->lastRow) {
             $this->lastRow = $messageId;
         }
-        return($messageId);
+        return $messageId;
     }
 
     /**
@@ -358,10 +358,10 @@ class Chat
     {
         global $TYPO3_DB,$BE_USER;
         $table = "tx_supportchat_chats";
-        $updateArray = Array(
+        $updateArray = [
             "active" => 0,
-        );
-        if($BE_USER->user["uid"]) {
+        ];
+        if ($BE_USER->user["uid"]) {
             $updateArray["status"] = "be_user_destroyed";
         }
         else {
@@ -386,12 +386,12 @@ class Chat
     public function writeLog($msg)
     {
         global $TYPO3_DB;
-        $insertData = array(
+        $insertData = [
             "crdate" => time(),
             "tstamp"=> time(),
             "pid" => $this->pid,
             "message" => $msg
-        );
+        ];
         $table = "tx_supportchat_log";
         $TYPO3_DB->exec_INSERTquery($table,$insertData);
         return 1;
@@ -409,9 +409,9 @@ class Chat
     {
         global $TYPO3_DB,$BE_USER;
         $table = "tx_supportchat_chats";
-        $updateArray = array(
+        $updateArray = [
             "be_user" => $lock ? $BE_USER->user["uid"] : "",
-        );
+        ];
         $TYPO3_DB->exec_UPDATEquery($table,'uid='.$this->uid,$updateArray);
         if ($this->logging) {
             $user = $this->admin ? ($BE_USER->user["realName"] ? $BE_USER->user["realName"] : $BE_USER->user["username"]) : "FE-User";
@@ -464,11 +464,18 @@ class Chat
             $limit = time() - ($inactivateTime*60);
             $messageRes = $GLOBALS["TYPO3_DB"]->exec_SELECTquery('uid',$tableMessages,'chat_pid='.$row["uid"].' AND crdate > '.$limit);
             $messageRow = $GLOBALS["TYPO3_DB"]->sql_fetch_assoc($messageRes);
-            if(!$messageRow["uid"] && $row["crdate"] < $limit) {
+            if (!$messageRow["uid"] && $row["crdate"] < $limit) {
                 // delete the Chat
-                $GLOBALS["TYPO3_DB"]->exec_UPDATEquery($tableChats,"uid=".$row["uid"],array("active" => "0", "status" => "timeout"));
+                $GLOBALS["TYPO3_DB"]->exec_UPDATEquery(
+                    $tableChats,
+                    "uid=".$row["uid"],
+                    ["active" => "0", "status" => "timeout"]
+                );
                 if ($this->logging) {
-                    $user = $BE_USER->user["uid"] ? ($BE_USER->user["realName"] ? $BE_USER->user["realName"] : $BE_USER->user["username"]) : "FE-User";
+                    $user = $BE_USER->user["uid"]
+                        ? ($BE_USER->user["realName"]
+                            ? $BE_USER->user["realName"] : $BE_USER->user["username"])
+                        : "FE-User";
                     $this->writeLog("Chat ".$row["uid"]." was succesfully destroyed by System, timeout exceeded");
                 }
             }
@@ -484,7 +491,7 @@ class Chat
      * @return boolean           True or false if useTypingIndicator is not set to true (1).
      * @access public
      * @see #useTypingIndicator
-     * @see #initChat($pid,$ident,$admin=0,$useTypingIndicator)
+     * @see #initChat($pid, $ident, $admin=0, $useTypingIndicator)
      */
     public function saveTypingStatus($isTyping)
     {
@@ -494,7 +501,7 @@ class Chat
             if($this->db['uid']) {
                 $status_array = unserialize($this->db['status']);
                 if(!is_array($status_array)) {
-                    $status_array = array ('feu_typing'=>0, 'beu_typing'=>0);
+                    $status_array = ['feu_typing' => 0, 'beu_typing' => 0];
                 }
                 if($BE_USER->user["uid"]) {
                     //current user is a backend-user and typing?
@@ -505,14 +512,14 @@ class Chat
                     }
                 } else {
                     //current user is a frontend-user and typing?
-                    if($isTyping == 1) {
+                    if ($isTyping == 1) {
                         $status_array['feu_typing'] = 1;
                     } else {
                         $status_array['feu_typing'] = 0;
                     }
                 }
-                $updateArray = Array('status' => serialize($status_array));
-                if($this->db['status'] != $updateArray['status']) {
+                $updateArray = ['status' => serialize($status_array)];
+                if ($this->db['status'] != $updateArray['status']) {
                     $tableChats = "tx_supportchat_chats";
                     $GLOBALS["TYPO3_DB"]->exec_UPDATEquery($tableChats,"uid=".$this->uid,$updateArray);
                 }
@@ -539,21 +546,21 @@ class Chat
 
         /** tradem 2012-04-11 Added check of control variable. */
         if ($this->useTypingIndicator == 1) {
-            if($this->db['uid'] && $this->db['active']) {
+            if ($this->db['uid'] && $this->db['active']) {
                 $status_array = unserialize($this->db['status']);
-                if(!is_array($status_array)) {
-                    $status_array = array ('feu_typing'=>0, 'beu_typing'=>0);
+                if (!is_array($status_array)) {
+                    $status_array = ['feu_typing'=>0, 'beu_typing'=>0];
                 }
-                if($BE_USER->user["uid"]) {
+                if ($BE_USER->user["uid"]) {
                     //current user is a backend-user and frontend-user is typing?
-                    if($status_array['feu_typing'] == 1) {
+                    if ($status_array['feu_typing'] == 1) {
                         return 1;
                     } else {
                         return 0;
                     }
                 } else {
                     //current user is frontend-user and backend-user is typing?
-                    if($status_array['beu_typing'] == 1) {
+                    if ($status_array['beu_typing'] == 1) {
                         return 1;
                     } else {
                         return 0;

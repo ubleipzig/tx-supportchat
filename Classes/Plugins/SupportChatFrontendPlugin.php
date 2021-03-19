@@ -95,7 +95,7 @@ class SupportChatFrontendPlugin
      *
      * @return string   The content that is displayed on the website
      */
-    public function main($content ,$conf)	{
+    public function main($content, $conf)	{
         $this->conf = $conf;
         $this->pi_setPiVarDefaults(); // @deprecated - not set not used properly
         $this->pi_loadLL();
@@ -115,9 +115,9 @@ class SupportChatFrontendPlugin
                 $sessionId = $this->checkJS();
                 // write something to the session so the session cookie (and id) is not re-created on every browser request (needed since new session handling see bug http://bugs.typo3.org/view.php?id=10205)
                 $GLOBALS['TSFE']->fe_user->setKey("ses","supportchat","1");
-                if($sessionId) {
+                if ($sessionId) {
                     $chatIsOnline = ChatHelper::checkIfChatIsOnline($this->checkPids);
-                    if($chatIsOnline[$this->conf["chatPluginPid"]]) {
+                    if ($chatIsOnline[$this->conf["chatPluginPid"]]) {
                         // tx_chat_functions::destroyInactiveChats($this->conf["timeToInactivateChatIfNoMessages"],$this->conf["chatsPid"]);
                         $chat = new Chat();
                         /** tradem 2012-04-12 Pass typing inidcator usage configuration */
@@ -137,7 +137,7 @@ class SupportChatFrontendPlugin
                 $this->addJsInHeaderForCheckIfChatIsOnline();
                 $content = $this->showSupportButton();
         }
-        if(trim($this->conf["_CSS_DEFAULT_STYLE"]))	{
+        if (trim($this->conf["_CSS_DEFAULT_STYLE"]))	{
             $GLOBALS['TSFE']->additionalHeaderData['tx_supportchat_pi1_css'] =
                 '<style type="text/css">'.$this->conf["_CSS_DEFAULT_STYLE"].'</style>';
         }
@@ -167,10 +167,10 @@ class SupportChatFrontendPlugin
     public function showChatIsOfflineMessage()
     {
         $out = $this->cObj->getSubpart($this->templateCode, '###CHAT_BOX_OFFLINE###');
-        $markerArray = array(
+        $markerArray = [
             "###TITLE###" => Localization::translate("chat-offline-title", $this->extKey),
             "###MESSAGE###" => Localization::translate("chat-offline-message", $this->extKey),
-        );
+        ];
         $content = $this->cObj->substituteMarkerArrayCached($out,$markerArray);
         return ($content);
     }
@@ -183,7 +183,7 @@ class SupportChatFrontendPlugin
     public function generateChatBox()
     {
         $out = $this->cObj->getSubpart($this->templateCode, '###CHAT_BOX###');
-        $markerArray = array(
+        $markerArray = [
             "###TITLE###" =>
                 Localization::translate("chatbox-welcome", $this->extKey),
             "###TITLE_ID###" => 'chatboxTitle',
@@ -205,57 +205,42 @@ class SupportChatFrontendPlugin
                 Localization::translate("chatbox-export", $this->extKey),
             "###EXPORT_ACTION_URL###" =>
                 $this->getAbsUrl('index.php?eID=tx_supportchat_pi1&cmd=createChatLog')
-        );
+        ];
         $content = $this->cObj->substituteMarkerArrayCached($out,$markerArray);
-        return($content);
+        return $content;
     }
 
     /**
      * Adds the JS Code for the SupportLogo to the Header
      *
+     * @return void     Adds JS code to '$GLOBALS['TSFE']->additionalHeaderData['tx_supportchat_pi1']'
      * @access public
      */
-    function addJsInHeaderForCheckIfChatIsOnline() {
-        if($this->conf["usePrototype"] || $this->conf["useMootools"]) {
-            if($this->conf["addPrototype"] && $this->conf["usePrototype"]) {
-                $GLOBALS['TSFE']->additionalHeaderData['tx_supportchat_pi1'] = '<script type="text/javascript" src="'.ExtensionManagementUtility::siteRelPath('supportchat').'Resources/Public/js/prototype.js"></script>';
-            }
-            if($this->conf["addMootools"] && $this->conf["useMootools"]) {
-                $GLOBALS['TSFE']->additionalHeaderData['tx_supportchat_pi1'] = '<script type="text/javascript" src="'.ExtensionManagementUtility::siteRelPath('supportchat').'Resources/Public/js/mootools-1.2.6-core-yc.js"></script>';
-            }
-            $jsCheckPids = $this->checkForOnlineOfflinePages();
+    public function addJsInHeaderForCheckIfChatIsOnline() {
 
-            if($jsCheckPids) {
-                if($this->conf["usePrototype"]) {
-                    $GLOBALS['TSFE']->additionalHeaderData['tx_supportchat_pi1'] .= '<script type="text/javascript" src="'.GeneralUtility::createVersionNumberedFilename(ExtensionManagementUtility::siteRelPath('supportchat') . 'Resources/Public/js/supportchatIsOnline.js').'"></script>';
-                    $onLoad = '
-						Event.observe(window, "load", function() { initOnlineCheck("'.$this->getAbsUrl('index.php?eID=tx_supportchat_pi1').'"); });
-					';
-                }
-                else {
-                    $GLOBALS['TSFE']->additionalHeaderData['tx_supportchat_pi1'] .= '<script type="text/javascript" src="'.GeneralUtility::createVersionNumberedFilename(ExtensionManagementUtility::siteRelPath('supportchat') . 'Resources/Public/js/supportchatIsOnline_Mootools.js').'"></script>';
-                    $onLoad = '
-						window.addEvent("domready",function() { initOnlineCheck("'.$this->getAbsUrl('index.php?eID=tx_supportchat_pi1').'"); });
-					';
-                }
-            }
-            else {
-                // no online/offline check in FE
-                $onLoad = '';
-            }
-            $GLOBALS['TSFE']->additionalHeaderData['tx_supportchat_pi1'] .= '
-				<script type="text/javascript">
-				/*<![CDATA[*/
-				<!--
-					var globFreq = '.$this->conf["checkIfChatIsOnline"].';
-					var checkPids = "'.$jsCheckPids.'";
-					'.$onLoad.'
-				// -->
-				/*]]>*/
-				</script>
-			';
+        $onload = '';
+
+        $GLOBALS['TSFE']->additionalHeaderData['tx_supportchat_pi1'] = '<script type="text/javascript" src="'.ExtensionManagementUtility::siteRelPath('supportchat').'Resources/Public/JavaScript/Prototype.js"></script>';
+        $jsCheckPids = $this->checkForOnlineOfflinePages();
+
+        if ($jsCheckPids) {
+
+            $GLOBALS['TSFE']->additionalHeaderData['tx_supportchat_pi1'] .= '<script type="text/javascript" src="'.GeneralUtility::createVersionNumberedFilename(ExtensionManagementUtility::siteRelPath('supportchat') . 'Resources/Public/JavaScript/SupportchatIsOnline.js').'"></script>';
+            $onLoad = '
+                Event.observe(window, "load", function() { initOnlineCheck("'.$this->getAbsUrl('index.php?eID=tx_supportchat_pi1').'"); });
+            ';
         }
-        return;
+        $GLOBALS['TSFE']->additionalHeaderData['tx_supportchat_pi1'] .= '
+            <script type="text/javascript">
+            /*<![CDATA[*/
+            <!--
+                var globFreq = '.$this->conf["checkIfChatIsOnline"].';
+                var checkPids = "'.$jsCheckPids.'";
+                '.$onLoad.'
+            // -->
+            /*]]>*/
+            </script>
+        ';
     }
 
     /**
@@ -268,7 +253,8 @@ class SupportChatFrontendPlugin
      * @return void
      * @access public
      */
-    public function addJsInHeader($sessionId, $chatUid) {
+    public function addJsInHeader($sessionId, $chatUid)
+    {
         $pid = $this->conf["chatsPid"] ? $this->conf["chatsPid"] : $GLOBALS["TSFE"]->id;
         $lang = intval(GeneralUtility::_GET("L")) ? "&L=".intval(GeneralUtility::_GET("L")) : "";
         $freq = $this->conf["getMessagesInSeconds"] * 1000;
@@ -280,10 +266,10 @@ class SupportChatFrontendPlugin
                 : addslashes($GLOBALS["TSFE"]->fe_user->user["name"]))
             : addslashes(Localization::translate("chat-username", $this->extKey));
         $GLOBALS['TSFE']->additionalHeaderData['tx_supportchat_pi1'] = '
-			<script type="text/javascript" src="'.ExtensionManagementUtility::siteRelPath('supportchat').'Resources/Public/js/mootools-1.2.6-core-yc.js"></script>
-			<script type="text/javascript" src="'.ExtensionManagementUtility::siteRelPath('supportchat').'Resources/Public/js/mootools-1.2.5.1-more.js"></script>
-			<script type="text/javascript" src="'.GeneralUtility::createVersionNumberedFilename(ExtensionManagementUtility::siteRelPath('supportchat').'Resources/Public/js/smilies.js').'"></script>
-			<script type="text/javascript" src="'.GeneralUtility::createVersionNumberedFilename(ExtensionManagementUtility::siteRelPath('supportchat').'Resources/Public/js/supportchat.js').'"></script>
+			<script type="text/javascript" src="'.ExtensionManagementUtility::siteRelPath('supportchat') . 'Resources/Public/JavaScript/MootoolsCore.js"></script>
+			<script type="text/javascript" src="'.ExtensionManagementUtility::siteRelPath('supportchat') . 'Resources/Public/JavaScript/MootoolsMore.js"></script>
+			<script type="text/javascript" src="'.GeneralUtility::createVersionNumberedFilename(ExtensionManagementUtility::siteRelPath('supportchat') . 'Resources/Public/JavaScript/Smileys.js').'"></script>
+			<script type="text/javascript" src="'.GeneralUtility::createVersionNumberedFilename(ExtensionManagementUtility::siteRelPath('supportchat') . 'Resources/Public/JavaScript/Supportchat.js').'"></script>
 			<script type="text/javascript">
 			/*<![CDATA[*/
 			<!--
@@ -336,14 +322,14 @@ class SupportChatFrontendPlugin
         $out = $this->cObj->getSubpart($this->templateCode, '###SHOW_SUPPORT_LOGO###');
         // get the offline Variant
         $image = '<img src="'.ChatHelper::getPath($this->conf["offlineLogo"]).'" alt="Support Chat Offline" title="Support Chat Offline" />';
-        $markerArray = array(
+        $markerArray = [
             "###TITLE###" =>
                 Localization::translate("support-logo-header", $this->extKey),
             "###IMAGE###" => $this->cObj->stdWrap($image,$this->conf["offlineLogo."]["stdWrap."]),
             "###STATUS_MSG###" =>
                 Localization::translate("status_msg_offline", $this->extKey)
-        );
-        if($chatIsOnline[$this->conf["chatPluginPid"]]) {
+        ];
+        if ($chatIsOnline[$this->conf["chatPluginPid"]]) {
             $onlineClass = "";
             $offlineClass = 'class="hidden"';
         }
@@ -354,21 +340,21 @@ class SupportChatFrontendPlugin
         $offline = '<div '.$offlineClass.' id="tx_supportchat_pi1_offlineLogo_'.$this->conf["chatPluginPid"].'">'.$this->cObj->substituteMarkerArrayCached($out,$markerArray).'</div>';
         // get the online Variant
         $image = '<img src="'.ChatHelper::getPath($this->conf["onlineLogo"]).'" alt="Support Chat Online" title="Support Chat Online" />';
-        $linkConf = array(
+        $linkConf = [
             "parameter" => $this->conf["chatPluginPid"],
             "linkAccessRestrictedPages" => 1,
             "additionalParams" => "&tx_supportchat_pi1[cmd]=openChat",
             "returnLast" => "url"
-        );
+        ];
         $openChatLink = $this->getAbsUrl($this->cObj->typolink("",$linkConf));
-        $markerArray = array(
+        $markerArray = [
             "###TITLE###" => $this->pi_getLL("support-logo-header"),
             "###IMAGE###" => '<a href="'.$this->pi_getPageLink($this->conf["chatNotSupportedPage"]).'" onclick="supportChatOpenWindow(\''.$openChatLink.'\',\'supportchatwindow\',\''.$this->conf["chatWindowJsParams"].'\'); return false;" target="_blank">'.$image.'</a>',
             "###STATUS_MSG###" => $this->pi_getLL("status_msg_online")
-        );
-        $online = '<div '.$onlineClass.' id="tx_supportchat_pi1_onlineLogo_'.$this->conf["chatPluginPid"].'">'.$this->cObj->substituteMarkerArrayCached($out,$markerArray).'</div>';
+        ];
+        $online = '<div '.$onlineClass.' id="tx_supportchat_onlineLogo_'.$this->conf["chatPluginPid"].'">'.$this->cObj->substituteMarkerArrayCached($out,$markerArray).'</div>';
         $content = $online.$offline;
-        return ($content);
+        return $content;
     }
 
     /**
@@ -376,13 +362,13 @@ class SupportChatFrontendPlugin
      *
      * @params boolean $forceThisUid
      *
-     * @return int
+     * @return int $checkPids
      * @access public
      */
     public function checkForOnlineOfflinePages($forceThisUid = false)
     {
-        if(trim($this->conf["checkIfChatIsOnlinePids"])) {
-            if(trim($this->conf["checkIfChatIsOnlinePids"]) == "this") {
+        if (trim($this->conf["checkIfChatIsOnlinePids"])) {
+            if (trim($this->conf["checkIfChatIsOnlinePids"]) == "this") {
                 $checkPids = $this->conf["chatPluginPid"];
             } else {
                 $checkPids = trim($this->conf["checkIfChatIsOnlinePids"]);
@@ -390,24 +376,24 @@ class SupportChatFrontendPlugin
         } else {
             $checkPids = 0;
         }
-        if($forceThisUid) {
+        if ($forceThisUid) {
             $checkPids = $this->conf["chatPluginPid"];
         }
-        return ($checkPids);
+        return $checkPids;
     }
 
     /**
      * Checks if the Surfer has JS enabled and if a sessionID exists
      *
-     * @return string   SessionId or zero if no javascript or no sessionId
+     * @return mixed  SessionId or zero if no javascript or no sessionId
      * @access public
      */
     public function checkJS()
     {
-        if(!$GLOBALS['TSFE']->fe_user->id || GeneralUtility::_GET("noJs")) {
-            return(0);
+        if (!$GLOBALS['TSFE']->fe_user->id || GeneralUtility::_GET("noJs")) {
+            return 0;
         } else {
-            return($GLOBALS['TSFE']->fe_user->id);
+            return $GLOBALS['TSFE']->fe_user->id;
         }
     }
 
@@ -420,24 +406,24 @@ class SupportChatFrontendPlugin
     public function noJsOrCookie()
     {
         $out = $this->cObj->getSubpart($this->templateCode, '###NO_JS_OR_COOKIES_ENABLED###');
-        $markerArray = array(
+        $markerArray = [
             "###TITLE###" => Localization::translate("noJsOrCookies-title", $this->extKey),
             "###TEXT###" => Localization::translate("noJsOrCookies-text", $this->extKey),
-        );
+        ];
         $content = $this->cObj->substituteMarkerArrayCached($out,$markerArray);
-        return ($content);
+        return $content;
     }
 
     /**
      * Checks if typing indicator is enabled in configuration or not.
      * Defaults to true.
      *
-     * @return boolean     Returns true (1) or false (0)
+     * @return boolean   Returns true or false
      * @access public
      */
     public function loadUsingTypingIndicator()
     {
-        return ($this->conf["useTypingIndicator"] ? 1 : 0);
+        return ($this->conf["useTypingIndicator"]) ? true : false;
     }
 
     /**
@@ -446,12 +432,13 @@ class SupportChatFrontendPlugin
      * @params string $link
      *
      * @return string $url Absolute URL
+     * @access public
      */
     public function getAbsUrl($link)
     {
         $isAbsRelPrefix = !empty($GLOBALS['TSFE']->absRefPrefix);
         $isBaseURL  = !empty($GLOBALS['TSFE']->baseUrl);
-        if($isBaseURL) {
+        if ($isBaseURL) {
             $url = $GLOBALS['TSFE']->baseUrlWrap($link);
         } else if ($isAbsRelPrefix) {
             $url = GeneralUtility::locationHeaderUrl($link);

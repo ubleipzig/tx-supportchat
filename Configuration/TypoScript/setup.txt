@@ -15,8 +15,6 @@ plugin.tx_supportchat {
     # ====================================
     settings {
         # templateFile = EXT:supportchat/pi1/template.tmpl
-        addPrototype = 1
-        usePrototype = 1
         useTypingIndicator = 1
         checkIfChatIsOnline = 30
         # "this" or list uf uids for Chat FE-Plugin Pages to check if respective chats are online or offline
@@ -24,8 +22,8 @@ plugin.tx_supportchat {
         checkIfChatIsOnlinePids = this
         chatPluginPid =
         chatsPid =
-        offlineLogo = EXT:supportchat/pics/offline.jpg
-        onlineLogo = EXT:supportchat/pics/online.jpg
+        offlineLogo = EXT:supportchat/Resources/Public/Images/offline.jpg
+        onlineLogo = EXT:supportchat/Resources/Public/Images/online.jpg
         chatWindowJsParams = width=450,height=570,status=0,menubar=0
         chatNotSupportedPage =
         timeToInactivateChatIfNoMessages = 15

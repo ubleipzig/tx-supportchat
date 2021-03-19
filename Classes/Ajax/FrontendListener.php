@@ -113,13 +113,13 @@ class FrontendListener
             ? intval(GeneralUtility::_GP("lastRow")) : 0;
         $chat = new Chat();
         $chat->initChat($this->pid, $this->identification,0, $this->useTypingIndicator);
-        if($this->uid) {
+        if ($this->uid) {
             $chat->loadChatFromDB($this->uid,$lastRow);
         }
         switch ($this->cmd) {
             case "checkIfOnline":
                 $chatPids = GeneralUtility::_GET("chatPids");
-                $onlineArray = $chat->checkIfChatIsOnline($chatPids);
+                $onlineArray = ChatHelper::checkIfChatIsOnline($chatPids);
                 $xml = ChatHelper::convert2xml($onlineArray);
                 return ChatHelper::printResponse($xml);
                 break;
@@ -128,38 +128,38 @@ class FrontendListener
                 return ChatHelper::printResponse($chatUid);
                 break;
             case "destroyChat":
-                if($chat->hasUserRights()) {
+                if ($chat->hasUserRights()) {
                     $chat->destroyChat();
                 }
                 break;
             case "getAll":
                 /* get and send messages*/
-                if($chat->hasUserRights()) {
+                if ($chat->hasUserRights()) {
                     // get messages from DB
                     $fields = "crdate,code,name,message";
                     $msgArray = $chat->getMessages($fields);
                     // store new messages in DB
                     $msgToSend = GeneralUtility::_POST("msgToSend");
                     $chat->saveTypingStatus(GeneralUtility::_GP("isTyping"));
-                    if($msgToSend) {
+                    if ($msgToSend) {
                         $userName = htmlspecialchars(GeneralUtility::_POST("chatUsername"));
                         for($i=0; $i < sizeOf($msgToSend); $i++) {
                             $chat->insertMessage($msgToSend[$i], "feuser",$userName);
                         }
                     }
-                    $xmlArray = array(
+                    $xmlArray = [
                         "time" => ChatHelper::renderTstamp(time()),
                         "lastRow" => $chat->lastRow,
                         "messages" => $msgArray,
                         "status" => $chat->getTypingStatus()
-                    );
+                    ];
                 }
                 else {
                     /* why no access */
-                    $xmlArray = array(
+                    $xmlArray = [
                         "time" => ChatHelper::renderTstamp(time()),
                         "status" => $chat->chatStatus()
-                    );
+                    ];
                 }
                 $xml = ChatHelper::convert2xml($xmlArray);
                 return ChatHelper::printResponse($xml);

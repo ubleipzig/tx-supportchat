@@ -113,12 +113,12 @@ class ChatMarket extends Chat {
 		/* get the language Info */
 		//$language = $this->getLanguageInfo();
 		/* get all chats */
-		$retArray = array();
+		$retArray = [];
         $tableChats = "tx_supportchat_chats";
         $res = $TYPO3_DB->exec_SELECTquery("*",$tableChats,'active=1 AND pid='.$this->pid,"","crdate desc");
 		$i=0;
 		// additional info that is shown after the language info in the chatbox  
-		$hookObjectsArr = array();
+		$hookObjectsArr = [];
 		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['supportchat/additionalInfo'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['supportchat/additionalInfo'] as $classRef) {
 				$hookObjectsArr[] = &GeneralUtility::getUserObj($classRef);
@@ -127,11 +127,11 @@ class ChatMarket extends Chat {
 		while ($row=$TYPO3_DB->sql_fetch_assoc($res)) {
 			$lastRow = intval($lastRowArray[$row["uid"]]) ? intval($lastRowArray[$row["uid"]]) : 0;
 			$this->loadChatFromData($row,$lastRow);
-			if($this->hasUserRights()) {
+			if ($this->hasUserRights()) {
 				// get All Messages
                 $messages = $this->getMessages("crdate,code,from_supportler,to_supportler,name,message");
 				// send Messages
-				if($msgToSend[$this->uid]) {
+				if ($msgToSend[$this->uid]) {
 					foreach ($msgToSend[$this->uid] as $msg) {
 	                    $this->insertMessage($msg,"beuser",$this->beUserName);
 					}	
@@ -160,22 +160,22 @@ class ChatMarket extends Chat {
 				/*added for typingStatus*/
 				$retArray[$i]["chatIndex"]["status"] = ($tmp_status == 1 ? 1 : 0);
                 // lock chat ?
-                if(isset($lockChats[$this->uid])) {
+                if (isset($lockChats[$this->uid])) {
                     $this->lockChat(intval($lockChats[$this->uid]));
 					$retArray[$i]["chatIndex"]["from_lock_chat"] = intval($lockChats[$this->uid]);
                 }
 				// destroy chat ?
-				if(intval($destroyChats[$this->uid])) {
+				if (intval($destroyChats[$this->uid])) {
 					$this->destroyChat();
 					$retArray[$i]["chatIndex"]["from_destroy_chat"] = 1;
 				}
 				/*added for typingStatus*/
 				// set typing status
-                if(isset($typingStatus[$this->uid])) {
+                if (isset($typingStatus[$this->uid])) {
                     $this->saveTypingStatus(intval($typingStatus[$this->uid]));
                 }
 				
-				foreach($hookObjectsArr as $hookObj)    {
+				foreach ($hookObjectsArr as $hookObj)    {
 					if (method_exists($hookObj, 'additionalInfo')) {
 						/* only one extension can use this hook for now! */
 						$retArray[$i]["chatIndex"]["additionalInfo"] = $hookObj->additionalInfo($this);
@@ -200,22 +200,22 @@ class ChatMarket extends Chat {
 		$table="be_sessions";
 		$res = $TYPO3_DB->exec_SELECTquery("ses_userid", $table, '1');
 		$inList="";
-		$beUserArray = array();
-		while($row = $TYPO3_DB->sql_fetch_assoc($res)) {
+		$beUserArray = [];
+		while ($row = $TYPO3_DB->sql_fetch_assoc($res)) {
 			$inList .= ",'".$row["ses_userid"]."'";
 		}
 		$inList = substr($inList,1);
-		if($inList) {
+		if ($inList) {
 			$table = "be_users";
 			$options="";
 			$res = $TYPO3_DB->exec_SELECTquery("uid,username,realName",$table,'deleted=0 AND disable=0 AND uid IN ('.$inList.') AND uid<>'.$BE_USER->user["uid"]);
 			$i=0;
-			while($row = $TYPO3_DB->sql_fetch_assoc($res)) {
+			while ($row = $TYPO3_DB->sql_fetch_assoc($res)) {
 				$name = $row["realName"] ? $row["realName"] : $row["username"];
-				$beUserArray[$i] = array(
+				$beUserArray[$i] = [
 					"uid" => $row["uid"],
 					"name" => $name,
-				);
+				];
 				$i++;
 			}
 		}
@@ -233,17 +233,25 @@ class ChatMarket extends Chat {
 	public function getLogMessages()
     {
 		global $TYPO3_DB;
-		if($this->logging) {
-			$retArray = array();
+		if ($this->logging) {
+			$retArray = [];
 			$tableLog = "tx_supportchat_log";
-			if(!$this->lastLogRow) {
+			if (!$this->lastLogRow) {
 				$limit = '5';
 			}
 			else {
 				$limit = "";
 			}
 			$notOlderThan = time()-600;
-			$res = $TYPO3_DB->exec_SELECTquery("uid,crdate,message",$tableLog,'pid='.$this->pid.' AND crdate > '.$notOlderThan.' AND uid > '.$this->lastLogRow,"","uid");
+			$res = $TYPO3_DB->exec_SELECTquery(
+			    "uid,
+			    crdate,
+			    message",
+                $tableLog,
+                'pid='.$this->pid.' AND crdate > '.$notOlderThan.' AND uid > '.$this->lastLogRow,
+                "",
+                "uid"
+            );
 			$i=0;
 			while ($row=$TYPO3_DB->sql_fetch_assoc($res)) {
 				$this->lastLogRow = $row["uid"];

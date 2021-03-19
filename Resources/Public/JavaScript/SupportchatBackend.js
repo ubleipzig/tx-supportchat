@@ -1,11 +1,10 @@
 // called on domready, create the chat
 function initChat(freq,useTypingIndicator) {
- 	var theChatMarket = new chatMarket(freq,useTypingIndicator);
+	var theChatMarket = new chatMarket(freq,useTypingIndicator);
 }
 
-/**
-* Handler Object for all Chats
-*/
+// Handler Object for all Chats
+
 var chatMarket = new Class({
 	"initialize": function(freq,useTypingIndicator) {
 		this.freq = freq; // the period for the request
@@ -13,19 +12,19 @@ var chatMarket = new Class({
 		this.useTypingIndicator = useTypingIndicator;
 		this.chats = new Array(); // Array to gather the Chat Objects, key=the chat uid, value = the chat object
 		this.lastRowQuery = ""; // the last row GetVar Array: key => chatUid, value => lastRow
-		this.msgToSendQuery = ""; 
+		this.msgToSendQuery = "";
 		this.lockChatQuery = "";
 		this.destroyChatQuery = "";
 		/*added for typingStatus*/
 		this.typingStatusQuery = "";
-		this.lastLogRow = 0; // the last log row uid 
+		this.lastLogRow = 0; // the last log row uid
 		this.log = new log();
 		this.beUserStorage = new beUserMarket(); // the current logged in be-users
 		theRequest = new Request({
 			"url":  TYPO3.settings.ajaxUrls['chat_response'],
 			"link": "chain",
 			"onComplete": this.getAllDone.bind(this)
-		}); // the unique request 
+		}); // the unique request
 		this.getAll.attempt("",this); // start the chat Market
 	},
 	"getChat": function(uid) {
@@ -42,10 +41,10 @@ var chatMarket = new Class({
 		/* periodically called function which does all (get Chats,messages, send messages, destroy chats, lock/unlock chats) */
 		$clear(timer); // just to be sure
 		this.getChatsPostData(); // get all dyn handle data as query strings
-		
-		/** tradem 2012-04-04  Added typingStatusQuery */
+
+		/* tradem 2012-04-04  Added typingStatusQuery */
 		var data = "cmd=doAll"+this.lastRowQuery+"&lastLogRow="+this.lastLogRow+this.msgToSendQuery+this.lockChatQuery+this.destroyChatQuery+this.typingStatusQuery;
-		/** tradem 2012-04-04  Modifed */
+		/* tradem 2012-04-04  Modifed */
 		theRequest.send({
 			"data": data,
 			"method": "post"
@@ -53,28 +52,28 @@ var chatMarket = new Class({
 	},
 	"getAllDone": function(respText,respXML) {
 		/* the onComplete function of the unique AJAX Request */
-        if(respXML) {
+		if(respXML) {
 			var root = respXML.getElementsByTagName("phparray");
 			var handle = root[0].childNodes[0].nodeName;
 			switch (handle) {
 				case 'fromDoAll':
 					root = respXML.getElementsByTagName("fromDoAll");
 					strftime = root[0].childNodes[0].firstChild.nodeValue; // update Time
-                    /* online BE-Users / for now only to list them in the menu */
+					/* online BE-Users / for now only to list them in the menu */
 					this.beUserStorage.resetUpdate();
-                    if(root[0].childNodes[4]) {
+					if(root[0].childNodes[4]) {
 						var beUsers = root[0].childNodes[4].getElementsByTagName("numIndex");
-                        if(beUsers.length > 0) {
+						if(beUsers.length > 0) {
 							for (var i=0; i<beUsers.length; i++) {
 								var uid = this.getTextNode(beUsers[i].childNodes[0].firstChild);
 								var name = this.getTextNode(beUsers[i].childNodes[1].firstChild);
 								this.beUserStorage.addUser(uid,name);
 							}
-                        }
+						}
 						else {
 							this.beUserStorage.empty();
 						}
-                    }
+					}
 					if(root[0].childNodes[1]) {
 						/* chats */
 						var chats = root[0].childNodes[1].getElementsByTagName("chatIndex");
@@ -87,11 +86,11 @@ var chatMarket = new Class({
 								if(theChat) {
 									// just update lastRow, strftime and Be-Users if they has changed
 									theChat.updateLastRow(lastRow);
-	                                theChat.updateBeUsers(this.beUserStorage);
-	                                
-                                    /** tradem 2011-04-11 Show indicator if configured only.*/
-                                    /*added for typingStatus*/
-                                    theChat.updateTypingStatus(item.childNodes[9].firstChild.nodeValue);
+									theChat.updateBeUsers(this.beUserStorage);
+
+									/** tradem 2011-04-11 Show indicator if configured only.*/
+									/*added for typingStatus*/
+									theChat.updateTypingStatus(item.childNodes[9].firstChild.nodeValue);
 
 								}
 								else {
@@ -110,8 +109,8 @@ var chatMarket = new Class({
 									}
 									theChat = new chat(uid,this.useTypingIndicator,crdate,language,be_user,lastRow,surfer_ip,lImg,lLabel,data);
 									this.chats.include(theChat);
-	                                theChat.updateBeUsers(this.beUserStorage,1); // force create the be-users select
-								}	
+									theChat.updateBeUsers(this.beUserStorage,1); // force create the be-users select
+								}
 								if(item.childNodes[8]) {
 									// messages
 									var messages = item.childNodes[8].getElementsByTagName("numIndex");
@@ -141,7 +140,7 @@ var chatMarket = new Class({
 								var from_destroy_chat = item.getElementsByTagName("from_destroy_chat");
 								if(from_destroy_chat[0]) {
 									// last request was also a destroy chat request
-				                    this.removeChat(theChat);
+									this.removeChat(theChat);
 								}
 							}
 						}
@@ -153,7 +152,7 @@ var chatMarket = new Class({
 							for (var i=0; i<logMsg.length; i++) {
 								var crdate = this.getTextNode(logMsg[i].childNodes[0].firstChild);
 								var msg = this.getTextNode(logMsg[i].childNodes[1].firstChild);
-								this.log.addLogMessage(crdate,msg);	
+								this.log.addLogMessage(crdate,msg);
 							}
 						}
 					}
@@ -171,16 +170,16 @@ var chatMarket = new Class({
 								if(toDelete) {
 									this.removeChat(item);
 								}
-							}	 
+							}
 						}.bind(this));
 					}
-				break;
+					break;
 				case "fromNoAccess":
 					alert("You don't have access to this module, please try to re-login in typo3 or contact your sys-admin!");
-				break;
-			}	
-	        timer = this.getAll.delay(this.freq,this); // call getAll function periodically
-		}	
+					break;
+			}
+			timer = this.getAll.delay(this.freq,this); // call getAll function periodically
+		}
 		else {
 			document.getElement("body").empty();
 			document.getElement("body").set("html",respText);
@@ -201,30 +200,30 @@ var chatMarket = new Class({
 		this.msgToSendQuery = "";
 		this.lockChatQuery = "";
 		this.destroyChatQuery = "";
-		/*added for typingStatus*/
-        /** tradem: 2012-04-04 Added new postVar*/
+		// added for typingStatus
+		// tradem: 2012-04-04 Added new postVar
 		this.typingStatusQuery = "";
 		this.chats.each(function(item, index) {
 			// last Row
 			if(item.lastRow) {
-            	this.lastRowQuery += "&lastRowArray["+item.uid+"]="+item.lastRow;
+				this.lastRowQuery += "&lastRowArray["+item.uid+"]="+item.lastRow;
 			}
 			// send messages
 			item.msgToSend.each(function(itemM,indexM) {
 				if(itemM!="") {
 					this.msgToSendQuery += "&msgToSend["+item.uid+"]["+indexM+"]="+encodeURIComponent(itemM);
-				}	
+				}
 			}.bind(this));
 			// delete the msgToSend Array
 			item.msgToSend.empty();
-			// lock / unlock Chat 
+			// lock / unlock Chat
 			/** tradem: 2012-04-04 set the post variable with current typingStatus*/
 			if($chk(item.typingStatus)) {
 				/*added for typingStatus*/
-			   this.typingStatusQuery += "&typingStatus["+item.uid+"]="+item.typingStatus;                           			   
-			}	
+				this.typingStatusQuery += "&typingStatus["+item.uid+"]="+item.typingStatus;
+			}
 			if($chk(item.lockReq)) {
-				this.lockChatQuery += "&lockChat["+item.uid+"]="+item.lockReq;	
+				this.lockChatQuery += "&lockChat["+item.uid+"]="+item.lockReq;
 				item.lockReq = null;
 			}
 			// destroy Chat
@@ -241,11 +240,6 @@ var chatMarket = new Class({
 	}
 });
 
-
-
-/**
-* Chat Object without any request
-*/
 var chat = new Class({
 	"Implements": Options,
 	"options": {
@@ -275,33 +269,33 @@ var chat = new Class({
 		}
 		else {
 			this.chatLocked = 0;
-		}	
+		}
 		this.hotkeyFixText = Array(); // fixText for Hotkeys [0] = text for Alt+0
-        // play alert sound for every new chat
-        if($("beep_alert")) {
-            if($("alert_check").checked) {
+		// play alert sound for every new chat
+		if($("beep_alert")) {
+			if($("alert_check").checked) {
 				try {
-	                $("beep_alert").play(1);
+					$("beep_alert").play(1);
 				}
 				catch(e) {
 					// no flash??
 				}
-            }
-        }
+			}
+		}
 	},
-    "createMessage": function(e) {
+	"createMessage": function(e) {
 		/* function called from onEnter Event, add local message and gather message in msgToSend Array */
-        var msg = $(this.idTextarea).get("value");
-        if(msg) {
-	        var msgObj = new message(strftime, "beuser", 0, 0, LL.username, msg.stripScripts());
-	        $(this.idChatbox).adopt(msgObj.getNode()); // insert message local
-    	    this.scrollToBottom.delay(100, this);
-			this.msgToSend.include(msg); // gather message in array for next request            
-            $(this.idTextarea).set("value", "");
-        }
-        $(this.idTextarea).focus();
-        e.stop();
-    },
+		var msg = $(this.idTextarea).get("value");
+		if(msg) {
+			var msgObj = new message(strftime, "beuser", 0, 0, LL.username, msg.stripScripts());
+			$(this.idChatbox).adopt(msgObj.getNode()); // insert message local
+			this.scrollToBottom.delay(100, this);
+			this.msgToSend.include(msg); // gather message in array for next request
+			$(this.idTextarea).set("value", "");
+		}
+		$(this.idTextarea).focus();
+		e.stop();
+	},
 	"addMessage": function(msg) {
 		/* includes the message html code in the messages array which will be drawed on the next draw() call */
 		this.messagesToDraw.include(msg.getNode());
@@ -309,7 +303,7 @@ var chat = new Class({
 	"draw": function() {
 		/* draws the chat --> if the chat isn't visible then draw the whole chat, else draw only messages ecc. */
 		if(!this.chatVisible) {
-			// draw the whole chat	
+			// draw the whole chat
 			var wrap = new Element("div",{
 				"id": this.idChatboxWrap,
 				"class": "chat_single_wrap"
@@ -355,7 +349,7 @@ var chat = new Class({
 				var lang = this.lImg;
 			} else {
 				var lang = this.language;
-			}	
+			}
 			var title = new Element("h3", {
 				"html": "<p>Chatbox: ID "+this.uid+", "+LL.created_at+" "+this.crdate+"</p><p>Surfer: "+this.surferIp+", "+LL.language+": "+lang+" "+this.additionalInfo+"</p>"
 			});
@@ -369,8 +363,8 @@ var chat = new Class({
 			if(this.messagesToDraw.length>0) {
 				// append the messages to the chatbox
 				this.messagesToDraw.each(function(item,index) {
-					chatbox.adopt(item);	
-				}); 
+					chatbox.adopt(item);
+				});
 			}
 			var textBoxLabel = new Element("p", {
 				"text": LL.type_youre_message,
@@ -388,7 +382,7 @@ var chat = new Class({
 			var typingIcon = new Element("img",{
 				"id": this.idTypingIcon,
 				"class": "not_typing",
-				"src": assetsPath+"img/typing.png"
+				"src": assetsPath + "Images/typing.png"
 			});
 			var status = new Element("p", {
 				"id": this.idStatus,
@@ -405,22 +399,22 @@ var chat = new Class({
 				// the chat is locked, change Status and Icon
 				this.lockChatDone(1);
 			}
-			// create the foldout navi 
+			// create the foldout navi
 			this.naviMenu = new UvumiDropdown(this.idNaviTop);
-	        this.scrollDownAni = new Fx.Scroll(this.idChatbox, {
-    	        "duration": "short",
-        	    "link": "cancel"
-       		});
+			this.scrollDownAni = new Fx.Scroll(this.idChatbox, {
+				"duration": "short",
+				"link": "cancel"
+			});
 			this.scrollToBottom.delay(100,this);
 			this.addEvents();
 		}
 		else {
 			// draw new messages and be-users if any
-            if(this.messagesToDraw.length>0) {
-                // append the messages to the chatbox
+			if(this.messagesToDraw.length>0) {
+				// append the messages to the chatbox
 				for (var i=0; i<this.messagesToDraw.length; i++) {
-                    $(this.idChatbox).adopt(this.messagesToDraw[i]);
-                }
+					$(this.idChatbox).adopt(this.messagesToDraw[i]);
+				}
 				// play alert sound on every message
 				if($("beep_alert")) {
 					if($("alert_check").checked) {
@@ -433,7 +427,7 @@ var chat = new Class({
 					}
 				}
 				this.scrollToBottom.delay(100,this);
-            }
+			}
 			if(this.beUserSelectNode) {
 				// delete the old select Menu and adopt the new one
 				if($(this.idAssume).getElement("ul")) {
@@ -441,9 +435,9 @@ var chat = new Class({
 				}
 				$(this.idAssume).adopt(this.beUserSelectNode);
 				this.beUserSelectNode = null; // we have changed the html, delete the node
-	            // re-create the foldout navi
+				// re-create the foldout navi
 				delete(this.naviMenu);
-    	        this.naviMenu = new UvumiDropdown(this.idNaviTop);
+				this.naviMenu = new UvumiDropdown(this.idNaviTop);
 			}
 		}
 		this.messagesToDraw.empty(); // clear the messages variable
@@ -469,28 +463,28 @@ var chat = new Class({
 		/* called if lock chat was completed by last request or if chat which was locked is now newly created, just set chatLocked variable and change symbols and status text */
 		if(locked=="1") {
 			// the chat was successfully locked
-            $(this.idAssumeIcon).removeClass("lock_it");
-            $(this.idAssumeIcon).addClass("unlock_it");
-            $(this.idStatus).set("text",LL.status_locked);
+			$(this.idAssumeIcon).removeClass("lock_it");
+			$(this.idAssumeIcon).addClass("unlock_it");
+			$(this.idStatus).set("text",LL.status_locked);
 			$(this.idLock).set("text",LL.options_unlock);
-            this.chatLocked = 1;
+			this.chatLocked = 1;
 		}
 		else {
 			// the chat was successfully unlocked
 			$(this.idAssumeIcon).removeClass("unlock_it");
 			$(this.idAssumeIcon).addClass("lock_it");
 			$(this.idStatus).set("text",LL.status_unlocked);
-            $(this.idLock).set("text",LL.options_lock);
+			$(this.idLock).set("text",LL.options_lock);
 			this.chatLocked = 0;
 		}
 	},
 	/*added for typingStatus*/
 	"resetTypingStatus": function() {
-	    this.typingStatus = 0;
-	    $clear(this.resetTimer);
+		this.typingStatus = 0;
+		$clear(this.resetTimer);
 	},
 	"addEvents": function() {
-	    /* add all events we are using in a single chatbox */
+		/* add all events we are using in a single chatbox */
 		$(this.idTextarea).addEvents({
 			"enterButtonDown": this.createMessage.bind(this),
 			"keypress": function(e) {
@@ -506,22 +500,22 @@ var chat = new Class({
 			}.bind(this),
 			"keyup": function(e) {
 				if(e.code==18) {
-    		        $(this.idFixTextUl).removeClass("visible");
-	        	    $(this.idFixTextUl).addClass("invisible");
+					$(this.idFixTextUl).removeClass("visible");
+					$(this.idFixTextUl).addClass("invisible");
 					e.stop();
 				}
-			}.bind(this),									
-				/*added for typingStatus*/
-				"isTyping": function() {
-					/** tradem 2012-04-11 Only registere event 'isTyping' if typingStatus has been configured. */
-					if (this.useTypingIndicator == 1) {
-						this.typingStatus = 1;
-					    this.resetTimer = this.resetTypingStatus.delay(3500,this);
-					}				    
+			}.bind(this),
+			/*added for typingStatus*/
+			"isTyping": function() {
+				/** tradem 2012-04-11 Only registere event 'isTyping' if typingStatus has been configured. */
+				if (this.useTypingIndicator == 1) {
+					this.typingStatus = 1;
+					this.resetTimer = this.resetTypingStatus.delay(3500,this);
+				}
 			}.bind(this)
 		});
 		$(this.idClose).addEvents({
-			"click": this.destroyChat.bind(this) 
+			"click": this.destroyChat.bind(this)
 		});
 		$(this.idAssumeIcon).addEvents({
 			"click": this.lockChat.bind(this)
@@ -534,7 +528,7 @@ var chat = new Class({
 		this.idAssumeIcon = "assumeChat_"+this.uid;
 		/*added for typingStatus*/
 		this.idTypingIcon = "typingIcon_"+this.uid;
-		
+
 		this.idChatbox = "chatBox_"+this.uid;
 		this.idTextarea = "chatTextarea_"+this.uid;
 		this.idChatboxOuter = "chatboxes_wrap";
@@ -549,10 +543,10 @@ var chat = new Class({
 	},
 	"addFixText": function(text) {
 		/* inserts the @param text at the current Cursor position in Textarea of current chatbox */
-		$(this.idTextarea).insertAtCursor(text);	 
+		$(this.idTextarea).insertAtCursor(text);
 	},
 	"addFixTextMenu": function() {
-	    /* creates the ul Navi for Fix Texts from global Var fixText, only called by draw (create whole chat) */
+		/* creates the ul Navi for Fix Texts from global Var fixText, only called by draw (create whole chat) */
 		var ul = new Element("ul", {
 			"id": this.idFixTextUl
 		});
@@ -563,7 +557,7 @@ var chat = new Class({
 					"events": {
 						"click": this.addFixText.bind(this,fixText[this.language][i])
 					}
-				});	
+				});
 				if (count < 10) {
 					li.set("text",fixText[this.language][i]+" [Alt+"+count+"]");
 					this.hotkeyFixText[count] = fixText[this.language][i];
@@ -588,9 +582,9 @@ var chat = new Class({
 		/* updates the Be Users if neccesarry */
 		if(beUserStorage.toUpdate() || forceUpdate) {
 			var tmp = beUserStorage.getUsers();
-            var ul = new Element("ul", {
-                "class": "invisible"
-            });
+			var ul = new Element("ul", {
+				"class": "invisible"
+			});
 			if(tmp.length > 0) {
 				for (var i in tmp) {
 					if(typeof(tmp[i])=="string") {
@@ -618,21 +612,21 @@ var chat = new Class({
 	},
 	/*added for typingStatus*/
 	"updateTypingStatus": function(status) {
-	    if(status == 1) {
-	        if($(this.idTypingIcon).hasClass("not_typing")) {
-	            $(this.idTypingIcon).addClass("typing");
-	            $(this.idTypingIcon).removeClass("not_typing");
-	        }
-	    } else {
-	        if($(this.idTypingIcon).hasClass("typing")) {
-	            $(this.idTypingIcon).addClass("not_typing");
-	            $(this.idTypingIcon).removeClass("typing");
-	        }
-	    }
+		if(status == 1) {
+			if($(this.idTypingIcon).hasClass("not_typing")) {
+				$(this.idTypingIcon).addClass("typing");
+				$(this.idTypingIcon).removeClass("not_typing");
+			}
+		} else {
+			if($(this.idTypingIcon).hasClass("typing")) {
+				$(this.idTypingIcon).addClass("not_typing");
+				$(this.idTypingIcon).removeClass("typing");
+			}
+		}
 	},
 	/* stickyWin with message why */
 	"assumeChatToUser": function(beUserUid) {
-		/* @todo implement this */		
+		/* @todo implement this */
 	},
 	"addLoadingImg": function() {
 		this.loading = 1;
@@ -640,38 +634,36 @@ var chat = new Class({
 	},
 	"removeLoadingImg": function() {
 		this.loading = 0;
-		$(this.idAssumeIcon).removeClass("loading");	
+		$(this.idAssumeIcon).removeClass("loading");
 	},
 	"scrollToBottom": function() {
 		// scroll to bottom of textbox smoothly
 		this.scrollDownAni.toBottom();
 	},
-    "destroyChat": function() {
+	"destroyChat": function() {
 		/* destroy the chat on next Request */
-        // write system chat destroyed message
-        var msgObj = new message(strftime, "system", 0, 0, LL.system, LL.chatDestroyedMsg);
-        this.addLoadingImg();
-        $(this.idChatbox).adopt(msgObj.getNode());
-        this.scrollToBottom.delay(100,this);
-        $(this.idTextarea).removeEvents();
-        $(this.idClose).removeEvents();
+		// write system chat destroyed message
+		var msgObj = new message(strftime, "system", 0, 0, LL.system, LL.chatDestroyedMsg);
+		this.addLoadingImg();
+		$(this.idChatbox).adopt(msgObj.getNode());
+		this.scrollToBottom.delay(100,this);
+		$(this.idTextarea).removeEvents();
+		$(this.idClose).removeEvents();
 		this.destroyReq = 1;
-    },
+	},
 	"removeChat": function() {
-	    /* start an opacity tween and then remove the chat from HTML */
+		/* start an opacity tween and then remove the chat from HTML */
 		this.opacityTween.addEvents({
 			"onComplete": function(el) {
 				el.dispose();
-			}	
+			}
 		});
 		this.opacityTween.start(0);
 	}
 });
 
+// Class for a single Message
 
-/**
-* Class for a single Message
-*/
 var message = new Class({
 	"initialize": function(crdate, code, fromSupportler, toSupportler, name, message) {
 		this.crdate = crdate;
@@ -681,15 +673,15 @@ var message = new Class({
 		this.name = name;
 		if(this.code == "beuser" || this.code == "feuser") {
 			$each(supportChatSmilies, function(img, key) {
-				var theImg = '<img src="'+assetsPath+'img/smiley/'+img+'" />';
+				var theImg = '<img src="'+assetsPath+'Images/smileys/'+img+'" />';
 				message = this.str_replace(key, theImg, message);
 			}.bind(this));
 		}
-        this.message = message;
+		this.message = message;
 	},
-    str_replace: function(search, replace, subject) {
-        return subject.split(search).join(replace);
-    },
+	str_replace: function(search, replace, subject) {
+		return subject.split(search).join(replace);
+	},
 	"getNode": function() {
 		// create the message HTML nodes
 		var msg = new Element("p");
@@ -703,10 +695,10 @@ var message = new Class({
 		switch (this.code) {
 			case "beuser":
 				name.addClass("be_user_message");
-			break;
+				break;
 			case "feuser":
 				name.addClass("fe_user_message");
-			break;
+				break;
 			default:
 				name.addClass("system_message");
 		}
@@ -759,11 +751,11 @@ var logMessage = new Class({
 
 var beUserMarket = new Class({
 	"initialize": function() {
-		this.beUsers = Array();	
+		this.beUsers = Array();
 		this.somethingChanged = 0;
 	},
 	"resetUpdate": function() {
-		this.somethingChanged = 0;	
+		this.somethingChanged = 0;
 	},
 	"addUser": function(uid,name) {
 		if(!this.beUsers[uid]) {
@@ -787,30 +779,28 @@ var beUserMarket = new Class({
 });
 
 Element.Events.enterButtonDown = {
-    base: 'keypress', //we set a base type
-    condition: function(event){ //and a function to perform additional checks.
-        if(event.code == 13) {
+	base: 'keypress', //we set a base type
+	condition: function(event){ //and a function to perform additional checks.
+		if(event.code == 13) {
 			// 13 = ENTER
-            return (true);
-        }
-        else {
-            return (false);
-        }
-    }
-};
-/*added for typingStatus*/
-/** tradem: 2012-04-04: Added IsTyping Event. Filters out Enter-key and Alt-Key
- * @see 
- */
-Element.Events.isTyping = {
-    base: 'keypress', //we set a base type
-    condition: function(event){ //and a function to perform additional checks.
-        if(event.key == "enter" || event.key == "alt") { // 13 = ENTER; 9 = Alt 
-            return (false);
-        }
-        else {
-            return (true);
-        }
-    }
+			return (true);
+		}
+		else {
+			return (false);
+		}
+	}
 };
 
+// Added for typingStatus
+// tradem: 2012-04-04: Added IsTyping Event. Filters out Enter-key and Alt-Key
+Element.Events.isTyping = {
+	base: 'keypress', //we set a base type
+	condition: function(event){ //and a function to perform additional checks.
+		if(event.key == "enter" || event.key == "alt") { // 13 = ENTER; 9 = Alt
+			return (false);
+		}
+		else {
+			return (true);
+		}
+	}
+};
