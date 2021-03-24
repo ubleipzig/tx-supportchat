@@ -35,7 +35,8 @@ class ChatHelper {
      *
      * @param array $pids
      *
-	 * @return array ("chatsPluginPid" => boolen(on- or offline), ...)
+	 * @return array Return ("chatsPluginPid" => boolen(on- or offline), ...)
+     * @access public
 	 */
 	public static function checkIfChatIsOnline($pids)
     {
@@ -54,21 +55,16 @@ class ChatHelper {
 		while ($row = $TYPO3_DB->sql_fetch_assoc($res)) {
 			$retArray[$row["uid"]] = $row["hidden"] ? 0 : 1;
 		}
-		// Hook for your own chatIsOnline function
-		$hookObjectsArr = [];
-		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['supportchat/checkIfOnline'])) {
-			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['supportchat/checkIfOnline'] as $classRef) {
-                $userObj = GeneralUtility::getUserObj($classRef);
-                $hookObjectsArr[] = &$userObj;
-			}
-		}
-
-		foreach($hookObjectsArr as $hookObj) {
-			if (method_exists($hookObj, 'checkIfChatIsOnline')) {
-				$retArray =  $hookObj->checkIfChatIsOnline($pids, $retArray, self);
-			}
-		}
-        return ($retArray);
+		// Hook for implements personal check of chatIsOnline function
+        if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXT']['supportchat']['Library/ChatHelper.php']['checkChatIsOnline'])) {
+            foreach ($GLOBALS['TYPO3_CONF_VARS']['EXT']['supportchat']['Library/ChatHelper.php']['checkChatIsOnline'] as $_funcRef) {
+                $_params = [
+                    'retArray' => $retArray
+                ];
+                $retArray = GeneralUtility::callUserFunction($_funcRef, $_params, self);
+            }
+        }
+        return $retArray;
 	}
 
     /**
@@ -88,11 +84,13 @@ class ChatHelper {
     }
 
 	/**
-	* Gets the path to a file, needed to translate the 'EXT:extkey' into the real path
-	*
-	* @params string $path  Path to the file
-	* @return string        Returns path
-	*/
+	 * Gets the path to a file, needed to translate the 'EXT:extkey' into the real path
+	 *
+	 * @params string $path  Path to the file
+	 *
+     * @return string        Returns path
+     * @access public
+	 */
 	public static function getPath($path)
     {
 		if (substr($path,0,4)=='EXT:') {
@@ -112,6 +110,7 @@ class ChatHelper {
      * @param string $data The String to check
      *
      * @return string $xml With activated links
+     * @access public
      */
 	public static function convert2Xml($data)
     {
@@ -125,6 +124,7 @@ class ChatHelper {
      * @param string $tstamp
      *
      * @return string
+     * @access public
      */
 	public static function renderTstamp($tstamp)
     {

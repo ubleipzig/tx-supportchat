@@ -116,7 +116,6 @@ class SupportChatController extends BaseAbstractController
     public function indexAction()
     {
         $this->checkPids = $this->checkForOnlineOfflinePages(true);
-        /** tradem 2012-04-11 Sets typing indicator */
         $this->useTypingIndicator = $this->loadUsingTypingIndicator();
         $this->request = GeneralUtility::_GP('supportchat');
         $cmd = (isset($this->request['cmd']))
@@ -126,17 +125,15 @@ class SupportChatController extends BaseAbstractController
                 //get sessionId and check if JS is enabled
                 $sessionId = $this->checkJS();
                 // write something to the session so the session cookie (and id) is not re-created on every browser request (needed since new session handling see bug http://bugs.typo3.org/view.php?id=10205)
-                $GLOBALS['TSFE']->fe_user->setKey("ses","supportchat","1");
+                $GLOBALS['TSFE']->fe_user->setKey("ses", "supportchat", "1");
                 if($sessionId) {
                     $chatIsOnline = ChatHelper::checkIfChatIsOnline($this->checkPids);
                     if($chatIsOnline[$this->settings["chatPluginPid"]]) {
                         // tx_chat_functions::destroyInactiveChats($this->conf["timeToInactivateChatIfNoMessages"],$this->conf["chatsPid"]);
                         $chat = new Chat();
-                        /** tradem 2012-04-12 Pass typing inidcator usage configuration */
-                        // $chat->writeLog("Frontend : useTypingIndicator=[" .$this->useTypingIndicator. "]");
                         $chat->initChat($this->settings["chatsPid"], "", 0, $this->useTypingIndicator);
                         $chat->destroyInactiveChats($this->settings["timeToInactivateChatIfNoMessages"]);
-                        $this->addJsInHeader($sessionId, $chatUid);
+                        $this->addJsInHeader();
                         $this->displayChatBox();
                     } else {
                         $this->displayChatIsOffline();
@@ -248,13 +245,10 @@ class SupportChatController extends BaseAbstractController
      * Adds the JS - AJAX Code in the <head> section of the template
      * Includes the needed JS files.
      *
-     * @params string $sessionId    The identification for the Server
-     * @params int $chatUid         The chat-uid for this surfer
-     *
      * @return void
      * @access public
      */
-    public function addJsInHeader($sessionId, $chatUid) {
+    public function addJsInHeader() {
         $pid = $this->settings["chatsPid"]
             ? $this->settings["chatsPid"] : $GLOBALS["TSFE"]->id;
         $lang = intval(GeneralUtility::_GET("L"))
@@ -309,6 +303,7 @@ class SupportChatController extends BaseAbstractController
 			</script>
 		';
         $this->view->assign('headerJs', $jsInHeader);
+        return;
     }
 
     /**

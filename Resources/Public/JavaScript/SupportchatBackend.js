@@ -350,8 +350,8 @@ var chat = new Class({
 			} else {
 				var lang = this.language;
 			}
-			var title = new Element("h3", {
-				"html": "<p>Chatbox: ID "+this.uid+", "+LL.created_at+" "+this.crdate+"</p><p>Surfer: "+this.surferIp+", "+LL.language+": "+lang+" "+this.additionalInfo+"</p>"
+			var title = new Element("h2", {
+				"html": "<p>Chatbox: ID "+this.uid+", "+LL.created_at+" "+this.crdate+"</p><p>Client: "+this.surferIp+", "+LL.language+": "+lang+" "+this.additionalInfo+"</p>"
 			});
 			var chatbox = new Element("div", {
 				"id": this.idChatbox,

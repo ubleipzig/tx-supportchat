@@ -2,49 +2,84 @@
 <!-- ###CHAT_BOX### -->
 
 <f:section name="main">
-    <div class="tx-supportchat">
+    <div class="tx-supportchat" role="main">
     <f:if condition="{isChatbox}">
-    <h2 id="chaterror"><f:translate key="{error}">[error]</f:translate></h2>
+    <h1 id="chaterror">
+        <f:translate key="{error}">[error]</f:translate>
+    </h1>
     <div id="chatboxouter" style="{chatbox-style}">
-        <h2 id="{title-id}"><f:translate key="{title}">[title]</f:translate></h2>
+        <h1 id="{title-id}">
+            <f:translate key="{title}">[title]</f:translate>
+        </h1>
         <div id="{chatbox-id}">
             <f:translate key="message"></f:translate>
         </div>
         <div class="bottom-cont">
-            <!-- icon from: http://schollidesign.deviantart.com/gallery/#/d1qpw1n -->
+            <f:comment>
+               <!-- icon from: http://schollidesign.deviantart.com/gallery/#/d1qpw1n -->
+            </f:comment>
             <form action="{export-action-url}" method="post" target="my_iframe" id="exportForm">
                 <input type="image" src="typo3conf/ext/supportchat/Resources/Public/Images/save.png" id="exportButton" style="float:right; border:0px;" title="<f:translate key="{export-text}">[export-text]</f:translate>"/><input type="hidden" name="data" value="" id="data1" />
             </form>
             <iframe name="my_iframe" src="about:blank" style="display:none"></iframe>
-            <!-- icon from GNOME Empathy 3.4 iconset: http://ftp.acc.umu.se/pub/GNOME/sources/empathy/3.4/ -->
-            <img src="typo3conf/ext/supportchat/Resources/Public/Images/typing.png" id="typingPen" style="display:none; float:right; border:0px; margin-right:5px;" />
-            <p class="message-label"><f:translate key="{message-label}">[message-label]</f:translate></p>
-            <p><textarea id="{textbox-id}"></textarea></p>
-            <p class="close"><input type="submit" id="{close-id}" value="<f:translate key='{close-label}'>[close-label]</f:translate>"/></p>
-            <p class="send-message"><input type="submit" id="{send-id}" value="<f:translate key='{send-label}'>[send-label]</f:translate>" /></p>
+            <f:comment>
+                <!-- icon from GNOME Empathy 3.4 iconset: http://ftp.acc.umu.se/pub/GNOME/sources/empathy/3.4/ -->
+            </f:comment>
+            <img src="typo3conf/ext/supportchat/Resources/Public/Images/typing.png" id="typingPen" style="display:none; float:right; border:0; margin-top:10px; margin-right:5px;" />
+            <p id="message-label">
+                <f:translate key="{message-label}">[message-label]</f:translate>
+            </p>
+            <p>
+                <textarea id="{textbox-id}" aria-labelledby="message-label"></textarea>
+            </p>
+            <p class="close">
+                <input type="submit" id="{close-id}" value="<f:translate key='{close-label}'>[close-label]</f:translate>"/>
+            </p>
+            <p class="send-message">
+                <input type="submit" id="{send-id}" value="<f:translate key='{send-label}'>[send-label]</f:translate>" />
+            </p>
         </div>
     </div>
     </f:if>
-    <!-- ###CHAT_BOX### -->
-
-    <!-- ###SHOW_SUPPORT_LOGO### -->
-    <f:if condition="{offlineOnline}">
-        <f:render partial="offline-online" arguments="{_all}" />
-    </f:if>
-    <!-- ###SHOW_SUPPORT_LOGO### -->
-
-    <!-- ###NO_JS_OR_COOKIES_ENABLED### -->
-    <f:if condition="{isNoJsAndCookie}">
-    <h3><f:translate key="noJsOrCookies-title">[noJsOrCookies-title]</f:translate></h3>
-    <p><f:translate key="noJsOrCookies-text">[noJsOrCookies-text]</f:translate></p>
-    </f:if>
-    <!-- ###NO_JS_OR_COOKIES_ENABLED### -->
-
-    <!-- ###CHAT_BOX_OFFLINE### -->
-    <f:if condition="{isChatOffline}">
-    <h2><f:translate key="chat-offline-title">[chat-offline-title]</f:translate></h2>
-    <p><f:translate key="chat-offline-message">[chat-offline-message]</f:translate></p>
-    </f:if>
-    <!-- ###CHAT_BOX_OFFLINE### -->
+        <f:comment>
+            <!-- ###CHAT_BOX### -->
+        </f:comment>
+        <f:comment>
+            <!-- ###SHOW_SUPPORT_LOGO### -->
+        </f:comment>
+        <f:if condition="{offlineOnline}">
+            <f:render partial="offline-online" arguments="{_all}" />
+        </f:if>
+        <f:comment>
+            <!-- ###SHOW_SUPPORT_LOGO### -->
+        </f:comment>
+        <f:comment>
+            <!-- ###NO_JS_OR_COOKIES_ENABLED### -->
+        </f:comment>
+        <f:if condition="{isNoJsAndCookie}">
+            <h2>
+                <f:translate key="noJsOrCookies-title">[noJsOrCookies-title]</f:translate>
+            </h2>
+            <p>
+                <f:translate key="noJsOrCookies-text">[noJsOrCookies-text]</f:translate>
+            </p>
+        </f:if>
+        <f:comment>
+            <!-- ###NO_JS_OR_COOKIES_ENABLED### -->
+        </f:comment>
+        <f:comment>
+            <!-- ###CHAT_BOX_OFFLINE### -->
+        </f:comment>
+        <f:if condition="{isChatOffline}">
+            <h1>
+                <f:translate key="chat-offline-title">[chat-offline-title]</f:translate>
+            </h1>
+            <p>
+                <f:translate key="chat-offline-message">[chat-offline-message]</f:translate>
+            </p>
+        </f:if>
+        <f:comment>
+            <!-- ###CHAT_BOX_OFFLINE### -->
+        </f:comment>
     </div>
 </f:section>

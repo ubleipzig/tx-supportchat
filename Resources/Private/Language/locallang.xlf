@@ -151,7 +151,7 @@
                 <source>There are no templates available for the FE-Users language!</source>
             </trans-unit>
             <trans-unit id="module.noBeUserOnline" xml:space="preserve">
-                <source>No any other supporter is currently online!</source>
+                <source>No other supporter is currently online!</source>
             </trans-unit>
             <trans-unit id="module.ok" xml:space="preserve">
                 <source>Ok</source>

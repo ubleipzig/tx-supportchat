@@ -108,7 +108,7 @@ class SupportChatModuleController extends BaseAbstractController
      * @var boolean
      * @access private
      */
-    private $showLogBox = 1;
+    private $showLogBox = true;
 
     /**
      * Time to inactivate a chat in minutes
@@ -135,33 +135,36 @@ class SupportChatModuleController extends BaseAbstractController
      */
     public function initializeAction()
     {
-        global $BE_USER;
-
-        $this->chatsPid = $BE_USER->userTS["supportchat."]["chatsPid"];
+        $this->chatsPid = $this->getBackendUser()->userTS["supportchat."]["chatsPid"];
         if (!$this->chatsPid) {
             throw new Exception(
                 'You must insert the BE-User TS-Config var "supportchat.chatsPid"!'
             );
         }
 
-        $this->defLang = ($BE_USER->userTS["supportchat."]["defLang"])
-            ? $BE_USER->userTS["supportchat."]["defLang"] : $this->defLang;
+        $this->defLang = ($this->getBackendUser()->userTS["supportchat."]["defLang"])
+            ? $this->getBackendUser()->userTS["supportchat."]["defLang"]
+            : $this->defLang;
 
         /** 2012-04-11 Added to control typing indiator if it works. */
-        $this->useTypingIndicator = (isset($BE_USER->userTS["supportchat."]["useTypingIndicator"]))
-            ? intval($BE_USER->userTS["supportchat."]["useTypingIndicator"]) : $this->useTypingIndicator;
-        $this->ajaxGetAllFreq = ($BE_USER->userTS["supportchat."]["ajaxGetAllFreq"])
-            ? $BE_USER->userTS["supportchat."]["ajaxGetAllFreq"] * 1000
+        $this->useTypingIndicator = (isset($this->getBackendUser()->userTS["supportchat."]["useTypingIndicator"]))
+            ? $this->getBackendUser()->userTS["supportchat."]["useTypingIndicator"]
+            : $this->useTypingIndicator;
+        $this->ajaxGetAllFreq = ($this->getBackendUser()->userTS["supportchat."]["ajaxGetAllFreq"])
+            ? $this->getBackendUser()->userTS["supportchat."]["ajaxGetAllFreq"] * 1000
             : $this->ajaxGetAllFreq * 1000;
-        $this->timeToInactivateChat = (isset($BE_USER->userTS["supportchat."]["timeToInactivateChatIfNoMessages"]))
-            ? $BE_USER->userTS["supportchat."]["timeToInactivateChatIfNoMessages"]
+        $this->timeToInactivateChat = (isset($this->getBackendUser()->userTS["supportchat."]["timeToInactivateChatIfNoMessages"]))
+            ? $this->getBackendUser()->userTS["supportchat."]["timeToInactivateChatIfNoMessages"]
             : $this->timeToInactivateChat;
-        $this->playAlert = (isset($BE_USER->userTS["supportchat."]["playAlert"]))
-            ? $BE_USER->userTS["supportchat."]["playAlert"] : $this->playAlert;
-        $this->showLogBox = (isset($BE_USER->userTS["supportchat."]["showLogBox"]))
-            ? $BE_USER->userTS["supportchat."]["showLogBox"] : $this->showLogBox;
-        $this->beUserName = (isset($BE_USER->user["realName"]))
-            ? $BE_USER->user["realName"] : $BE_USER->user["username"];
+        $this->playAlert = (isset($this->getBackendUser()->userTS["supportchat."]["playAlert"]))
+            ? $this->getBackendUser()->userTS["supportchat."]["playAlert"]
+            : $this->playAlert;
+        $this->showLogBox = (isset($this->getBackendUser()->userTS["supportchat."]["showLogBox"]))
+            ? $this->getBackendUser()->userTS["supportchat."]["showLogBox"]
+            : $this->showLogBox;
+        $this->beUserName = (isset($this->getBackendUser()->user["realName"]))
+            ? $this->getBackendUser()->user["realName"]
+            : $this->getBackendUser()->user["username"];
         // general
         $this->id = (int)GeneralUtility::_GET('id');
         //The page will show only if there is a valid page and if this page may be viewed by the user
@@ -178,30 +181,29 @@ class SupportChatModuleController extends BaseAbstractController
         $chat = new Chat();
         $chat->initChat($this->chatsPid, "");
         $chat->destroyInactiveChats($this->timeToInactivateChat);
+        // deprecated method call getModTSconfig
+        BackendUtility::getModTSconfig($this->id, "mod." . $GLOBALS["MCONF"]["name"]);
 
         $content = $this->getAudioAlertViewSnippet(); // $contentPlayAlert;
-        $content .= $this->moduleContent();
         $content .= $this->addJsInlineCode();
 
         $this->view->assignMultiple([
             'content' => $content,
             'moduleUrl' => BackendUtility::getModuleUrl($this->request->getPluginName()),
             'frequencyOfChatRequest' => $this->ajaxGetAllFreq,
-            'isTypeIndicator' => $this->useTypingIndicator
+            'isTypeIndicator' => $this->useTypingIndicator,
+            'showLogBox' => $this->showLogBox
         ]);
     }
 
     /**
      * Get chat ajax action
      *
-     * @return string xml
-     *
+     * @return void  Return ajax request
      */
     public function getChatAction()
     {
-        global $BE_USER;
-
-        if (!$BE_USER->user["uid"]) {
+        if (!$this->getBackendUser()->user["uid"]) {
             $xmlArray = [
                 "fromNoAccess" => [
                     "time" => ChatHelper::renderTstamp(time()),
@@ -209,13 +211,15 @@ class SupportChatModuleController extends BaseAbstractController
             ];
             return ($xmlArray);
         }
-        $this->chatsPid = $BE_USER->userTS["supportchat."]["chatsPid"];
-        if ($BE_USER->userTS["supportchat."]["showLogBox"]!="") {
-            $this->logging = $BE_USER->userTS["supportchat."]["showLogBox"];
+        // user ts chatsPid
+        $this->chatsPid = $this->getBackendUser()->userTS["supportchat."]["chatsPid"];
+        // user ts enableLogging
+        if ($this->getBackendUser()->userTS["supportchat."]["enableLogging"] != "") {
+            $this->logging = $this->getBackendUser()->userTS["supportchat."]["enableLogging"];
         }
-        /** tradem 2012-04-12 Added to control typing indiator if it works. */
-        if ($BE_USER->userTS["supportchat."]["useTypingIndicator"]) {
-            $this->useTypingIndicator = $BE_USER->userTS["supportchat."]["useTypingIndicator"];
+        // user ts useTypingIndicator
+        if ($this->getBackendUser()->userTS["supportchat."]["useTypingIndicator"]) {
+            $this->useTypingIndicator = $this->getBackendUser()->userTS["supportchat."]["useTypingIndicator"];
         }
         $this->lastRowArray = (GeneralUtility::_GP("lastRowArray"))
             ? GeneralUtility::_GP("lastRowArray") : [];
@@ -229,7 +233,7 @@ class SupportChatModuleController extends BaseAbstractController
         $chatMarket = new ChatMarket($this->logging, $this->lastLogRow);
         $chatMarket->initChat(
             $this->chatsPid,
-            $BE_USER->user["uid"],
+            $this->getBackendUser()->user["uid"],
             1,
             $this->useTypingIndicator
         );
@@ -239,13 +243,17 @@ class SupportChatModuleController extends BaseAbstractController
                 $msgToSend = GeneralUtility::_GP("msgToSend");
                 $lockChats = GeneralUtility::_GP("lockChat");
                 $destroyChats = GeneralUtility::_GP("destroyChat");
-                /*added for typingStatus*/
                 $typingStatus = GeneralUtility::_GP("typingStatus");
                 $xmlArray = [
                     "fromDoAll" => [
                         "time" => ChatHelper::renderTstamp(time()),
-                        /*added for typingStatus*/
-                        "chats" => $chatMarket->doAll($this->lastRowArray, $msgToSend, $lockChats, $destroyChats, $typingStatus),
+                        "chats" => $chatMarket->doAll(
+                            $this->lastRowArray,
+                            $msgToSend,
+                            $lockChats,
+                            $destroyChats,
+                            $typingStatus
+                        ),
                         "log" => $chatMarket->getLogMessages(),
                         "lastLogRow" => $chatMarket->lastLogRow,
                         "beUsers" => $chatMarket->getBeUsers(),
@@ -255,7 +263,6 @@ class SupportChatModuleController extends BaseAbstractController
                 ChatHelper::printResponse($xml);
                 break;
         }
-        return;
     }
 
     /**
@@ -364,8 +371,7 @@ class SupportChatModuleController extends BaseAbstractController
      */
     private function createFixTextJsObj()
     {
-        global $BE_USER;
-        $fixText = $BE_USER->userTS["supportchat."]["fixText."];
+        $fixText = $this->getBackendUser()->userTS["supportchat."]["fixText."];
         $jsCode = '';
         if (is_array($fixText)) {
             foreach ($fixText as $key => $val) {
@@ -400,7 +406,8 @@ class SupportChatModuleController extends BaseAbstractController
             );
             $options = '';
             $sessionData = $this->getSessionData('tx_supportchat');
-            $alertSound = ($sessionData['alertsound']) ? $sessionData['alertsound'] : $sounds[0];
+            $alertSound = ($sessionData['alertsound'] && ($sessionData['alertsound'] != ""))
+                ? $sessionData['alertsound'] : $sounds[0];
             foreach ($sounds as $sound) {
                 $options .= '<option value="' . $sound . '" ' . (($sound == $alertSound) ? 'selected="selected"' : '') . '>'. pathinfo($sound, PATHINFO_FILENAME) .'</option>';
             }
@@ -489,31 +496,5 @@ class SupportChatModuleController extends BaseAbstractController
         if (!$this->MCONF['name']) {
             $this->MCONF = $MCONF;
         }
-    }
-
-    /**
-     * Generates the module content
-     *
-     * @return string
-     */
-    private function moduleContent()
-    {
-        // page/be_user TSconfig settings:
-        // @deprecated seems to have no proper function at codes FM
-        $modTSconfig = BackendUtility::getModTSconfig(
-            $this->id,
-            "mod." . $GLOBALS["MCONF"]["name"]
-        );
-
-        // render Chat Boxes Wrap
-        $content = '<div id="chatboxes_wrap">';
-        $content .= '</div>';
-        $content .= '<hr class="clearer" />';
-        if (isset($this->showLogBox) && $this->showLogBox == 1) {
-            $content .= '<div style="padding-top: 5px;"></div>';
-            $content .= '<p class="log_title">Log:</p>';
-            $content .= '<div id="logBox">&nbsp;</div>';
-        }
-        return $content;
     }
 }

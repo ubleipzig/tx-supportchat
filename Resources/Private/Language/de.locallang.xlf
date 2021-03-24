@@ -146,6 +146,10 @@
                 <source>Online Supporter</source>
                 <target>Mitarbeiter</target>
             </trans-unit>
+            <trans-unit id="module.options_close" xml:space="preserve">
+                <source>Close chat</source>
+                <target>Chat schließen</target>
+            </trans-unit>
             <trans-unit id="module.created_at" xml:space="preserve">
                 <source>created at</source>
                 <target>erstellt</target>
@@ -163,8 +167,8 @@
                 <target>Der Chat is entsperrt</target>
             </trans-unit>
             <trans-unit id="module.playAlert" xml:space="preserve">
-                <source>.. play an alert 'beep' for every message</source>
-                <target>.. Tonsignal bei jeder Nachricht</target>
+                <source>... play an alert 'beep' for every message</source>
+                <target>... Tonsignal bei jeder Nachricht</target>
             </trans-unit>
             <trans-unit id="module.system" xml:space="preserve">
                 <source>System</source>
@@ -187,8 +191,8 @@
                 <target>Keine Vorlagen für die Sprache des Nutzers!</target>
             </trans-unit>
             <trans-unit id="module.noBeUserOnline" xml:space="preserve">
-                <source>No any other supporter is currently online!</source>
-                <target></target>
+                <source>No other supporter is currently online!</source>
+                <target>Zur Zeit ist kein Chat-Mitarbeiter online!</target>
             </trans-unit>
             <trans-unit id="module.ok" xml:space="preserve">
                 <source>Ok</source>

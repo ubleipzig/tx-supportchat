@@ -1,5 +1,19 @@
 # Change Log
 
+## [v2.2.0](https://github.com/ubleipzig/tx-supportchat/tree/v2.2.0)
+
+[Full Changelog](https://github.com/ubleipzig/tx-vufind-auth/compare/2.1.1...2.2.0)
+
+**Refactoring**
+* improves styling of front- and backend view of chat
+  * adapts accessibility standards
+* refactoring of implemented hooks
+* encapsulate global $BE_USERS at single method 
+
+**Fixes**
+* German and English languages files
+* comments at fluid templates
+
 ## [v2.1.1](https://github.com/ubleipzig/tx-supportchat/tree/v2.1.1)
 
 [Full Changelog](https://github.com/ubleipzig/tx-vufind-auth/compare/2.1.0...2.1.1)

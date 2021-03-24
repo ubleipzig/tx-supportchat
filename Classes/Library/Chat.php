@@ -220,19 +220,16 @@ class Chat
             "status" => '',
             "assume_to_be_user" => ''
         ];
-        // Hook for example adding a call by Asterisk to youre Supportlers or manipulating the DB entry
-        $hookObjectsArr = [];
-        if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['supportchat/createChat'])) {
-            foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['supportchat/createChat'] as $classRef) {
-                $hookObjectsArr[] = GeneralUtility::getUserObj($classRef);
+        // hook for manipulating the db entry of insert data
+        if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXT']['supportchat']['Library/Chat.php']['overwriteCreateChat'])) {
+            foreach ($GLOBALS['TYPO3_CONF_VARS']['EXT']['supportchat']['Library/Chat.php']['overwriteCreateChat'] as $_funcRef) {
+                $_params = [
+                    'insertData' => $insertData
+                ];
+                $insertData = GeneralUtility::callUserFunction($_funcRef, $_params, $this);
             }
         }
 
-        foreach($hookObjectsArr as $hookObj)    {
-            if (method_exists($hookObj, 'createChat')) {
-                $insertData = $hookObj->createChat($insertData, $this);
-            }
-        }
         $GLOBALS['TYPO3_DB']->exec_INSERTquery($table, $insertData);
         $chatPid = $GLOBALS['TYPO3_DB']->sql_insert_id();
 
@@ -282,60 +279,46 @@ class Chat
     /**
      * Insert a message in database
      *
-     * @params string $message
-     * @params string $code
-     * @params string $name
-     * @params string $fromSupportler   Default empty
-     * @params string $toSupportler     Default empty
+     * @param string $message
+     * @param string $code
+     * @param string $name
+     * @param string $fromSupporter
+     * @param string $toSupporter
      *
      * @return int $messageId           Id of the newly created message
      * @access public
      */
     public function insertMessage(
-        $message, $code, $name, $fromSupportler = "", $toSupportler = ""
+        $message,
+        $code,
+        $name,
+        $fromSupporter = "",
+        $toSupporter = ""
     ) {
         global $TYPO3_DB;
 
         $message = htmlspecialchars($message);
         $message = ChatHelper::activateHtmlLinks($message);
 
-        /* DEPRECATED HOOK since 26.11.11 - use preInsertMessage instead */
-        $hookObjectsArr = [];
-        if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['supportchat/prePostMessage'])) {
-            foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['supportchat/prePostMessage'] as $classRef) {
-                $hookObjectsArr[] = GeneralUtility::getUserObj($classRef);
-            }
-        }
-        foreach ($hookObjectsArr as $hookObj)    {
-            if (method_exists($hookObj, 'prePostMessage')) {
-                $message = $hookObj->prePostMessage($message,$this);
-                // DEPRECATED HOOK since 26.11.11 - use preInsertMessage instead
-            }
-        }
-
         $insertData = [
             "crdate" => time(),
             "tstamp"=> time(),
             "pid" => $this->pid,
             "code" => $code,
-            "from_supportler" => $fromSupportler,
-            "to_supportler" => $toSupportler,
+            "from_supportler" => $fromSupporter,
+            "to_supportler" => $toSupporter,
             "chat_pid" => $this->uid,
             "name" => $name,
             "message" => $message
         ];
 
-        // Hook for own processing of posted message
-        $hookObjectsArr = [];
-        if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['supportchat/insertMessage'])) {
-            foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['supportchat/insertMessage'] as $classRef) {
-                $hookObjectsArr[] = GeneralUtility::getUserObj($classRef);
-            }
-        }
-
-        foreach ($hookObjectsArr as $hookObj) {
-            if (method_exists($hookObj, 'preInsertMessage')) {
-                $message = $hookObj->preInsertMessage($insertData,$this);
+        // Hook for post processing of posted message
+        if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXT']['supportchat']['Library/Chat.php']['postProcessPostedMessage'])) {
+            foreach ($GLOBALS['TYPO3_CONF_VARS']['EXT']['supportchat']['Library/Chat.php']['postProcessPostedMessage'] as $_funcRef) {
+                $_params = [
+                  'insertData' => $insertData
+                ];
+                $insertData = GeneralUtility::callUserFunction($_funcRef, $_params, $this);
             }
         }
 
@@ -456,7 +439,7 @@ class Chat
      */
     public function destroyInactiveChats($inactivateTime)
     {
-        global $TYPO3_DB;
+        global $BE_USER;
         $tableChats = "tx_supportchat_chats";
         $tableMessages = "tx_supportchat_messages";
         $res = $GLOBALS["TYPO3_DB"]->exec_SELECTquery('uid,crdate',$tableChats,'active=1 AND deleted=0 AND hidden=0 AND pid='.$this->pid);

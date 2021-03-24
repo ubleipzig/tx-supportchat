@@ -6,7 +6,18 @@
 </f:section>
 
 <f:section name="content">
-    <f:format.raw>{content}</f:format.raw>
+    <div class="support-chat-module">
+        <f:format.raw>{content}</f:format.raw>
+    </div>
+    <div id="chatboxes_wrap">
+    </div>
+    <hr class="clearer" />
+    <f:if condition="{showLogBox} == 1">
+        <div style="padding-top: 5px;"></div>
+        <p class="log_title">Log:</p>
+        <div id="logBox">&nbsp;</div>
+    </f:if>
+
     <script language="javascript" type="text/javascript">
       var moduleUrl = '{f:format.raw(value: moduleUrl)}';
       var frequencyOfChatRequest = '{f:format.raw(value: frequencyOfChatRequest)}';

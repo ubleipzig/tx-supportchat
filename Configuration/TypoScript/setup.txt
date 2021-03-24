@@ -29,6 +29,7 @@ plugin.tx_supportchat {
         timeToInactivateChatIfNoMessages = 15
         strftime = %H:%M:%S
         getMessagesInSeconds = 2
+        enableLogging = 1
 	}
 }
 

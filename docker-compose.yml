@@ -1,7 +1,7 @@
 version: '2'
 services:
   lamp:
-    image: docker.io/useltmann/dev-dotdeb:php56
+    image: docker.io/useltmann/dev-dotdeb:php72
     ports:
       - '127.0.0.1:80:80'
       - '127.0.0.1:443:443'

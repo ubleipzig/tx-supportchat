@@ -30,6 +30,13 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 class ChatMarket extends Chat {
 
     /**
+     * Backend user authentication
+     *
+     * @var \TYPO3\CMS\Core\Authentication\BackendUserAuthentication
+     */
+    protected $backendUserAuthentication;
+
+    /**
      * Should session be logged
      *
      * @var boolean $logging    Default false
@@ -46,7 +53,7 @@ class ChatMarket extends Chat {
 	public $lastLogRow = 0;
 
     /**
-     * Path to default language floag
+     * Path to default language flag
      *
      * @var string $defaultLImg
      * @access public
@@ -73,19 +80,24 @@ class ChatMarket extends Chat {
 	/**
 	 * Constructor initializes variables
      *
+     * @param boolean $logging
+     * @param int $lastLogRow
+     *
+     * @access public
 	 */
 	public function __construct()
     {
-		global $BE_USER;
+        $this->backendUserAuthentication = $GLOBALS['BE_USER'];
 		$this->logging = func_get_arg(0);
 		$this->lastLogRow = intval(func_get_arg(1));
-		$this->beUserName = $BE_USER->user["realName"]
-            ? $BE_USER->user["realName"] : $BE_USER->user["username"];
-		if ($BE_USER->userTS["supportchat."]["defLangImg"]) {
-			$this->defaultLImg = $BE_USER->userTS["supportchat."]["defLangImg"];
+		$this->beUserName = ($this->backendUserAuthentication->user["realName"])
+            ? $this->backendUserAuthentication->user["realName"]
+            : $this->backendUserAuthentication->user["username"];
+		if ($this->backendUserAuthentication->userTS["supportchat."]["defLangImg"]) {
+			$this->defaultLImg = $this->backendUserAuthentication->userTS["supportchat."]["defLangImg"];
 		}
-		if ($BE_USER->userTS["supportchat."]["defLangLabel"]) {
-			$this->defaultLLabel = $BE_USER->userTS["supportchat."]["defLangLabel"];
+		if ($this->backendUserAuthentication->userTS["supportchat."]["defLangLabel"]) {
+			$this->defaultLLabel = $this->backendUserAuthentication->userTS["supportchat."]["defLangLabel"];
 		}
 	}
 	
@@ -115,16 +127,16 @@ class ChatMarket extends Chat {
 		/* get all chats */
 		$retArray = [];
         $tableChats = "tx_supportchat_chats";
-        $res = $TYPO3_DB->exec_SELECTquery("*",$tableChats,'active=1 AND pid='.$this->pid,"","crdate desc");
-		$i=0;
-		// additional info that is shown after the language info in the chatbox  
-		$hookObjectsArr = [];
-		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['supportchat/additionalInfo'])) {
-			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['supportchat/additionalInfo'] as $classRef) {
-				$hookObjectsArr[] = &GeneralUtility::getUserObj($classRef);
+        $res = $TYPO3_DB->exec_SELECTquery("*", $tableChats, 'active=1 AND pid='.$this->pid, "", "crdate desc");
+		$i = 0;
+		// hook for additional info that is shown after the language info in the chatbox
+        $hookObjectsArr = [];
+		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXT']['supportchat']['Library/ChatMarket.php']['additionalInfo'])) {
+			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXT']['supportchat']['Library/ChatMarket.php']['additionalInfo'] as $classRef) {
+				$hookObjectsArr[] = GeneralUtility::getUserObj($classRef);
 			}
 		}
-		while ($row=$TYPO3_DB->sql_fetch_assoc($res)) {
+		while ($row = $TYPO3_DB->sql_fetch_assoc($res)) {
 			$lastRow = intval($lastRowArray[$row["uid"]]) ? intval($lastRowArray[$row["uid"]]) : 0;
 			$this->loadChatFromData($row,$lastRow);
 			if ($this->hasUserRights()) {
@@ -174,12 +186,11 @@ class ChatMarket extends Chat {
                 if (isset($typingStatus[$this->uid])) {
                     $this->saveTypingStatus(intval($typingStatus[$this->uid]));
                 }
-				
-				foreach ($hookObjectsArr as $hookObj)    {
-					if (method_exists($hookObj, 'additionalInfo')) {
-						/* only one extension can use this hook for now! */
-						$retArray[$i]["chatIndex"]["additionalInfo"] = $hookObj->additionalInfo($this);
-					}
+
+                // process hook for additional info
+                foreach ($hookObjectsArr as $hookObj) {
+                    $retArray[$i]["chatIndex"]["additionalInfo"] =
+                        GeneralUtility::callUserFunction($hookObj, [], $this);
 				}
 				$i++;
 			}
@@ -195,7 +206,7 @@ class ChatMarket extends Chat {
      */
 	public function getBeUsers()
     {
-		global $TYPO3_DB, $BE_USER;
+		global $TYPO3_DB;
 		// get SelectBox with all be_user
 		$table="be_sessions";
 		$res = $TYPO3_DB->exec_SELECTquery("ses_userid", $table, '1');
@@ -208,7 +219,9 @@ class ChatMarket extends Chat {
 		if ($inList) {
 			$table = "be_users";
 			$options="";
-			$res = $TYPO3_DB->exec_SELECTquery("uid,username,realName",$table,'deleted=0 AND disable=0 AND uid IN ('.$inList.') AND uid<>'.$BE_USER->user["uid"]);
+			$res = $TYPO3_DB->exec_SELECTquery(
+			    "uid, username, realName", $table, 'deleted=0 AND disable=0 AND uid IN ('.$inList.') AND uid<>' . $this->backendUserAuthentication->user["uid"]
+            );
 			$i=0;
 			while ($row = $TYPO3_DB->sql_fetch_assoc($res)) {
 				$name = $row["realName"] ? $row["realName"] : $row["username"];
@@ -219,7 +232,7 @@ class ChatMarket extends Chat {
 				$i++;
 			}
 		}
-		return ($beUserArray);
+		return $beUserArray;
 	}
 
 	

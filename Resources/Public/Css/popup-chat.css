@@ -1,88 +1,122 @@
+/* This is for the Chat Frontend, which faces the user */
+.tx-supportchat {
+    font-family: sans-serif;
+}
+
+.tx-supportchat h1,
+.tx-supportchat h2 {
+    background: rgb(2, 19, 61);
+    color: #fff;
+    font-size: 1.25em;
+    margin: 0 0 .3rem;
+    min-height: 3rem;
+    padding: .75rem .5rem;
+}
+
+.tx-supportchat h1 {
+    font-weight: normal;
+}
+
 .tx-supportchat h2 {
     font-size: 1em;
-    background: rgb(2, 19, 61);
-    min-height:3rem;
-    color: #ffffff;
-    margin: 0 0 0.3rem;
-    padding: 0.75rem 0.5rem;
 }
+
+.tx-supportchat #supportchatbox {
+    background: #fff;
+    color: #000;
+    font-size: 16px;
+    min-height: 250px;
+    overflow: auto;
+}
+
 .tx-supportchat p {
-    border-top: 0.0625rem solid #ccc;
-    min-height: 4rem;
+    border-top: 1px solid #ccc;
     margin: 0;
-    padding: 0.5rem;
+    min-height: 4rem;
+    padding: .5rem;
 }
+
 .tx-supportchat-pi1 p:first-of-type {
     border-top: none;
 }
-.tx-supportchat #supportchatbox {
-    background: #ffffff;
-    color: #000000;
-    height: 300px;
-    overflow: auto;
-}
-.tx-supportchat textarea {
-    width: 100%;
-    height: 100px;
-    border: none;
-    margin: 0 .5rem .5rem 0;
-}
-.tx-supportchat p.message-label {
-    font-size: .9rem;
-    margin: 0;
-    padding: .5rem 0 0 .5rem;
-    min-height: 2rem;
-    max-height: 2rem;
-    color: #9c8f8f;
-    border-top: 0.0625rem solid #ccc;
-    border-bottom: none;
-}
-.tx-supportchat p.send-message {
-    text-align: right;
-    margin: 0.2em 0;
-    padding: 0;
-    border: none;
-}
-.tx-supportchat input {
-    background: #ffffff;
-    border: 0.0625rem solid #ccc;
-    color: #000;
-}
-.tx-supportchat span.date {
-    font-size: 0.9em;
-    color: #9c8f8f;
-}
-.tx-supportchat span.system-message {
-    color: rgb(64, 77, 109);
-    text-transform: uppercase;
-}
-/* Style for Username */
+
 .tx-supportchat span {
-    font-size: .9rem;
+    font-size: .9em;
     color: rgb(64, 77, 109);
     text-transform: uppercase;
 }
-.tx-supportchat span.supportler-message {
-    color: rgb(64, 77, 109);
-    text-transform: uppercase;
+
+.tx-supportchat .date {
+    color: #333;
 }
-.tx-supportchat span.message {
+
+.tx-supportchat .supportler-message {
+    color: cornflowerblue;
+}
+
+.tx-supportchat .message {
     color: #000;
     font-size: 1em;
+    line-height: 1.5;
     text-transform: none;
 }
-.tx-supportchat p.close {
-    float: left;
-    width: 50%;
-    text-align: left;
-    margin: 0.2em 0;
-    padding: 0;
-    border: none;
-}
-.tx-supportchat .hidden {
-    display: none;
-}
+
 .message:before {
     content: "\A";
     white-space: pre;
+}
+
+#message-label {
+    border-bottom: none;
+    border-top: 1px solid #ccc;
+    color: dodgerblue;
+    margin: 0;
+    max-height: 2rem;
+    min-height: 2rem;
+    padding: .5rem 0 0 .5rem;
+}
+
+.tx-supportchat textarea {
+    border: none;
+    font-family: sans-serif;
+    font-size: 1rem;
+    height: 100px;
+    margin: 0 .5rem .5rem 0;
+    width: 100%;
+}
+.tx-supportchat .close {
+    border: none;
+    float: left;
+    margin: .2em 0;
+    padding: 0;
+    text-align: left;
+    width: 50%;
+}
+
+.tx-supportchat .send-message {
+    border: none;
+    margin: .2em 0;
+    padding: 0;
+    text-align: right;
+}
+
+.tx-supportchat input {
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    color: #000;
+    font-size: 1rem;
+    padding: 5px 10px;
+}
+
+.tx-supportchat input[type='image'] {
+    padding: 0 10px;
+}
+
+#sendMessage {
+    background: lightgreen;
+}
+
+.tx-supportchat .hidden {
+    display: none;
 }
