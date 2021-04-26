@@ -11,26 +11,26 @@
 
 #chatboxes_wrap {
     font-size: 16px;
-    margin: 0 0 0 2%;
+    margin: 0;
 }
 
 .alert {
-    border-top: 1px dotted dodgerblue;
-    border-bottom: 1px dotted dodgerblue;
+    border-bottom: 1px dotted #172e75;
+    border-top: 1px dotted #172e75;
     padding: 5px 2%;
 }
 
 .chat_single_wrap {
-    font-size: 1em;
     color: #000;
+    font-size: 1em;
 }
 
 .chat_single_wrap {
-    width: 45%;
-    float: left;
     background: #e1dfdb;
     border: 1px solid #b9b7b4;
+    float: left;
     margin: 0 2% 2% 0;
+    width: 45%;
 }
 
 .chat_single_wrap .top {
@@ -39,14 +39,14 @@
 }
 
 .chat_single_wrap .top .chat_close {
+    cursor: pointer;
     display: block;
     float: right;
-    cursor: pointer;
 }
 
 .chat_single_wrap .top .chat_close:after {
-    content: '\00D7';
     color: red;
+    content: '\00D7';
     font-weight: bold;
 }
 
@@ -67,8 +67,8 @@
 }
 
 .chat_single_wrap .top ul ul {
-    margin: 0;
     border-top: 1px solid #b9b7b4;
+    margin: 0;
 }
 
 .chat_single_wrap .top ul ul li {
@@ -76,10 +76,9 @@
 }
 
 .chat_single_wrap .top ul ul ul li {
-    white-space: nowrap;
     background: #e1dfdb;
-    border: none;
     border-bottom: 1px solid #b9b7b4;
+    white-space: nowrap;
 }
 
 .chat_single_wrap .top .last {
@@ -88,21 +87,23 @@
 }
 
 .chat_single_wrap .top .unclickable {
-    font-style: italic;
     color: #000;
+    font-style: italic;
 }
 
 .chat_single_wrap h2 {
-    margin: 0;
     background: #b9bfca;
-    padding: 2px 4px;
-    color: #fff;
+    color: #333;
+    font-size: 16px;
+    margin: 0;
+    padding: 2px 15px;
 }
 
 .chat_single_wrap h2 p {
+    color: #333;
+    line-height: 1.5;
     margin: 0;
     padding: 0;
-    color: #fff;
 }
 
 .chat_single_wrap h2 img {
@@ -110,47 +111,45 @@
 }
 
 .chat_single_wrap .single_chatbox {
-    padding: 0 4px;
+    background: #fff;
     height: 175px;
     overflow: auto;
-    background: #fff;
+    padding: 7px 15px;
 }
 
 .chat_single_wrap .descr {
     border-bottom: none;
     border-top: 1px solid #ccc;
-    color: dodgerblue;
+    color: #172e75;
     margin: 0;
-    max-height: 3.25rem;
-    min-height: 3.25rem;
-    padding: .5rem 0 0 .5rem;
+    min-height: 2rem;
+    padding: 15px;
 }
 
 .chat_single_wrap textarea {
-    width: 100%;
-    padding: 2px 4px;
-    margin: 0;
-    height: 50px;
-    border: none;
-    border-top: 1px solid #b9b7b4;
     border-bottom: 1px solid #b9b7b4;
+    border-top: 1px solid #b9b7b4;
+    height: 50px;
+    margin: 0;
+    padding: 15px;
+    width: 100%;
 }
 
 .chat_single_wrap .chatbox_status {
-    line-height: 15px;
-    padding: 5px;
-    margin: 0;
     border-top: 1px solid #f6f2ee;
     font-style: italic;
+    line-height: 15px;
+    margin: 0;
+    padding: 15px;
 }
 
 .chat_single_wrap .status_icon {
-    display: block;
-    width: 15px;
-    height: 15px;
-    float: right;
     cursor: pointer;
+    display: block;
+    float: right;
+    height: 15px;
     margin: 3px 4px 3px 4px;
+    width: 15px;
 }
 
 .chat_single_wrap .lock_it {
@@ -163,16 +162,16 @@
 
 /*added for typing icon*/
 .chat_single_wrap .typing {
+    border: 0;
     display: inline;
     float: right;
-    border: 0;
     margin: 3px 5px 0 0;
 }
 
 .chat_single_wrap .not_typing {
+    border: 0;
     display: none;
     float: right;
-    border: 0;
     margin: 3px 5px 0 0;
 }
 
@@ -193,7 +192,7 @@
 }
 
 .single_chatbox .be_user_message {
-    color: cornflowerblue;
+    color: #172e75;
 }
 
 .fe_user_message {
@@ -222,23 +221,23 @@
 
 
 .log_title {
-    margin: 0 2% 0 0;
     font-style: italic;
+    margin: 0 2% 0 0;
 }
 
 #logBox {
-    height: 50px;
-    margin: 0 2% 0 0;
-    overflow: auto;
     background: #fff;
     border: 1px solid #b9b7b4;
-    padding: 0 4px;
     font-style: italic;
+    height: auto;
+    margin: 0 2% 0 0;
+    overflow: auto;
+    padding: 0 4px;
 }
 
 #logBox p {
-    padding: 0;
     margin: 0;
+    padding: 0;
 }
 
 
@@ -253,5 +252,4 @@ hr.clearer {
 html > body hr.clearer {
     margin: 0;
 }
-
 

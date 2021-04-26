@@ -1,4 +1,5 @@
-/* This is for the Chat Frontend, which faces the user */
+/* This is for the Chat Frontend, which the user sees */
+
 .tx-supportchat {
     font-family: sans-serif;
 }
@@ -25,7 +26,7 @@
     background: #fff;
     color: #000;
     font-size: 16px;
-    height: 250px;
+    min-height: 250px;
     overflow: auto;
 }
 
@@ -36,13 +37,17 @@
     padding: .5rem;
 }
 
+.tx-supportchat .bottom-cont p {
+    border-top: none;
+}
+
 .tx-supportchat-pi1 p:first-of-type {
     border-top: none;
 }
 
 .tx-supportchat span {
-    font-size: .9em;
     color: rgb(64, 77, 109);
+    font-size: .9em;
     text-transform: uppercase;
 }
 
@@ -51,7 +56,7 @@
 }
 
 .tx-supportchat .supportler-message {
-    color: cornflowerblue;
+    color: #172e75;
 }
 
 .tx-supportchat .message {
@@ -69,7 +74,7 @@
 #message-label {
     border-bottom: none;
     border-top: 1px solid #ccc;
-    color: dodgerblue;
+    color: #172e75;
     margin: 0;
     max-height: 2rem;
     min-height: 2rem;
@@ -77,12 +82,12 @@
 }
 
 .tx-supportchat textarea {
-    border: none;
     font-family: sans-serif;
     font-size: 1rem;
     height: 100px;
-    margin: 0 .5rem .5rem 0;
-    width: 100%;
+    margin: 0 .5rem .5rem -10px !important;
+    padding: 15px 15px 15px 10px;
+    width: 90%;
 }
 .tx-supportchat .close {
     border: none;
@@ -102,15 +107,16 @@
 
 .tx-supportchat input {
     background: #fff;
-    border: 1px solid #ccc;
     border-radius: 3px;
+    border: 1px solid #ccc;
     color: #000;
     font-size: 1rem;
     padding: 5px 10px;
 }
 
 .tx-supportchat input[type='image'] {
-    padding: 0 10px;
+    margin-top: 2px;
+    padding: 12px 15px 9px;
 }
 
 #sendMessage {

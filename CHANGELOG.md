@@ -1,5 +1,12 @@
 # Change Log
 
+## [v2.3.1](https://github.com/ubleipzig/tx-supportchat/tree/2.3.1)
+
+[Full Changelog](https://github.com/ubleipzig/tx-supportchat/compare/2.3.0...2.3.1)
+
+**Fixes**
+* layout fixes at css for frontend and backend
+
 ## [v2.3.0](https://github.com/ubleipzig/tx-supportchat/tree/2.3.0)
 
 [Full Changelog](https://github.com/ubleipzig/tx-supportchat/compare/2.2.0...2.3.0)
