@@ -1,8 +1,8 @@
 # Change Log
 
-## [v2.3.0](https://github.com/ubleipzig/tx-supportchat/tree/v2.3.0)
+## [v2.3.0](https://github.com/ubleipzig/tx-supportchat/tree/2.3.0)
 
-[Full Changelog](https://github.com/ubleipzig/tx-vufind-auth/compare/2.2.0...2.3.0)
+[Full Changelog](https://github.com/ubleipzig/tx-supportchat/compare/2.2.0...2.3.0)
 
 **Refactoring**
 * removes ```prototype.js``` and Mootools javascript libraries from frontend popup chat window
@@ -14,9 +14,9 @@
 * css failure of class ```supportchatbox``` setting ```height``` to get scrolling chat box
 * adds label for select box of notifications sounds
 
-## [v2.2.0](https://github.com/ubleipzig/tx-supportchat/tree/v2.2.0)
+## [v2.2.0](https://github.com/ubleipzig/tx-supportchat/tree/2.2.0)
 
-[Full Changelog](https://github.com/ubleipzig/tx-vufind-auth/compare/2.1.1...2.2.0)
+[Full Changelog](https://github.com/ubleipzig/tx-supportchat/compare/2.1.1...2.2.0)
 
 **Refactoring**
 * improves styling of front- and backend view of chat
@@ -29,17 +29,17 @@
 * comments at fluid templates
 * fixes logging of extension and added new boolean setting _enableLogging_
 
-## [v2.1.1](https://github.com/ubleipzig/tx-supportchat/tree/v2.1.1)
+## [v2.1.1](https://github.com/ubleipzig/tx-supportchat/tree/2.1.1)
 
-[Full Changelog](https://github.com/ubleipzig/tx-vufind-auth/compare/2.1.0...2.1.1)
+[Full Changelog](https://github.com/ubleipzig/tx-supportchat/compare/2.1.0...2.1.1)
 
 **Fixes**
 * adding plugin at backend w/ registerPlugin at _Configuration/TCA/Overrides/tt_content.php_ 
 
 
-## [v2.1.0](https://github.com/ubleipzig/tx-supportchat/tree/v2.1.0)
+## [v2.1.0](https://github.com/ubleipzig/tx-supportchat/tree/2.1.0)
 
-[Full Changelog](https://github.com/ubleipzig/tx-vufind-auth/compare/2.0.2...2.1.0)
+[Full Changelog](https://github.com/ubleipzig/tx-supportchat/compare/2.0.2...2.1.0)
 
 **New requirements**
 
@@ -64,18 +64,18 @@
 * fixes several image paths for e.g. online/offline images 
 * fixes false call of method Classes/Ajax/Frontendlistener.php cmd -> checkIfOnline
 
-## [v2.0.2](https://github.com/ubleipzig/tx-supportchat/tree/v2.0.2)
+## [v2.0.2](https://github.com/ubleipzig/tx-supportchat/tree/2.0.2)
 
-[Full Changelog](https://github.com/ubleipzig/tx-vufind-auth/compare/2.0.1...2.0.2)
+[Full Changelog](https://github.com/ubleipzig/tx-supportchat/compare/2.0.1...2.0.2)
 
 **Fixes**
 
 * removes duplicated entry of _addStaticFile_ supportchat and defines it at newly created Configuration/TCA/Overrides/sys_template.php  
 * removes Configuration/TCA/Overrides/pages.php
 
-## [v2.0.1](https://github.com/ubleipzig/tx-supportchat/tree/v2.0.1)
+## [v2.0.1](https://github.com/ubleipzig/tx-supportchat/tree/2.0.1)
 
-[Full Changelog](https://github.com/ubleipzig/tx-vufind-auth/compare/2.0.0...2.0.1)
+[Full Changelog](https://github.com/ubleipzig/tx-supportchat/compare/2.0.0...2.0.1)
 
 **Fixes**
 
@@ -83,7 +83,7 @@
     * ExtensionManagementUtility::extRelPath will be deprecated w/ [TYPO3 v8.4](https://docs.typo3.org/c/typo3/cms-core/master/en-us/Changelog/8.4/Deprecation-78193-ExtensionManagementUtilityextRelPath.html)
 * rename file Configuration/TypoScript/constants.txt correctly
 
-## [v2.0.0](https://github.com/ubleipzig/tx-supportchat/tree/v2.0.0)
+## [v2.0.0](https://github.com/ubleipzig/tx-supportchat/tree/2.0.0)
 
 **Refactoring**
 
