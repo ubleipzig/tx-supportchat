@@ -114,7 +114,7 @@ class ChatHelper {
      */
 	public static function convert2Xml($data)
     {
-		$xml = GeneralUtility::array2xml($data,"",0,"phparray",-1);
+		$xml = GeneralUtility::array2xml($data, "", 0, "phparray", -1);
 		return ($xml);
 	}
 

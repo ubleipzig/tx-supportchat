@@ -135,6 +135,9 @@
             <trans-unit id="module.playAlert" xml:space="preserve">
                 <source>.. play an alert 'beep' for every message</source>
             </trans-unit>
+            <trans-unit id="module.selectAlertSound" xml:space="preserve">
+                <source>Select notification sound</source>
+            </trans-unit>
             <trans-unit id="module.system" xml:space="preserve">
                 <source>System</source>
             </trans-unit>

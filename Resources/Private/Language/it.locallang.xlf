@@ -117,6 +117,16 @@
 				<target>Lei non ha accesso!</target>
 			</trans-unit>
 
+			 <trans-unit id="module.playAlert" xml:space="preserve">
+                <source>... play an alert 'beep' for every message</source>
+                <target>... emettere un suono di avviso</target>
+             </trans-unit>
+
+             <trans-unit id="module.selectAlertSound" xml:space="preserve">
+                <source>Select notification sound</source>
+                <target>Scegli un suono di avviso</target>
+             </trans-unit>
+
 			<trans-unit id="status_msg_offline" xml:space="preserve">
 				<source>Offline</source>
 			</trans-unit>

@@ -403,11 +403,13 @@ class SupportChatModuleController extends BaseAbstractController
             $sounds = array_diff(
                 scandir(ExtensionManagementUtility::extPath('supportchat') . 'Resources/Public/media'),
                 ['..','.']
+
             );
             $options = '';
             $sessionData = $this->getSessionData('tx_supportchat');
             $alertSound = ($sessionData['alertsound'] && ($sessionData['alertsound'] != ""))
-                ? $sessionData['alertsound'] : $sounds[0];
+                ? $sessionData['alertsound'] : reset($sounds);
+            echo "Das ist " . $alertSound;
             foreach ($sounds as $sound) {
                 $options .= '<option value="' . $sound . '" ' . (($sound == $alertSound) ? 'selected="selected"' : '') . '>'. pathinfo($sound, PATHINFO_FILENAME) .'</option>';
             }
@@ -419,6 +421,7 @@ class SupportChatModuleController extends BaseAbstractController
 					/>
 				</audio>
 				<p class="alert">
+				    <label for="alert-select">' . $this->translate("module.selectAlertSound") . '</label>
 				    <select id="alert-select" name="alert-select">
 				        ' . $options . '
                     </select>

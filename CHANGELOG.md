@@ -1,5 +1,19 @@
 # Change Log
 
+## [v2.3.0](https://github.com/ubleipzig/tx-supportchat/tree/v2.3.0)
+
+[Full Changelog](https://github.com/ubleipzig/tx-vufind-auth/compare/2.2.0...2.3.0)
+
+**Refactoring**
+* removes ```prototype.js``` and Mootools javascript libraries from frontend popup chat window
+  * using pure javascript only
+* getAll() POST messages request returns json instead of xml 
+  * adds method ```processPostRequest``` to evaluate response
+  
+**Fixes**
+* css failure of class ```supportchatbox``` setting ```height``` to get scrolling chat box
+* adds label for select box of notifications sounds
+
 ## [v2.2.0](https://github.com/ubleipzig/tx-supportchat/tree/v2.2.0)
 
 [Full Changelog](https://github.com/ubleipzig/tx-vufind-auth/compare/2.1.1...2.2.0)
@@ -13,6 +27,7 @@
 **Fixes**
 * German and English languages files
 * comments at fluid templates
+* fixes logging of extension and added new boolean setting _enableLogging_
 
 ## [v2.1.1](https://github.com/ubleipzig/tx-supportchat/tree/v2.1.1)
 

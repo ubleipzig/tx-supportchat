@@ -151,18 +151,20 @@ class FrontendListener
                         "time" => ChatHelper::renderTstamp(time()),
                         "lastRow" => $chat->lastRow,
                         "messages" => $msgArray,
-                        "status" => $chat->getTypingStatus()
+                        "typingStatus" => $chat->getTypingStatus()
                     ];
-                }
-                else {
+                } else {
                     /* why no access */
                     $xmlArray = [
                         "time" => ChatHelper::renderTstamp(time()),
                         "status" => $chat->chatStatus()
                     ];
                 }
-                $xml = ChatHelper::convert2xml($xmlArray);
-                return ChatHelper::printResponse($xml);
+                //$xml = ChatHelper::convert2xml($xmlArray);
+                return ChatHelper::printResponse(
+                    json_encode($xmlArray),
+                    true
+                );
                 break;
             case "createChatLog":
                 $this->data = is_string(GeneralUtility::_POST("data"))

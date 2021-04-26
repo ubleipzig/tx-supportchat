@@ -203,7 +203,7 @@ class SupportChatController extends BaseAbstractController
             'error' => 'noJsOrCookies-text',
             'export-text' => 'chatbox-export',
             'export-action-url' =>
-                $this->getAbsUrl('index.php?eID=tx_supportchat_pi1&cmd=createChatLog')
+                $this->getAbsUrl('index.php?eID=tx_supportchat&cmd=createChatLog')
         ]);
     }
 
@@ -217,14 +217,16 @@ class SupportChatController extends BaseAbstractController
     public function addJsInHeaderForCheckIfChatIsOnline()
     {
         $onload = '';
-
-        $content = '<script type="text/javascript" src="' . ExtensionManagementUtility::siteRelPath('supportchat') . 'Resources/Public/Javascript/Prototype.js"></script>';
+        $content = "";
+        //$content = '<script type="text/javascript" src="' . ExtensionManagementUtility::siteRelPath('supportchat') . 'Resources/Public/Javascript/Prototype.js"></script>';
         $jsCheckPids = $this->checkForOnlineOfflinePages();
 
         if ($jsCheckPids) {
             $content .= '<script type="text/javascript" src="'.GeneralUtility::createVersionNumberedFilename(ExtensionManagementUtility::siteRelPath('supportchat') . 'Resources/Public/JavaScript/SupportchatIsOnline.js').'"></script>';
             $onLoad = '
-	    		Event.observe(window, "load", function() { initOnlineCheck("'.$this->getAbsUrl('index.php?eID=tx_supportchat').'"); });
+                window.addEventListener("load" () => {
+                    initOnlineCheck("'.$this->getAbsUrl('index.php?eID=tx_supportchat').'");                    
+                });
 			';
         }
         $content .= '
@@ -262,8 +264,6 @@ class SupportChatController extends BaseAbstractController
                 : addslashes($GLOBALS["TSFE"]->fe_user->user["name"]))
             : addslashes(Localization::translate("chat-username", $this->extKey));
         $jsInHeader = '
-			<script type="text/javascript" src="'.ExtensionManagementUtility::siteRelPath('supportchat').'Resources/Public/JavaScript/MootoolsCore.js"></script>
-			<script type="text/javascript" src="'.ExtensionManagementUtility::siteRelPath('supportchat').'Resources/Public/JavaScript/MootoolsMore.js"></script>
 			<script type="text/javascript" src="'.GeneralUtility::createVersionNumberedFilename(ExtensionManagementUtility::siteRelPath('supportchat').'Resources/Public/JavaScript/Smileys.js').'"></script>
 			<script type="text/javascript" src="'.GeneralUtility::createVersionNumberedFilename(ExtensionManagementUtility::siteRelPath('supportchat').'Resources/Public/JavaScript/Supportchat.js').'"></script>
 			<script type="text/javascript">
@@ -289,7 +289,16 @@ class SupportChatController extends BaseAbstractController
 					\'chatDestroyedByAdmin\': \''.addslashes(Localization::translate("chatDestroyedByAdmin", $this->extKey)).'\',
 					\'chatNoAccess\': \''.addslashes(Localization::translate("chatNoAccess", $this->extKey)).'\'
 				};
-				window.addEvent("domready", function() {
+				function domReady(fn) {
+                    // see if DOM is already available
+                    if (document.readyState === "complete" || document.readyState === "interactive") {
+                        // call on next available tick
+                        setTimeout(fn, 1);
+                    } else {
+                        document.addEventListener("DOMContentLoaded", fn);
+                    }
+                }    
+				domReady(function() {
 					initChat("'.$this->getAbsUrl('index.php?eID=tx_supportchat').'");
 				});
 				window.onbeforeunload = function() {
@@ -357,7 +366,6 @@ class SupportChatController extends BaseAbstractController
             'offlineOnlineImage' => $link,
             'offlineOnlineStatusMsg' => 'status_msg_online'
         ];
-
         return $this->view->assign('offlineOnline', $offlineOnline);
     }
 
