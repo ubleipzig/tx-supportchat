@@ -24,7 +24,7 @@ plugin.tx_supportchat {
         chatsPid =
         offlineLogo = EXT:supportchat/Resources/Public/Images/offline.jpg
         onlineLogo = EXT:supportchat/Resources/Public/Images/online.jpg
-        chatWindowJsParams = width=450,height=570,status=0,menubar=0
+        chatWindowJsParams = width=450,height=600,status=0,menubar=0
         chatNotSupportedPage =
         timeToInactivateChatIfNoMessages = 15
         strftime = %H:%M:%S

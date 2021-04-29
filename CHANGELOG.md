@@ -1,5 +1,12 @@
 # Change Log
 
+## [v2.3.2](https://github.com/ubleipzig/tx-supportchat/tree/2.3.2)
+
+[Full Changelog](https://github.com/ubleipzig/tx-supportchat/compare/2.3.1...2.3.2)
+
+**Fixes**
+* layout fix for enable scrolling chat window and hide outer scrolling panel
+
 ## [v2.3.1](https://github.com/ubleipzig/tx-supportchat/tree/2.3.1)
 
 [Full Changelog](https://github.com/ubleipzig/tx-supportchat/compare/2.3.0...2.3.1)
