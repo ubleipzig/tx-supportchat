@@ -1,5 +1,15 @@
 # Change Log
 
+## [v2.4.0](https://github.com/ubleipzig/tx-supportchat/tree/2.4.0)
+
+[Full Changelog](https://github.com/ubleipzig/tx-supportchat/compare/2.3.2...2.4.0)
+
+**Support**
+* removes support for typo3 minor than version 7.6 and adds support for version 8
+
+**Fixes**
+* adjusts /Configuration/TCA models due to deprecation warnings
+
 ## [v2.3.2](https://github.com/ubleipzig/tx-supportchat/tree/2.3.2)
 
 [Full Changelog](https://github.com/ubleipzig/tx-supportchat/compare/2.3.1...2.3.2)

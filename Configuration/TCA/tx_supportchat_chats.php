@@ -8,13 +8,13 @@ $_TXEXTKEY = 'tx_' . $EXTKEY;
 
 return [
     "ctrl" => [
-            'title' => 'LLL:EXT:' . $_EXTKEY . '/Resources/Private/Language/locallang_db.xlf:'.$_TXEXTKEY.'_chats',
-            'label' => 'be_user',
-            'tstamp' => 'tstamp',
-            'crdate' => 'crdate',
-            'cruser_id' => 'cruser_id',
-            "default_sortby" => "ORDER BY crdate DESC",
-            "delete" => "deleted",
+        'title' => 'LLL:EXT:' . $_EXTKEY . '/Resources/Private/Language/locallang_db.xlf:'.$_TXEXTKEY.'_chats',
+        'label' => 'be_user',
+        'tstamp' => 'tstamp',
+        'crdate' => 'crdate',
+        'cruser_id' => 'cruser_id',
+        "default_sortby" => "ORDER BY crdate DESC",
+        "delete" => "deleted",
         "enablecolumns" => [
             "disabled" => "hidden",
         ],
@@ -86,7 +86,7 @@ return [
         ],
     ],
     "types" => [
-        "0" => ["showitem" => "hidden;;1;;1-1-1, be_user, session, active, last_row_uidi,language_uid,surfer_ip"]
+        "0" => ["showitem" => "hidden, --palette--;;1;, be_user, session, active, last_row_uid, language_uid, surfer_ip"]
     ],
     "palettes" => [
         "1" => ["showitem" => ""]

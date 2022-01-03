@@ -55,7 +55,7 @@ return [
         ],
     ],
     "types" => [
-        "0" => ["showitem" => "chat_pid;;;;1-1-1, name, message"]
+        "0" => ["showitem" => "chat_pid, name, message"]
     ],
     "palettes" => [
         "1" => ["showitem" => ""]
