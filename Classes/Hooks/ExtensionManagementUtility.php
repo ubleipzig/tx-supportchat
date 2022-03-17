@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-namespace Ubl\SupportChat\Hooks;
+namespace Ubl\Supportchat\Hooks;
 
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility as BaseExtensionManagementUtility;
 
@@ -67,7 +67,7 @@ class ExtensionManagementUtility extends BaseExtensionManagementUtility
     /**
      * Get the unqualified name of a class
      *
-     * @param string $qualifiedClassname: The qualified class name from get_class()
+     * @param string $qualifiedClassname The qualified class name from get_class()
      *
      * @return string The unqualified class name
      * @access public

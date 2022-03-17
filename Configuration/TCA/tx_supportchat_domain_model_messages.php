@@ -4,16 +4,18 @@ if (!defined ('TYPO3_MODE')) {
 }
 
 $_EXTKEY = 'supportchat';
-$_TXEXTKEY = 'tx_' . $EXTKEY;
+$_TL = 'tx_' . $_EXTKEY . '_domain_model_messages';
+$_LL = 'LLL:EXT:' . $_EXTKEY . '/Resources/Private/Language/locallang_db.xlf:' . $_TL;
 
 return [
     "ctrl" => [
-        'title' => 'LLL:EXT:' . $_EXTKEY . '/Resources/Private/Language/locallang_db.xlf:'.$_TXEXTKEY.'_messages',
-        'label' => 'name',
-        'tstamp' => 'tstamp',
-        'crdate' => 'crdate',
-        'cruser_id' => 'cruser_id',
+        "title" => $_LL,
+        "label" => "name",
+        "tstamp" => "tstamp",
+        "crdate" => "crdate",
+        "cruser_id" => "cruser_id",
         "default_sortby" => "ORDER BY crdate DESC",
+        "delete" => "deleted",
         "iconfile" => 'EXT:' . $_EXTKEY . '/Resources/Public/Icons/icon_tx_supportchat_messages.gif',
     ],
     "feInterface" => [
@@ -25,11 +27,11 @@ return [
     "columns" => [
         "chat_pid" => [
             "exclude" => 1,
-            "label" => "LLL:EXT:' . $_EXTKEY . '/Resources/Private/Language/locallang_db.xlf:'.$_TXEXTKEY.'_messages.chat_pid",
+            "label" => $_LL . ".chat_pid",
             "config" => [
                 "type" => "group",
                 "internal_type" => "db",
-                "allowed" => "tx_supportchat_chats",
+                "allowed" => "tx_supportchat_domain_model_chats",
                 "size" => 1,
                 "minitems" => 0,
                 "maxitems" => 1
@@ -37,7 +39,7 @@ return [
         ],
         "name" => [
             "exclude" => 1,
-            "label" => "LLL:EXT:' . $_EXTKEY . '/Resources/Private/Language/locallang_db.xlf:'.$_TXEXTKEY.'_messages.name",
+            "label" => $_LL . ".name",
             "config" => [
                 "type" => "input",
                 "size" => "30"
@@ -45,7 +47,7 @@ return [
         ],
         "message" => [
             "exclude" => 1,
-            "label" => "LLL:EXT:' . $_EXTKEY . '/Resources/Private/Language/locallang_db.xlf:'.$_TXEXTKEY.'_messages.message",
+            "label" => $_LL . ".message",
             "config" => [
                 "type" => "text",
                 "wrap" => "OFF",
@@ -53,9 +55,21 @@ return [
                 "rows" => "5"
             ]
         ],
+        "code" => [
+            "exclude" => 1,
+            "label" => $_LL . ".code",
+            "config" => [
+                "type" => "none"
+            ]
+        ],
+        'crdate' => [
+            'config' => [
+                'type' => 'passthrough',
+            ],
+        ]
     ],
     "types" => [
-        "0" => ["showitem" => "chat_pid, name, message"]
+        "0" => ["showitem" => "chat_pid, name, message, code"]
     ],
     "palettes" => [
         "1" => ["showitem" => ""]

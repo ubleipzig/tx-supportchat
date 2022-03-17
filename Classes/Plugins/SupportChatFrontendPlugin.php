@@ -122,7 +122,7 @@ class SupportChatFrontendPlugin
                         $chat = new Chat();
                         /** tradem 2012-04-12 Pass typing inidcator usage configuration */
                         // $chat->writeLog("Frontend : useTypingIndicator=[" .$this->useTypingIndicator. "]");
-                        $chat->initChat($this->conf["chatsPid"], "", 0, $this->useTypingIndicator);
+                        $chat->initChat($this->conf["chatsPid"], "", false, $this->useTypingIndicator);
                         $chat->destroyInactiveChats($this->conf["timeToInactivateChatIfNoMessages"]);
                         $this->addJsInHeader($sessionId, $chatUid);
                         $content = $this->generateChatBox();

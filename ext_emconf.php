@@ -15,7 +15,7 @@ $EM_CONF[$_EXTKEY] = [
 	'description' => 'A Support Chat for Typo3',
 	'category' => 'misc',
 	'shy' => 0,
-	'version' => '2.4.0',
+	'version' => '2.5.0',
 	'dependencies' => '',
 	'conflicts' => '',
 	'priority' => '',
@@ -33,7 +33,7 @@ $EM_CONF[$_EXTKEY] = [
 	'CGLcompliance_note' => '',
 	'constraints' => [
 		'depends' => [
-			'typo3' => '7.0.0-8.7.99',
+			'typo3' => '8.7.0-9.5.99',
 		],
 		'conflicts' => [
 		],
@@ -45,14 +45,14 @@ $EM_CONF[$_EXTKEY] = [
             'psr-4' =>
                 [
                     'Ubl\\Supportchat\\' => 'Classes',
-                ],
+                ]
         ],
     'autoload-dev' =>
         [
             'psr-4' =>
                 [
                     'Ubl\\Supportchat\\Tests' => 'Tests',
-                ],
+                ]
         ],
 ];
 

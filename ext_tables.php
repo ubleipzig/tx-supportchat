@@ -1,5 +1,7 @@
 <?php
-if (!defined ('TYPO3_MODE')) 	die ('Access denied.');
+if (!defined ('TYPO3_MODE')) {
+    die ('Access denied.');
+}
 
 if (TYPO3_MODE == "BE") {
 
@@ -13,7 +15,7 @@ if (TYPO3_MODE == "BE") {
         ],
         [          // Additional configuration
             'access' => 'user,group',
-            'icon' => 'EXT:' . $_EXTKEY . '/Resources/Public/Icons/moduleicon.gif',
+            'icon' => 'EXT:' . $_EXTKEY . '/Resources/Public/Icons/module-icon.svg',
             'labels' => 'LLL:EXT:' . $_EXTKEY . '/Resources/Private/Language/locallang_mod.xlf',
         ]
     );

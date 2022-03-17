@@ -11,7 +11,7 @@
   ],
   "homepage": "https://github.com/ubleipzig/tx-support-chat",
   "license": ["GPL-2.0+"],
-  "version": "2.4.0",
+  "version": "2.5.0",
   "support": {
     "issues": "https://github.com/ubleipzig/tx-support-chat/issues"
   },
@@ -42,16 +42,16 @@
     "url": "https://composer.typo3.org/"
   }],
   "require": {
-    "typo3/cms": "^7.6.0 || 8.0.0"
+    "typo3/cms": "^8.7 || ^9.5"
   },
   "autoload": {
     "psr-4": {
-      "Ubl\\Supportchat\\": "Classes"
+      "Ubl\\Supportchat\\": "Classes/"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "Ubl\\Supportchat\\Tests\\": "Tests"
+      "Ubl\\Supportchat\\Tests\\": "Tests/"
     }
   }
 }

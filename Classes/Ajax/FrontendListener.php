@@ -96,25 +96,18 @@ class FrontendListener
     {
         $feUserObj = \TYPO3\CMS\Frontend\Utility\EidUtility::initFeUser();
         $this->identification = $feUserObj->id;
-        $this->uid = intval(GeneralUtility::_GET("chat"))
-            ? intval(GeneralUtility::_GET("chat")) : 0;
-        $this->lang = intval(GeneralUtility::_GET("L"))
-            ? intval(GeneralUtility::_GET("L")) : 0;
-        $this->pid = intval(GeneralUtility::_GET("pid"))
-            ? intval(GeneralUtility::_GET("pid")) : 0;
+        $this->uid = (int)(GeneralUtility::_GET("chat")) ?: 0;
+        $this->lang = (int)(GeneralUtility::_GET("L")) ?: 0;
+        $this->pid = (int)(GeneralUtility::_GET("pid")) ?: 0;
         /** 2012-04-11 tradem Initialize useTypingIndicator */
-        $this->useTypingIndicator = intval(GeneralUtility::_GET("useTypingIndicator"))
-            ? intval(GeneralUtility::_GET("useTypingIndicator")) : 0;
-        if(GeneralUtility::_GP("cmd")) {
-            $this->cmd = GeneralUtility::_GP("cmd");
-        }
+        $this->useTypingIndicator = (int)(GeneralUtility::_GET("useTypingIndicator")) ?: 0;
+        $this->cmd = (GeneralUtility::_GP("cmd")) ?: null;
         // initialize the chat Object
-        $lastRow = intval(GeneralUtility::_GP("lastRow"))
-            ? intval(GeneralUtility::_GP("lastRow")) : 0;
+        $lastRow = (int)(GeneralUtility::_GP("lastRow")) ?: 0;
         $chat = new Chat();
-        $chat->initChat($this->pid, $this->identification,0, $this->useTypingIndicator);
+        $chat->initChat($this->pid, $this->identification,false, $this->useTypingIndicator);
         if ($this->uid) {
-            $chat->loadChatFromDB($this->uid,$lastRow);
+            $chat->loadChatFromDB($this->uid, $lastRow);
         }
         switch ($this->cmd) {
             case "checkIfOnline":
@@ -136,15 +129,14 @@ class FrontendListener
                 /* get and send messages*/
                 if ($chat->hasUserRights()) {
                     // get messages from DB
-                    $fields = "crdate,code,name,message";
-                    $msgArray = $chat->getMessages($fields);
+                    $msgArray = $chat->getMessages();
                     // store new messages in DB
                     $msgToSend = GeneralUtility::_POST("msgToSend");
                     $chat->saveTypingStatus(GeneralUtility::_GP("isTyping"));
                     if ($msgToSend) {
                         $userName = htmlspecialchars(GeneralUtility::_POST("chatUsername"));
-                        for($i=0; $i < sizeOf($msgToSend); $i++) {
-                            $chat->insertMessage($msgToSend[$i], "feuser",$userName);
+                        for ($i=0; $i < sizeOf($msgToSend); $i++) {
+                            $chat->insertMessage($msgToSend[$i], "feuser", $userName);
                         }
                     }
                     $xmlArray = [
@@ -181,6 +173,5 @@ class FrontendListener
                 }
                 break;
         }
-
     }
 }

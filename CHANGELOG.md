@@ -1,5 +1,22 @@
 # Change Log
 
+## [v2.5.0](https://github.com/ubleipzig/tx-supportchat/tree/2.5.0)
+
+[Full Changelog](https://github.com/ubleipzig/tx-supportchat/compare/2.4.0...2.5.0)
+
+**Refactoring**
+* replaces DatabaseMapper w/ DBAL Doctrine 
+  * implementing Domain/Model-Repository model
+  * renames all databases to `tx_supportchat_domain_model_*` and updates translation for databases fields
+* removes JavaScript Mootools library and dependent scripts from backend
+  * replaces it by Vanilla Javascript
+  * replaces XML of response by JSON
+* partly redesign of backend chat windows
+
+**Fixes**
+* fixes minor error at _SupportchatBackendAlert.js_
+* replaces several icons by *.svg
+
 ## [v2.4.0](https://github.com/ubleipzig/tx-supportchat/tree/2.4.0)
 
 [Full Changelog](https://github.com/ubleipzig/tx-supportchat/compare/2.3.2...2.4.0)
