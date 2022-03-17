@@ -27,8 +27,8 @@ namespace Ubl\Supportchat\Library;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-class ChatMarket extends Chat {
-
+class ChatMarket extends Chat
+{
     /**
      * Backend user authentication
      *
@@ -39,18 +39,27 @@ class ChatMarket extends Chat {
     /**
      * Should session be logged
      *
-     * @var boolean $logging    Default false
+     * @var boolean $logging  Default false
      * @access public
      */
 	public $logging = 0;
+
+    /**
+     * Limit of log messages to displayed
+     *
+     * @var boolean $logging  Default false
+     * @access public
+     */
+    public $logLimit = 10;
 
     /**
      * Last logged row
      *
      * @var int $lastLogRow
      * @access public
+     * @deprecated Variable seems to have not apparently any use case; replaced by $logLimit in function.
      */
-	public $lastLogRow = 0;
+	public $lastLogRow = null;
 
     /**
      * Path to default language flag
@@ -70,14 +79,6 @@ class ChatMarket extends Chat {
 	public $defaultLLabel = "english";
 
     /**
-     * Backend user name
-     *
-     * @var string $beUserName
-     * @access public
-     */
-	public $beUserName = "Supportler";
-	
-	/**
 	 * Constructor initializes variables
      *
      * @param boolean $logging
@@ -87,17 +88,14 @@ class ChatMarket extends Chat {
 	 */
 	public function __construct()
     {
-        $this->backendUserAuthentication = $GLOBALS['BE_USER'];
-		$this->logging = func_get_arg(0);
-		$this->lastLogRow = intval(func_get_arg(1));
-		$this->beUserName = ($this->backendUserAuthentication->user["realName"])
-            ? $this->backendUserAuthentication->user["realName"]
-            : $this->backendUserAuthentication->user["username"];
-		if ($this->backendUserAuthentication->userTS["supportchat."]["defLangImg"]) {
-			$this->defaultLImg = $this->backendUserAuthentication->userTS["supportchat."]["defLangImg"];
+        parent::__construct();
+        $this->logging = func_get_arg(0);
+		$this->lastLogRow = (int)(func_get_arg(1));
+		if ($this->getBackendUserTypoScript("defLangImg")) {
+			$this->defaultLImg = $this->getBackendUserTypoScript("defLangImg");
 		}
-		if ($this->backendUserAuthentication->userTS["supportchat."]["defLangLabel"]) {
-			$this->defaultLLabel = $this->backendUserAuthentication->userTS["supportchat."]["defLangLabel"];
+		if ($this->getBackendUserTypoScript("defLangLabel")) {
+			$this->defaultLLabel = $this->getBackendUserTypoScript("defLangLabel");
 		}
 	}
 	
@@ -121,14 +119,11 @@ class ChatMarket extends Chat {
         $destroyChats,
         $typingStatus
     ) {
-        global $TYPO3_DB;
-		/* get the language Info */
-		//$language = $this->getLanguageInfo();
+		/* Get the language Info */
+		// $language = $this->getLanguageInfo();
 		/* get all chats */
 		$retArray = [];
-        $tableChats = "tx_supportchat_chats";
-        $res = $TYPO3_DB->exec_SELECTquery("*", $tableChats, 'active=1 AND pid='.$this->pid, "", "crdate desc");
-		$i = 0;
+        $i = 0;
 		// hook for additional info that is shown after the language info in the chatbox
         $hookObjectsArr = [];
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXT']['supportchat']['Library/ChatMarket.php']['additionalInfo'])) {
@@ -136,61 +131,77 @@ class ChatMarket extends Chat {
 				$hookObjectsArr[] = GeneralUtility::getUserObj($classRef);
 			}
 		}
-		while ($row = $TYPO3_DB->sql_fetch_assoc($res)) {
-			$lastRow = intval($lastRowArray[$row["uid"]]) ? intval($lastRowArray[$row["uid"]]) : 0;
-			$this->loadChatFromData($row,$lastRow);
+        $res = $this->chatsRepository->findActiveChatsByPid($this->pid);
+		foreach ($res as $row) {
+			$lastRow = (int)($lastRowArray[($row->getUid())]) ?: 0;
+			$mapChatData = [
+                'active' => $row->getActive(),
+                'be_user' => $row->getBackendUser(),
+                'crdate' => $row->getCrdate(),
+                'language_uid' => $row->getLanguageUid(),
+                'session' => $row->getSession(),
+                'status' => $row->getStatus(),
+                'type_status' => $row->getTypeStatus(),
+                'surfer_ip' => $row->getClientIp(),
+                'uid' => $row->getUid()
+            ];
+            // Note: Use of variable $row seems to be finish here. Loop recurs and uses instead $this->db for data.
+            $this->loadChatFromData($mapChatData, $lastRow);
 			if ($this->hasUserRights()) {
-				// get All Messages
-                $messages = $this->getMessages("crdate,code,from_supportler,to_supportler,name,message");
-				// send Messages
+				// Get all Messages
+                $messages = $this->getMessages();
+				// Send Messages
 				if ($msgToSend[$this->uid]) {
 					foreach ($msgToSend[$this->uid] as $msg) {
-	                    $this->insertMessage($msg,"beuser",$this->beUserName);
+	                    $this->insertMessage($msg,"beuser", ($this->getBackendUsername()) ?: "Supporter");
 					}	
 				}
 
-				// adds localization and default handling
+				// Adds localization class
                 $localization = new LocalizationHelper();
-                $languageUid = ($this->db["language_uid"] != 0) ? $languageUid : 1;
+                // Set default language_uid
+                $languageUid = (int)$this->db["language_uid"];
 
-				// added for typingStatus
-				$tmp_status = unserialize($this->db['status']);
+				// Added for typingStatus
+                // Note: Initialization is not comprehensible
+				$tmp_status = $this->db['type_status'];
 				$tmp_status = $tmp_status['feu_typing'];
 
-				$retArray[$i]["chatIndex"]["uid"] = $this->uid;
-				$retArray[$i]["chatIndex"]["lastRow"] = $this->lastRow;
-				$retArray[$i]["chatIndex"]["crdate"] =
+				$retArray[$i]["uid"] = $this->uid;
+				$retArray[$i]["lastRow"] = $this->lastRow;
+				$retArray[$i]["crdate"] =
                     ChatHelper::renderTstamp($this->db["crdate"]);
-				$retArray[$i]["chatIndex"]["fe_language"] = $this->db["language_uid"];
-				$retArray[$i]["chatIndex"]["surfer_ip"] = $this->db["surfer_ip"];
-				$retArray[$i]["chatIndex"]["be_user"] = $this->db["be_user"];
-				$retArray[$i]["chatIndex"]["language_flag"] =
+				$retArray[$i]["fe_language"] = $languageUid;
+				$retArray[$i]["surfer_ip"] = $this->db["surfer_ip"];
+				$retArray[$i]["be_user"] = $this->db["be_user"];
+                $retArray[$i]["language_flag"] =
                     $localization->getRenderedFlagIconByLanguageUid($languageUid);
-				$retArray[$i]["chatIndex"]["language_label"] =
+				$retArray[$i]["language_label"] =
                     $localization->getLabelByLanguageUid($languageUid);
-				$retArray[$i]["chatIndex"]["messages"] = $messages;
+				$retArray[$i]["messages"] = $messages;
 				/*added for typingStatus*/
-				$retArray[$i]["chatIndex"]["status"] = ($tmp_status == 1 ? 1 : 0);
+				$retArray[$i]["type_status"] = ($tmp_status === 1) ? true : false;
                 // lock chat ?
                 if (isset($lockChats[$this->uid])) {
-                    $this->lockChat(intval($lockChats[$this->uid]));
-					$retArray[$i]["chatIndex"]["from_lock_chat"] = intval($lockChats[$this->uid]);
+                    $this->lockChat((int)$lockChats[$this->uid]);
+					$retArray[$i]["from_lock_chat"] = (int)$lockChats[$this->uid];
                 }
 				// destroy chat ?
-				if (intval($destroyChats[$this->uid])) {
+				if ((int)$destroyChats[$this->uid]) {
 					$this->destroyChat();
-					$retArray[$i]["chatIndex"]["from_destroy_chat"] = 1;
+					$retArray[$i]["from_destroy_chat"] = 1;
 				}
 				/*added for typingStatus*/
 				// set typing status
                 if (isset($typingStatus[$this->uid])) {
-                    $this->saveTypingStatus(intval($typingStatus[$this->uid]));
+                    $this->saveTypingStatus((int)$typingStatus[$this->uid]);
                 }
 
                 // process hook for additional info
                 foreach ($hookObjectsArr as $hookObj) {
-                    $retArray[$i]["chatIndex"]["additionalInfo"] =
-                        GeneralUtility::callUserFunction($hookObj, [], $this);
+                    $array = [];
+                    $retArray[$i]["additionalInfo"] =
+                        GeneralUtility::callUserFunction($hookObj, $array, $this);
 				}
 				$i++;
 			}
@@ -198,44 +209,6 @@ class ChatMarket extends Chat {
 		return ($retArray);
 	}
 
-	/**
-     * Get backend users
-     *
-     * @return array $beUserArray   List of backend users
-     * @access public
-     */
-	public function getBeUsers()
-    {
-		global $TYPO3_DB;
-		// get SelectBox with all be_user
-		$table="be_sessions";
-		$res = $TYPO3_DB->exec_SELECTquery("ses_userid", $table, '1');
-		$inList="";
-		$beUserArray = [];
-		while ($row = $TYPO3_DB->sql_fetch_assoc($res)) {
-			$inList .= ",'".$row["ses_userid"]."'";
-		}
-		$inList = substr($inList,1);
-		if ($inList) {
-			$table = "be_users";
-			$options="";
-			$res = $TYPO3_DB->exec_SELECTquery(
-			    "uid, username, realName", $table, 'deleted=0 AND disable=0 AND uid IN ('.$inList.') AND uid<>' . $this->backendUserAuthentication->user["uid"]
-            );
-			$i=0;
-			while ($row = $TYPO3_DB->sql_fetch_assoc($res)) {
-				$name = $row["realName"] ? $row["realName"] : $row["username"];
-				$beUserArray[$i] = [
-					"uid" => $row["uid"],
-					"name" => $name,
-				];
-				$i++;
-			}
-		}
-		return $beUserArray;
-	}
-
-	
 	/**
 	 * Get all log messages which are younger than now - 10min, takes care of
      * the lastLogRow var
@@ -245,34 +218,35 @@ class ChatMarket extends Chat {
 	 */
 	public function getLogMessages()
     {
-		global $TYPO3_DB;
 		if ($this->logging) {
-			$retArray = [];
-			$tableLog = "tx_supportchat_log";
-			if (!$this->lastLogRow) {
-				$limit = '5';
-			}
-			else {
-				$limit = "";
-			}
-			$notOlderThan = time()-600;
-			$res = $TYPO3_DB->exec_SELECTquery(
-			    "uid,
-			    crdate,
-			    message",
-                $tableLog,
-                'pid='.$this->pid.' AND crdate > '.$notOlderThan.' AND uid > '.$this->lastLogRow,
-                "",
-                "uid"
-            );
-			$i=0;
-			while ($row=$TYPO3_DB->sql_fetch_assoc($res)) {
-				$this->lastLogRow = $row["uid"];
-				$retArray[$i]["crdate"] = ChatHelper::renderTstamp($row["crdate"]);
-				$retArray[$i]["message"] = $row["message"];
+            $result = $this->logsRepository->findLogMessages($this->pid, (time() - 900), (int)($this->logLimit) ?: 10);
+			$i = 0;
+            $retArray = [];
+            foreach ($result as $row) {
+				$this->lastLogRow = $row->getUid();
+				$retArray[$i]["crdate"] = ChatHelper::renderTstamp($row->getCrdate());
+				$retArray[$i]["message"] = $row->getMessage();
 				$i++;
 			}
-			return ($retArray);
+			return $retArray;
 		}
 	}
+
+    /**
+     * Get backend user typo script settings
+     *
+     * @param string $key
+     *
+     * @return mixed
+     * @access protected
+     */
+    protected function getBackendUserTypoScript($key)
+    {
+        if (empty($key) && !is_string($key)) {
+            throw new \InvalidArgumentException(
+                'Parameter $key of ' . __METHOD__ . ' has to be set'
+            );
+        }
+        return ($GLOBALS['BE_USER']->userTS["supportchat."][$key]) ?: null;
+    }
 }

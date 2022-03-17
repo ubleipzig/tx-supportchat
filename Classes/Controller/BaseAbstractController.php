@@ -48,17 +48,6 @@ abstract class BaseAbstractController extends ActionController
     }
 
     /**
-     * Get database handle
-     *
-     * @return \TYPO3\Cms\Core\Database\DatabaseConnection
-     * @access protected
-     */
-    protected function getDatabaseConnection()
-    {
-        return $GLOBALS['TYPO3_DB'];
-    }
-
-    /**
      * Get session data
      *
      * @param string $key

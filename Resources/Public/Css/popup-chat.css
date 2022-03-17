@@ -115,8 +115,10 @@
 }
 
 .tx-supportchat input[type='image'] {
-    margin-top: 2px;
-    padding: 12px 15px 9px;
+    margin-top: 0.25em;
+    padding: 0.375em 0.375em 0.25em;
+    width: 1.125em;
+    height: 1.125em;
 }
 
 #sendMessage {

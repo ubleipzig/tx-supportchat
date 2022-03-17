@@ -14,18 +14,15 @@
         <div id="{chatbox-id}">
             <f:translate key="message"></f:translate>
         </div>
-        <div class="bottom-cont">
-            <f:comment>
-               <!-- icon from: http://schollidesign.deviantart.com/gallery/#/d1qpw1n -->
-            </f:comment>
+        <div class="service-panel">
             <form action="{export-action-url}" method="post" target="my_iframe" id="exportForm">
-                <input type="image" src="typo3conf/ext/supportchat/Resources/Public/Images/save.png" id="exportButton" style="float:right; border:0px;" title="<f:translate key="{export-text}">[export-text]</f:translate>"/><input type="hidden" name="data" value="" id="data1" />
+                <input type="image" src="typo3conf/ext/supportchat/Resources/Public/Images/icon-savedisk.svg" id="exportButton" style="float:right; border:0px;" title="<f:translate key="{export-text}">[export-text]</f:translate>"/><input type="hidden" name="data" value="" id="data1" />
             </form>
             <iframe name="my_iframe" src="about:blank" style="display:none"></iframe>
             <f:comment>
                 <!-- icon from GNOME Empathy 3.4 iconset: http://ftp.acc.umu.se/pub/GNOME/sources/empathy/3.4/ -->
             </f:comment>
-            <img src="typo3conf/ext/supportchat/Resources/Public/Images/typing.png" id="typingPen" style="display:none; float:right; border:0; margin-top:10px; margin-right:5px;" />
+            <img src="typo3conf/ext/supportchat/Resources/Public/Images/icon-typing.svg" id="typingPen" style="display:none; float:right; border:0; margin-top:10px; margin-right:5px;" />
             <p id="message-label">
                 <f:translate key="{message-label}">[message-label]</f:translate>
             </p>

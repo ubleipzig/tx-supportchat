@@ -23,12 +23,28 @@
 
 namespace Ubl\Supportchat\Library;
 
+use TYPO3\CMS\Core\Database\Connection;
+use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class LocalizationHelper
 {
+    /**
+     * Constants of default flag
+     *
+     * @var string
+     */
+    const DEFAULT_LANGUAGE_FLAG = "de";
+
+    /**
+     * Constants of default language name
+     *
+     * @var string
+     */
+    const DEFAULT_LANGUAGE_TITLE = "Deutsch";
+
     /**
      * Language object
      *
@@ -52,7 +68,7 @@ class LocalizationHelper
                 return $value['flag'];
             }
         }
-        return "";
+        return self::DEFAULT_LANGUAGE_FLAG;
     }
 
     /**
@@ -70,7 +86,7 @@ class LocalizationHelper
                 return $value['title'];
             }
         }
-        return "";
+        return self::DEFAULT_LANGUAGE_TITLE;
     }
 
     /**
@@ -119,25 +135,18 @@ class LocalizationHelper
     private function getLanguages()
     {
         if (!$this->languageObject) {
-            $statement = $this->getDatabaseConnection()->exec_SELECTquery(
-                "*", "sys_language", "1"
-            );
-            while ($row = $this->getDatabaseConnection()->sql_fetch_assoc($statement)) {
+            $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
+                ->getConnectionForTable('pages')
+                ->createQueryBuilder();
+            $result = $queryBuilder
+                ->select('*')
+                ->from('sys_language')
+                ->execute();
+            while ($row = $result->fetch()) {
                 $this->languageObject[] = $row;
             }
         }
         return $this->languageObject;
-    }
-
-    /**
-     * Get database handle
-     *
-     * @return \TYPO3\Cms\Core\Database\DatabaseConnection
-     * @access protected
-     */
-    protected function getDatabaseConnection()
-    {
-        return $GLOBALS['TYPO3_DB'];
     }
 }
 

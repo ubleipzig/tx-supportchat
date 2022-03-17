@@ -8,9 +8,9 @@ define([
     function ($, Notification) {
       'use strict';
 
-      var AlertSound = function() {
-        var me = this;
-        var extKey = 'supportchat';
+      let AlertSound = function() {
+        let me = this;
+        let extKey = 'supportchat';
 
         me.init = function() {
           $('#alert-select').on('change', function() {
@@ -30,7 +30,8 @@ define([
                     'src',
                     url.replace(/[\w\-]*.ogg/g, response.sound)
                 );
-                $('#beep_alert').load();
+                // Reload page to load new sound
+                window.location.href = window.location.href;
                 $('#beep_alert').get(0).play(1);
                 Notification.success(
                     'Alert sound',
@@ -47,7 +48,7 @@ define([
       };
 
       $(document).ready(function() {
-        var alert = new AlertSound();
+        let alert = new AlertSound();
         alert.init();
       });
 });

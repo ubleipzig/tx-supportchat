@@ -131,7 +131,7 @@ class SupportChatController extends BaseAbstractController
                     if($chatIsOnline[$this->settings["chatPluginPid"]]) {
                         // tx_chat_functions::destroyInactiveChats($this->conf["timeToInactivateChatIfNoMessages"],$this->conf["chatsPid"]);
                         $chat = new Chat();
-                        $chat->initChat($this->settings["chatsPid"], "", 0, $this->useTypingIndicator);
+                        $chat->initChat($this->settings["chatsPid"], "", false, $this->useTypingIndicator);
                         $chat->destroyInactiveChats($this->settings["timeToInactivateChatIfNoMessages"]);
                         $this->addJsInHeader();
                         $this->displayChatBox();
@@ -152,7 +152,6 @@ class SupportChatController extends BaseAbstractController
                 '<style type="text/css">'.$this->settings["_CSS_DEFAULT_STYLE"].'</style>'
             );
         }
-        //return $this->pi_wrapInBaseClass($content);
     }
 
     /**
@@ -218,7 +217,6 @@ class SupportChatController extends BaseAbstractController
     {
         $onload = '';
         $content = "";
-        //$content = '<script type="text/javascript" src="' . ExtensionManagementUtility::siteRelPath('supportchat') . 'Resources/Public/Javascript/Prototype.js"></script>';
         $jsCheckPids = $this->checkForOnlineOfflinePages();
 
         if ($jsCheckPids) {
@@ -251,13 +249,9 @@ class SupportChatController extends BaseAbstractController
      * @access public
      */
     public function addJsInHeader() {
-        $pid = $this->settings["chatsPid"]
-            ? $this->settings["chatsPid"] : $GLOBALS["TSFE"]->id;
-        $lang = intval(GeneralUtility::_GET("L"))
-            ? "&L=".intval(GeneralUtility::_GET("L")) : "";
+        $pid = $this->settings["chatsPid"] ?: $GLOBALS["TSFE"]->id;
+        $lang = ((int)(GeneralUtility::_GET("L"))) ?: 0;
         $freq = $this->settings["getMessagesInSeconds"] * 1000;
-        /* tradem 2012-04-11 Added JS-Variable for typing indicator */
-        $useTypingIndicator =  $this->useTypingIndicator;
         $chatUsername = $GLOBALS["TSFE"]->fe_user->user["uid"]
             ? ($GLOBALS["TSFE"]->fe_user->user["first_name"]
                 ? ($GLOBALS["TSFE"]->fe_user->user["first_name"]." ".$GLOBALS["TSFE"]->fe_user->user["last_name"])
@@ -275,7 +269,7 @@ class SupportChatController extends BaseAbstractController
 				var globLang = "'.$lang.'";
 				var fe_user_name = "'.$GLOBALS["TSFE"]->fe_user->user["name"].'";
 				var timeFormated = "'.strftime($this->settings["strftime"],time()).'";
-				var useTypingIndicator = '.$useTypingIndicator.'; // tradem 2012-04-11 Added JS-Variable for typing indicator
+				var useTypingIndicator = '.$this->useTypingIndicator.'; // tradem 2012-04-11 Added JS-Variable for typing indicator
 				var diffLang = {
 					\'chatboxTitleBeUserOk\': \''.addslashes(Localization::translate("chatbox-title-be-user-ok", $this->extKey)).'\',
 					\'chatboxWelcome\': \''.addslashes(Localization::translate("chatbox-welcome", $this->extKey)).'\',

@@ -1,5 +1,4 @@
 /* This is for the Chat Supporter backend */
-
 .support-chat-module {
     font-family: sans-serif;
     font-size: 16px;
@@ -9,15 +8,23 @@
     width: 100% !important;
 }
 
-#chatboxes_wrap {
-    font-size: 16px;
-    margin: 0;
+.support-chat-alert-options {
+    font-size: 0.925em;
+    padding: 0 0 1em;
 }
 
-.alert {
-    border-bottom: 1px dotted #172e75;
-    border-top: 1px dotted #172e75;
-    padding: 5px 2%;
+.support-chat-alert-options label {
+    font-weight: normal;
+    padding-right: 0.5em;
+}
+
+.support-chat-alert-options .alert-check {
+    margin-left: 1.5em;
+}
+
+#chatboxes_wrap {
+    font-size: 1.25em;
+    margin: 0;
 }
 
 .chat_single_wrap {
@@ -33,65 +40,105 @@
     width: 45%;
 }
 
-.chat_single_wrap .top {
-    background: lightgrey;
-    padding: 10px;
-}
-
-.chat_single_wrap .top .chat_close {
+/** Close button **/
+.chat_single_wrap .chat_close {
     cursor: pointer;
     display: block;
     float: right;
+    z-index: 10;
 }
 
-.chat_single_wrap .top .chat_close:after {
+.chat_single_wrap .chat_close:after {
     color: red;
     content: '\00D7';
     font-weight: bold;
+    font-size: 1.25em;
+    margin-right: 0.25em;
+    z-index: 10;
 }
 
+/** Top menu navigation **/
+.chat_single_wrap  nav {
+    background-color: #02133D;
+}
 
-[id^='chatsNaviTop_'] li {
-    border-right: 1px solid #b9b7b4;
+.chat_single_wrap nav li {
+    z-index: 1;
     cursor: pointer;
-    line-height: 20px;
-    margin: 0;
-    padding: 5px;
-    white-space: nowrap;
+    color: #fff;
 }
 
-.chat_single_wrap .top ul {
-    list-style-type: none;
-    margin: 0;
+.chat_single_wrap nav li:hover {
+    background-color: #ed7602;
+}
+
+.chat_single_wrap nav ul {
+    width: 80%;
     padding: 0;
-}
-
-.chat_single_wrap .top ul ul {
-    border-top: 1px solid #b9b7b4;
     margin: 0;
+    list-style: none;
+    position: relative;
 }
 
-.chat_single_wrap .top ul ul li {
-    background: #e1dfdb url(../../Images/2dots.gif) repeat-x bottom;
+.chat_single_wrap nav ul li {
+    display:inline-block;
+    background-color: #02133D;
+    margin: 0 0.75em;
+    padding: 0.25em;
 }
 
-.chat_single_wrap .top ul ul ul li {
-    background: #e1dfdb;
-    border-bottom: 1px solid #b9b7b4;
-    white-space: nowrap;
+/* Hide Dropdowns by Default */
+.chat_single_wrap nav ul ul {
+    display: none;
+    position: absolute;
+    top: 2em; /* the height of the main nav */
 }
 
-.chat_single_wrap .top .last {
-    background-image: none;
-    border-bottom: 1px solid #b9b7b4;
+/* Display Dropdowns on Hover */
+.chat_single_wrap nav ul li:hover > ul {
+    display: inherit;
 }
+
+/* First tier dropdown */
+.chat_single_wrap nav ul ul li {
+    width:20em;
+    float:none;
+    display:list-item;
+    position: relative;
+    left: -5.5em;
+    border-bottom: 0.125em dotted;
+}
+
+.chat_single_wrap nav ul ul.text-snippets li {
+    width:55em;
+    font-size: 0.875em;
+    left: -6em;
+    padding: 0.25em 0.5em;
+}
+
+.chat_single_wrap nav ul ul li:last-child {
+    border-bottom: 0;
+}
+
+/* Second, Third and more Tiers	*/
+.chat_single_wrap nav ul ul ul li {
+    position: relative;
+    top:-2em;
+    left:19em;
+}
+
+/* Change this in order to change the Dropdown symbol */
+nav ul ul li > li:after { content:  ' +'; }
+nav ul ul li > li:only-child:after { content: ''; }
+/** end top menu navigation **/
 
 .chat_single_wrap .top .unclickable {
-    color: #000;
+    background-color: #b40000;
     font-style: italic;
+    cursor: none;
 }
 
-.chat_single_wrap h2 {
+.chat_single_wrap .infobox {
     background: #b9bfca;
     color: #333;
     font-size: 16px;
@@ -99,14 +146,14 @@
     padding: 2px 15px;
 }
 
-.chat_single_wrap h2 p {
+.chat_single_wrap .infobox p {
     color: #333;
     line-height: 1.5;
     margin: 0;
     padding: 0;
 }
 
-.chat_single_wrap h2 img {
+.chat_single_wrap infobox img {
     vertical-align: middle;
 }
 
@@ -120,44 +167,53 @@
 .chat_single_wrap .descr {
     border-bottom: none;
     border-top: 1px solid #ccc;
-    color: #172e75;
+    color: #222;
     margin: 0;
-    min-height: 2rem;
-    padding: 15px;
+    min-height: 1em;
+    padding: 0.5em 0.75em;
+    background-color: #b9bfca;
 }
 
 .chat_single_wrap textarea {
-    border-bottom: 1px solid #b9b7b4;
-    border-top: 1px solid #b9b7b4;
-    height: 50px;
+    border-bottom: 1px solid #b9bfca;
+    border-top: 1px solid #b9bfca;
+    height: 3em;
     margin: 0;
-    padding: 15px;
+    padding: 0.5em 0.75em;
     width: 100%;
 }
 
 .chat_single_wrap .chatbox_status {
-    border-top: 1px solid #f6f2ee;
+    font-size: 0.875em;
     font-style: italic;
-    line-height: 15px;
+    line-height: 1.5em;
     margin: 0;
-    padding: 15px;
+    padding: 0.5em 0.75em;
+    background-color: #b9bfca;
 }
 
 .chat_single_wrap .status_icon {
     cursor: pointer;
     display: block;
     float: right;
-    height: 15px;
-    margin: 3px 4px 3px 4px;
-    width: 15px;
+    width: 1.25em;
+    height: 1.25em;
+    margin: 0.5em 0.25em;
+}
+
+.chat_single_wrap .status_icon:hover,
+.chat_single_wrap .status_icon:link,
+.chat_single_wrap .status_icon:visited,
+.chat_single_wrap .status_icon:active {
+    text-decoration: none;
 }
 
 .chat_single_wrap .lock_it {
-    background: transparent url(../../Images/unencrypted.jpg) no-repeat center center;
+    background: transparent url(../../Images/icon-unlock.svg) no-repeat center center;
 }
 
 .chat_single_wrap .unlock_it {
-    background: transparent url(../../Images/encrypted.jpg) no-repeat center center;
+    background: transparent url(../../Images/icon-lock.svg) no-repeat center center;
 }
 
 /*added for typing icon*/

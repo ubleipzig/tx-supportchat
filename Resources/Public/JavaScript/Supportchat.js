@@ -152,7 +152,6 @@ class AjaxChat {
 						this.requestDone.bind(this);
 				});*/
 				// call the getMessages function periodically
-				//this.timer = this.getAll.delay(this.freq, this);
 				this.getAllInterval(this.freq);
 				// create the button events
 				this.addEvents();
@@ -214,6 +213,7 @@ class AjaxChat {
 			return res.text();
 		})
 		.then(() => {
+			this.sleep(5);
 			window.close();
 		});
   }
@@ -289,7 +289,7 @@ class AjaxChat {
 		.then((res) => {
 			if (!res.ok) {
 				throw new Error(
-						"HTTP error at getAll() POST request " + response.status);
+						"HTTP exception at POST request in function AjaxChat.getAll() with status:" + response.status);
 			}
 			return res.json();
 		})
@@ -351,7 +351,7 @@ class AjaxChat {
 				newLine.innerHTML = allWrap;
 			newLine.appendChild(msgEl);
 			document.getElementById(this.options.id.chatbox).appendChild(newLine);
-			this.scrollTextbox();
+			this.scrollTextbox(120);
 		} else {
 			// insert a new title in top of the chatbox
 			document.getElementById(this.options.id.headline).textContent(message);
@@ -529,6 +529,7 @@ class AjaxChat {
 	 * @param delay	Difference of time in ms to request again
 	 */
 	scrollTextbox(delay) {
+		this.scrollTextBoxObj();
 		window.setTimeout(function periodic(delay) {
 			this.scrollTextBoxObj();
 			window.setTimeout(periodic.bind(this), delay * 1000 || 1000)
@@ -553,6 +554,19 @@ class AjaxChat {
 		this.clearTimer(this.resetTimer);
 		this.typingStatus = 1;
 		this.resetTimer = this.resetTypingState.delay(this.freq + 500, this);
+	}
+
+	/**
+	 * Sleep function
+	 *
+	 * @param int seconds
+	 */
+	sleep(seconds) {
+		const date = Date.now();
+		let currentDate = null;
+		do {
+			currentDate = Date.now();
+		} while (currentDate - date < (seconds * 1000));
 	}
 
 	/**

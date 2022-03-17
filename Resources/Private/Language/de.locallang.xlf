@@ -164,11 +164,11 @@
             </trans-unit>
             <trans-unit id="module.status_unlocked" xml:space="preserve">
                 <source>Chat is unlocked</source>
-                <target>Der Chat is entsperrt</target>
+                <target>Der Chat ist entsperrt</target>
             </trans-unit>
             <trans-unit id="module.playAlert" xml:space="preserve">
-                <source>... play an alert 'beep' for every message</source>
-                <target>... Tonsignal bei jeder Nachricht</target>
+                <source>Play an alert 'beep' for every message</source>
+                <target>Tonsignal bei jeder Nachricht</target>
             </trans-unit>
             <trans-unit id="module.selectAlertSound" xml:space="preserve">
                 <source>Select notification sound</source>

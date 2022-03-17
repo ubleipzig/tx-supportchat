@@ -3,35 +3,50 @@
 	<file source-language="en" datatype="plaintext" original="messages" date="2018-11-24T09:35:38Z" product-name="slug">
 		<header/>
 		<body>
-			<trans-unit id="tx_supportchat_chats.be_user">
+			<trans-unit id="tx_supportchat_domain_model_chats.be_user">
                 <source>Backend user</source>
             </trans-unit>
-            <trans-unit id="tx_supportchat_chats.session">
+            <trans-unit id="tx_supportchat_domain_model_chats.session">
                 <source>Session id</source>
             </trans-unit>
-            <trans-unit id="tx_supportchat_chats.active">
+            <trans-unit id="tx_supportchat_domain_model_chats.active">
                 <source>Active</source>
             </trans-unit>
-            <trans-unit id="tx_supportchat_chats.language_uid">
+            <trans-unit id="tx_supportchat_domain_model_chats.language_uid">
                 <source>Language uid</source>
             </trans-unit>
-            <trans-unit id="tx_supportchat_chats.last_row_uid">
+            <trans-unit id="tx_supportchat_domain_model_chats.last_row_uid">
                 <source>Last row uid</source>
             </trans-unit>
-            <trans-unit id="tx_supportchat_chats.surfer_ip">
+            <trans-unit id="tx_supportchat_domain_model_chats.status">
+                <source>Status</source>
+            </trans-unit>
+            <trans-unit id="tx_supportchat_domain_model_chats.type_status">
+                <source>Status of typing</source>
+            </trans-unit>
+            <trans-unit id="tx_supportchat_domain_model_chats.surfer_ip">
                 <source>Surfer ip address</source>
             </trans-unit>
-            <trans-unit id="tx_supportchat_messages">
+            <trans-unit id="tx_supportchat_domain_model_messages">
                 <source>Messages</source>
             </trans-unit>
-			<trans-unit id="tx_supportchat_messages.chat_pid">
+			<trans-unit id="tx_supportchat_domain_model_messages.chat_pid">
                 <source>Chat pid</source>
             </trans-unit>
-            <trans-unit id="tx_supportchat_messages.name">
+            <trans-unit id="tx_supportchat_domain_model_messages.name">
                 <source>Name</source>
             </trans-unit>
-            <trans-unit id="tx_supportchat_messages.message">
+            <trans-unit id="tx_supportchat_domain_model_messages.message">
                 <source>Messages</source>
+            </trans-unit>
+            <trans-unit id="tx_supportchat_domain_model_messages.code">
+                <source>Code of user</source>
+            </trans-unit>
+            <trans-unit id="tx_supportchat_domain_model_logs">
+                <source>Logs</source>
+            </trans-unit>
+            <trans-unit id="tx_supportchat_domain_model_logs.message">
+                <source>Log info</source>
             </trans-unit>
             <trans-unit id="tx_supportchat_internal_messages">
                 <source>Internal messages</source>

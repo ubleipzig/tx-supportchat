@@ -25,18 +25,10 @@
 namespace Ubl\Supportchat\Library;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
 
-class Chat
+class Chat extends ChatAbstract
 {
-
-    /**
-     * Is admin
-     *
-     * @var boolean $admin
-     * @access public
-     */
-    public $admin;
-
     /**
      * Identification for user (FE-User Session OR BE-USER UID)
      *
@@ -44,6 +36,14 @@ class Chat
      * @access public
      */
     public $identification = 0;
+
+    /**
+     * Is admin
+     *
+     * @var boolean $isAdmin
+     * @access public
+     */
+    public $isAdmin;
 
     /**
      * If admin then other access check user id (BE-USER)
@@ -106,11 +106,14 @@ class Chat
      * @access public
      */
     public function initChat(
-        $pid, $identification, $admin = 0, $useTypingIndicator = 0
+        $pid,
+        $identification,
+        $isAdmin = false,
+        $useTypingIndicator = 0
     ) {
-        $this->pid = intval($pid);
+        $this->pid = (int)$pid;
         $this->identification = $identification; // FE-User session id, or BE-User uid
-        $this->admin = $admin;
+        $this->isAdmin = $isAdmin;
         $this->useTypingIndicator = $useTypingIndicator;
     }
 
@@ -126,7 +129,7 @@ class Chat
     {
         $this->uid = $uid;
         $this->lastRow = $lastRow;
-        $this->db = $this->getChat();
+        $this->db = $this->chatsRepository->findChatByUid($uid);
     }
 
     /**
@@ -147,25 +150,24 @@ class Chat
     /**
      * Check if the current user has permission to given chat
      *
+     * @return boolean
      * @access public
      */
     public function hasUserRights()
     {
-        if(!$this->admin) {
-            if($this->db["session"] == $this->identification && $this->identification && $this->db["active"] && $this->uid) {
-                return (1);
-            }
-            else {
-                return (0);
-            }
-        }
-        else {
-            if ((!$this->db["be_user"] || $this->db["be_user"]==$this->identification) && $this->db["active"] && $this->uid) {
-                return (1);
-            }
-            else {
-                return (0);
-            }
+        if (!$this->isAdmin) {
+            return (
+                $this->db['session'] == $this->identification
+                && $this->identification
+                && $this->db['active']
+                && $this->uid
+            ) ? true : false;
+        } else {
+            return (
+                (!$this->db['be_user'] || $this->db['be_user'] == $this->identification)
+                && $this->db['active']
+                && $this->uid
+            ) ? true : false;
         }
     }
 
@@ -179,23 +181,9 @@ class Chat
     {
         if ($this->db["status"]) {
             return ($this->db["status"]);
-        }
-        else {
+        } else {
             return ("no_access");
         }
-    }
-
-    /**
-     * Get the chat from database
-     *
-     * @return array    The Chat
-     */
-    public function getChat()
-    {
-        global $TYPO3_DB;
-        $tableChats = "tx_supportchat_chats";
-        $res = $TYPO3_DB->exec_SELECTquery("*", $tableChats, 'uid=' . $this->uid);
-        return ($TYPO3_DB->sql_fetch_assoc($res));
     }
 
     /**
@@ -208,7 +196,6 @@ class Chat
      */
     public function createChat($feLanguageId)
     {
-        $table = "tx_supportchat_chats";
         $insertData = [
             "pid" => $this->pid,
             "crdate" => time(),
@@ -218,7 +205,7 @@ class Chat
             "surfer_ip" => ChatHelper::getIpAddressOfUser(),
             "be_user" => '',
             "status" => '',
-            "assume_to_be_user" => ''
+            "type_status" => "[]"
         ];
         // hook for manipulating the db entry of insert data
         if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXT']['supportchat']['Library/Chat.php']['overwriteCreateChat'])) {
@@ -229,12 +216,10 @@ class Chat
                 $insertData = GeneralUtility::callUserFunction($_funcRef, $_params, $this);
             }
         }
+        $chatPid = $this->addChat($insertData);
 
-        $GLOBALS['TYPO3_DB']->exec_INSERTquery($table, $insertData);
-        $chatPid = $GLOBALS['TYPO3_DB']->sql_insert_id();
-
-        if($this->logging) {
-            $this->writeLog("Chat ".$chatPid." was succesfully created!");
+        if ($this->logging) {
+            $this->writeLog("Chat " . $chatPid . " was successfully created");
             $this->logTypingStatus($chatPid);
         }
         return ($chatPid);
@@ -243,37 +228,24 @@ class Chat
     /**
      * Get all messages with uid greater then $this->lastRow
      *
-     * @param string $fields Default returns all fields from db
-     *
      * @return array $data   A multidimensional messages array
      * @access public
      */
-    public function getMessages($fields = "*")
+    public function getMessages()
     {
-        global $TYPO3_DB;
-        $table = "tx_supportchat_messages";
-        $res = $TYPO3_DB->exec_SELECTquery(
-            $fields.",uid",
-            $table,
-            'chat_pid='.$this->uid.' AND uid > '.$this->lastRow,"",
-            "crdate"
-        );
+        $resMessages = $this->messagesRepository->findMessagesByUidAndLastRow($this->uid, $this->lastRow);
         $data = [];
-        $fieldArray = explode(",",$fields);
-        $i=0;
-        while ($row = $TYPO3_DB->sql_fetch_assoc($res)) {
-            $this->lastRow = $row["uid"];
-            foreach ($fieldArray as $field) {
-                if($field == "crdate") {
-                    $data[$i][$field] = ChatHelper::renderTstamp($row[$field]);
-                }
-                else {
-                    $data[$i][$field] = $row[$field];
-                }
-            }
+        $i = 0;
+        foreach ($resMessages as $row) {
+            $this->lastRow = $row->getUid();
+            $data[$i]['code'] = $row->getCode();
+            $data[$i]['name'] = $row->getName();
+            $data[$i]['message'] = $row->getMessage();
+            $data[$i]['crdate'] = ChatHelper::renderTstamp($row->getCrdate());
+            $data[$i]['uid'] = $row->getUid();
             $i++;
         }
-        return ($data);
+        return $data;
     }
 
     /**
@@ -282,21 +254,12 @@ class Chat
      * @param string $message
      * @param string $code
      * @param string $name
-     * @param string $fromSupporter
-     * @param string $toSupporter
      *
      * @return int $messageId           Id of the newly created message
      * @access public
      */
-    public function insertMessage(
-        $message,
-        $code,
-        $name,
-        $fromSupporter = "",
-        $toSupporter = ""
-    ) {
-        global $TYPO3_DB;
-
+    public function insertMessage(string $message, string $code, string $name)
+    {
         $message = htmlspecialchars($message);
         $message = ChatHelper::activateHtmlLinks($message);
 
@@ -305,8 +268,6 @@ class Chat
             "tstamp"=> time(),
             "pid" => $this->pid,
             "code" => $code,
-            "from_supportler" => $fromSupporter,
-            "to_supportler" => $toSupporter,
             "chat_pid" => $this->uid,
             "name" => $name,
             "message" => $message
@@ -322,9 +283,8 @@ class Chat
             }
         }
 
-        $table = "tx_supportchat_messages";
-        $TYPO3_DB->exec_INSERTquery($table,$insertData);
-        $messageId = $TYPO3_DB->sql_insert_id();
+        $messageId = $this->addMessage($insertData);
+        // If messageId greater than lastRow make it lastRow seems to be true every time?
         if ($messageId > $this->lastRow) {
             $this->lastRow = $messageId;
         }
@@ -332,52 +292,30 @@ class Chat
     }
 
     /**
-     * Destroys a chat (active=0)
+     * Destroy a chat (active=0)
      *
      * @return void
      * @access public
      */
     public function destroyChat()
     {
-        global $TYPO3_DB,$BE_USER;
-        $table = "tx_supportchat_chats";
-        $updateArray = [
-            "active" => 0,
-        ];
-        if ($BE_USER->user["uid"]) {
-            $updateArray["status"] = "be_user_destroyed";
+        $persistenceManager = $this->objectManager->get(PersistenceManager::class);
+        $destroy = $this->chatsRepository->findByUid($this->uid);
+        $destroy->setActive(0);
+        if ($this->getBackendUserUid()) {
+            $destroy->setStatus("be_user_destroyed");
+        } else {
+            $destroy->setStatus("fe_user_destroyed");
         }
-        else {
-            $updateArray["status"] = "fe_user_destroyed";
-        }
-        $TYPO3_DB->exec_UPDATEquery($table,'uid='.$this->uid,$updateArray);
+        $this->chatsRepository->update($destroy);
+        $persistenceManager->persistAll();
+
         $this->db["active"] = 0;
         if ($this->logging) {
-            $user = $this->admin ? ($BE_USER->user["realName"] ? $BE_USER->user["realName"] : $BE_USER->user["username"]) : "FE-User";
-            $this->writeLog("Chat ".$this->uid." was succesfully destroyed by ".$user);
+            $user = $this->isAdmin
+                ? $this->getBackendUsername() : "Frontend-User";
+            $this->writeLog("Chat ". $this->uid . " was succesfully destroyed by ". $user);
         }
-    }
-
-    /**
-     * Write log message to DB
-     *
-     * @params string $msg
-     *
-     * @return boolean Return 1 for true
-     * @access public
-     */
-    public function writeLog($msg)
-    {
-        global $TYPO3_DB;
-        $insertData = [
-            "crdate" => time(),
-            "tstamp"=> time(),
-            "pid" => $this->pid,
-            "message" => $msg
-        ];
-        $table = "tx_supportchat_log";
-        $TYPO3_DB->exec_INSERTquery($table,$insertData);
-        return 1;
     }
 
     /**
@@ -390,42 +328,21 @@ class Chat
      */
     public function lockChat($lock = 1)
     {
-        global $TYPO3_DB,$BE_USER;
-        $table = "tx_supportchat_chats";
-        $updateArray = [
-            "be_user" => $lock ? $BE_USER->user["uid"] : "",
-        ];
-        $TYPO3_DB->exec_UPDATEquery($table,'uid='.$this->uid,$updateArray);
+        $persistenceManager = $this->objectManager->get(PersistenceManager::class);
+        $locked = $this->chatsRepository->findByUid($this->uid);
+        $locked->setBackendUser(
+            ($lock) ? $this->getBackendUserUid() : ""
+        );
+        $this->chatsRepository->update($locked);
+        $persistenceManager->persistAll();
+
         if ($this->logging) {
-            $user = $this->admin ? ($BE_USER->user["realName"] ? $BE_USER->user["realName"] : $BE_USER->user["username"]) : "FE-User";
+            $user = $this->isAdmin
+                ? $this->getBackendUsername() : "Frontend-User";
             $str = $lock ? "locked" : "unlocked";
-            $this->writeLog("Chat ".$this->uid." was succesfully ".$str." for ".$user);
+            $this->writeLog("Chat " . $this->uid . " was succesfully " . $str . " for ". $user);
         }
         return ($lock);
-    }
-
-    /**
-     * Assumes the chat to the be_user
-     *
-     * @param int $be_user  The be-user to assume the chat to
-     *
-     * @return void
-     * @todo implement it
-     */
-    function assumeChatToUser($be_user)
-    {
-    }
-
-    /**
-     * Accept or decline the request to assume the chat
-     *
-     * @params boolean  Accept it or not
-     *
-     * @return void
-     * @todo implement it
-     */
-    function acceptAssumeChat($accepted = 1)
-    {
     }
 
     /**
@@ -439,27 +356,23 @@ class Chat
      */
     public function destroyInactiveChats($inactivateTime)
     {
-        global $BE_USER;
-        $tableChats = "tx_supportchat_chats";
-        $tableMessages = "tx_supportchat_messages";
-        $res = $GLOBALS["TYPO3_DB"]->exec_SELECTquery('uid,crdate',$tableChats,'active=1 AND deleted=0 AND hidden=0 AND pid='.$this->pid);
-        while ($row=$GLOBALS["TYPO3_DB"]->sql_fetch_assoc($res)) {
-            $limit = time() - ($inactivateTime*60);
-            $messageRes = $GLOBALS["TYPO3_DB"]->exec_SELECTquery('uid',$tableMessages,'chat_pid='.$row["uid"].' AND crdate > '.$limit);
-            $messageRow = $GLOBALS["TYPO3_DB"]->sql_fetch_assoc($messageRes);
-            if (!$messageRow["uid"] && $row["crdate"] < $limit) {
-                // delete the Chat
-                $GLOBALS["TYPO3_DB"]->exec_UPDATEquery(
-                    $tableChats,
-                    "uid=".$row["uid"],
-                    ["active" => "0", "status" => "timeout"]
-                );
+        $res = $this->chatsRepository->findActiveChatsByPid($this->pid);
+        $limit = time() - ($inactivateTime * 60);
+        foreach ($res as $row) {
+            $message = $this->messagesRepository->findMessagesWithinPeriod($row->getUid(), $limit);
+            if (!$message && $row->getCrdate() < $limit) {
+                $persistenceManager = $this->objectManager->get(PersistenceManager::class);
+                $destroy = $this->chatsRepository->findByUid($row->getUid());
+                $destroy->setActive(0);
+                $destroy->setStatus("timeout");
+                $this->chatsRepository->update($destroy);
+                $persistenceManager->persistAll();
                 if ($this->logging) {
-                    $user = $BE_USER->user["uid"]
-                        ? ($BE_USER->user["realName"]
-                            ? $BE_USER->user["realName"] : $BE_USER->user["username"])
-                        : "FE-User";
-                    $this->writeLog("Chat ".$row["uid"]." was succesfully destroyed by System, timeout exceeded");
+                    $user = $this->getBackendUserUid()
+                        ? $this->getBackendUsername() : "Frontend-User";
+                    $this->writeLog(
+                        "Chat " . $row->getUid() . " of " . $user . " was succesfully destroyed by System, timeout exceeded"
+                    );
                 }
             }
         }
@@ -470,84 +383,69 @@ class Chat
      * Behaviour of this method is controlled by state of <code>useTypingIndicator</code>.
      *
      * @params boolean $isTyping True if current end is typing, false if it's not
+     * @param $isTyping
      *
-     * @return boolean           True or false if useTypingIndicator is not set to true (1).
+     * @return boolean  True or false if useTypingIndicator is not set to true (1).
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
      * @access public
      * @see #useTypingIndicator
      * @see #initChat($pid, $ident, $admin=0, $useTypingIndicator)
      */
     public function saveTypingStatus($isTyping)
     {
-        global $BE_USER;
         /** tradem 2012-04-11 Added check of control variable. */
         if ($this->useTypingIndicator == 1) {
-            if($this->db['uid']) {
-                $status_array = unserialize($this->db['status']);
-                if(!is_array($status_array)) {
+            if ($this->db['uid']) {
+                $status_array = $this->db['type_status'];
+                if (!is_array($status_array)) {
                     $status_array = ['feu_typing' => 0, 'beu_typing' => 0];
                 }
-                if($BE_USER->user["uid"]) {
+                if ($this->getBackendUserUid()) {
                     //current user is a backend-user and typing?
-                    if($isTyping == 1) {
-                        $status_array['beu_typing'] = 1;
-                    } else {
-                        $status_array['beu_typing'] = 0;
-                    }
+                    $status_array['beu_typing'] = ($isTyping == 1) ? 1 : 0;
                 } else {
                     //current user is a frontend-user and typing?
-                    if ($isTyping == 1) {
-                        $status_array['feu_typing'] = 1;
-                    } else {
-                        $status_array['feu_typing'] = 0;
-                    }
+                    $status_array['feu_typing'] = ($isTyping == 1) ? 1 : 0;
                 }
-                $updateArray = ['status' => serialize($status_array)];
-                if ($this->db['status'] != $updateArray['status']) {
-                    $tableChats = "tx_supportchat_chats";
-                    $GLOBALS["TYPO3_DB"]->exec_UPDATEquery($tableChats,"uid=".$this->uid,$updateArray);
+                $updateArray = ['type_status' => json_encode($status_array)];
+                if ($updateArray['type_status'] != $this->db['type_status']) {
+                    $persistenceManager = $this->objectManager->get(PersistenceManager::class);
+                    $save = $this->chatsRepository->findByUid($this->uid);
+                    $save->setTypeStatus($status_array);
+                    $this->chatsRepository->update($save);
+                    $persistenceManager->persistAll();
                 }
             }
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 
     /**
      * Retrieve typing status of opposite chat-partner.
      * Behavoir of this method is controlled by state of <code>useTypingIndicator</code>.
      *
-     * @return boolean True if other end is typing, false if it's not or
-     *                 if useTypingIndicator is not set to true (1).
+     * @return mixed True if other end is typing, false if it's not or
+     *               if useTypingIndicator is not set to true (1).
      * @access public
      * @see #useTypingIndicator
      * @see #initChat($pid,$ident,$admin=0,$useTypingIndicator)
      */
     public function getTypingStatus()
     {
-        global $BE_USER;
-
-        /** tradem 2012-04-11 Added check of control variable. */
         if ($this->useTypingIndicator == 1) {
             if ($this->db['uid'] && $this->db['active']) {
-                $status_array = unserialize($this->db['status']);
+                $status_array = $this->db['type_status'];
                 if (!is_array($status_array)) {
-                    $status_array = ['feu_typing'=>0, 'beu_typing'=>0];
+                    $status_array = ['feu_typing' => 0, 'beu_typing' => 0];
                 }
-                if ($BE_USER->user["uid"]) {
+                if ($this->getBackendUserUid()) {
                     //current user is a backend-user and frontend-user is typing?
-                    if ($status_array['feu_typing'] == 1) {
-                        return 1;
-                    } else {
-                        return 0;
-                    }
+                    return ($status_array['feu_typing'] == 1) ? 1 : 0;
                 } else {
                     //current user is frontend-user and backend-user is typing?
-                    if ($status_array['beu_typing'] == 1) {
-                        return 1;
-                    } else {
-                        return 0;
-                    }
+                    return ($status_array['beu_typing'] == 1) ? 1 : 0;
                 }
             }
         }
@@ -568,5 +466,64 @@ class Chat
                 "Info: Chat ".$chatId." has been configured without typing indicator!"
             );
         }
+    }
+
+    /**
+     * Write log message to database
+     *
+     * @params string $msg
+     *
+     * @return boolean Return true
+     * @access public
+     */
+    public function writeLog($msg)
+    {
+        $dbLogs = $this->getConnectionForLogs();
+        $dbLogs->insert(
+            ChatAbstract::TABLE_LOGS,
+            [
+                "crdate" => time(),
+                "tstamp"=> time(),
+                "pid" => $this->pid,
+                "message" => $msg
+            ]
+        );
+        return true;
+    }
+
+    /**
+     * Creates new chat room to table tx_supportchat_domain_model_chats
+     *
+     * @param array $insertData New dataset to insert.
+     *
+     * @return int  Last insert id return chat pid
+     * @access protected
+     */
+    protected function addChat(array $insertData)
+    {
+        $dbChats = $this->getConnectionForChats();
+        $dbChats->insert(
+            ChatAbstract::TABLE_CHATS,
+            $insertData
+        );
+        return (int)$dbChats->lastInsertId(Chat::TABLE_CHATS);
+    }
+
+    /**
+     * Adds message to table tx_supportchat_domain_model_messages
+     *
+     * @param array $insertData New dataset to insert.
+     *
+     * @return int  Last insert id
+     * @access protected
+     */
+    protected function addMessage(array $insertData)
+    {
+        $dbChats = $this->getConnectionForMessages();
+        $dbChats->insert(
+            ChatAbstract::TABLE_MESSAGES,
+            $insertData
+        );
+        return (int)$dbChats->lastInsertId(Chat::TABLE_MESSAGES);
     }
 }

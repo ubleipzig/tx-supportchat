@@ -4,11 +4,13 @@ if (!defined ('TYPO3_MODE')) {
 }
 
 $_EXTKEY = 'supportchat';
-$_TXEXTKEY = 'tx_' . $EXTKEY;
+$_TL = 'tx_' . $_EXTKEY . '_domain_model_chats';
+$_LL = 'LLL:EXT:' . $_EXTKEY . '/Resources/Private/Language/locallang_db.xlf:' . $_TL;
+
 
 return [
     "ctrl" => [
-        'title' => 'LLL:EXT:' . $_EXTKEY . '/Resources/Private/Language/locallang_db.xlf:'.$_TXEXTKEY.'_chats',
+        'title' => $_LL,
         'label' => 'be_user',
         'tstamp' => 'tstamp',
         'crdate' => 'crdate',
@@ -18,13 +20,13 @@ return [
         "enablecolumns" => [
             "disabled" => "hidden",
         ],
-    "iconfile" => 'EXT:' . $_EXTKEY . '/Resources/Public/Icons/icon_tx_supportchat_chats.gif',
+        "iconfile" => 'EXT:' . $_EXTKEY . '/Resources/Public/Icons/icon_tx_supportchat_chats.gif',
     ],
     "feInterface" => [
-        "fe_admin_fieldList" => "hidden, be_user, session, active, last_row_uid",
+        "fe_admin_fieldList" => "hidden, fe_user, session, active, last_row_uid",
     ],
     "interface" => [
-        "showRecordFieldList" => "hidden,be_user,session,active,last_row_uid,language_uid,surfer_ip"
+        "showRecordFieldList" => "hidden,be_user,session,active,last_row_uid,language_uid,surfer_ip,status,type_status"
     ],
     "columns" => [
         "hidden" => [
@@ -37,7 +39,7 @@ return [
         ],
         "be_user" => [
             "exclude" => 1,
-            "label" => "LLL:EXT:' . $_EXTKEY . '/Resources/Private/Language/locallang_db.xlf:'.$_TXEXTKEY.'_chats.be_user",
+            "label" => $_LL . ".be_user",
             "config" => [
                 "type" => "group",
                 "internal_type" => "db",
@@ -49,7 +51,7 @@ return [
         ],
         "session" => [
             "exclude" => 1,
-            "label" => "LLL:EXT:' . $_EXTKEY . '/Resources/Private/Language/locallang_db.xlf:'.$_TXEXTKEY.'_chats.session",
+            "label" => $_LL . ".session",
             "config" => [
                 "type" => "input",
                 "size" => "30"
@@ -57,7 +59,7 @@ return [
         ],
         "surfer_ip" => [
             "exclude" => 1,
-            "label" => "LLL:EXT:' . $_EXTKEY . '/Resources/Private/Language/locallang_db.xlf:'.$_TXEXTKEY.'_chats.surfer_ip",
+            "label" => $_LL . ".surfer_ip",
             "config" => [
                 "type" => "input",
                 "size" => "30"
@@ -65,25 +67,44 @@ return [
         ],
         "active" => [
             "exclude" => 1,
-            "label" => "LLL:EXT:' . $_EXTKEY . '/Resources/Private/Language/locallang_db.xlf:'.$_TXEXTKEY.'_chats.active",
+            "label" => $_LL . ".active",
             "config" => [
                 "type" => "check"
             ]
         ],
+        "status" => [
+            "exclude" => 1,
+            "label" => $_LL . ".status",
+            "config" => [
+                "type" => "none"
+            ]
+        ],
+        "type_status" => [
+            "exclude" => 1,
+            "label" => $_LL . ".type_status",
+            "config" => [
+                "type" => "none"
+            ]
+        ],
         "last_row_uid" => [
             "exclude" => 1,
-            "label" => "LLL:EXT:' . $_EXTKEY . '/Resources/Private/Language/locallang_db.xlf:'.$_TXEXTKEY.'_chats.last_row_uid",
+            "label" => $_LL . ".last_row_uid",
             "config" => [
                 "type" => "none"
             ]
         ],
         "language_uid" => [
             "exclude" => 1,
-            "label" => "LLL:EXT:' . $_EXTKEY . '/Resources/Private/Language/locallang_db.xlf:'.$_TXEXTKEY.'_chats.language_uid",
+            "label" => $_LL . ".language_uid",
             "config" => [
                 "type" => "none"
             ]
         ],
+        'crdate' => [
+            'config' => [
+                'type' => 'passthrough',
+            ],
+        ]
     ],
     "types" => [
         "0" => ["showitem" => "hidden, --palette--;;1;, be_user, session, active, last_row_uid, language_uid, surfer_ip"]

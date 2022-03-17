@@ -25,8 +25,10 @@
 
 namespace Ubl\Supportchat\Library;
 
-use \TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
-use \TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Database\Connection;
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class ChatHelper {
 
@@ -40,19 +42,24 @@ class ChatHelper {
 	 */
 	public static function checkIfChatIsOnline($pids)
     {
-	    global $TYPO3_DB;
-	    $table = "pages";
-
-		// security
 		$pid = explode(',',$pids);
 		$pids = "";
 		foreach ($pid as $uid) {
 			$pids .= ',' . (intval($uid));
 		}
 		$pids = substr($pids,1);
-		$res = $TYPO3_DB->exec_SELECTquery("uid, hidden", $table, 'uid IN ('.$pids.')');
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
+            ->getConnectionForTable('pages')
+            ->createQueryBuilder();
+        $result = $queryBuilder
+            ->select('uid', 'hidden')
+            ->from('pages')
+            ->where(
+                $queryBuilder->expr()->in('uid', $pids)
+            )
+            ->execute();
 		$retArray = [];
-		while ($row = $TYPO3_DB->sql_fetch_assoc($res)) {
+		while ($row = $result->fetch()) {
 			$retArray[$row["uid"]] = $row["hidden"] ? 0 : 1;
 		}
 		// Hook for implements personal check of chatIsOnline function
@@ -61,7 +68,8 @@ class ChatHelper {
                 $_params = [
                     'retArray' => $retArray
                 ];
-                $retArray = GeneralUtility::callUserFunction($_funcRef, $_params, self);
+                $self = self;
+                $retArray = GeneralUtility::callUserFunction($_funcRef, $_params, $self);
             }
         }
         return $retArray;
@@ -128,7 +136,7 @@ class ChatHelper {
      */
 	public static function renderTstamp($tstamp)
     {
-		return (date("H:i:s",$tstamp));
+		return (date("H:i:s", $tstamp));
 	}
 
 	/**
@@ -145,12 +153,12 @@ class ChatHelper {
 		// $str = str_replace("http://www.","www.",$str);
 		// $str = str_replace("www.","http://www.",$str);
 		$str = preg_replace(
-		    "/([\w]+:\/\/[\w-?&;#~=\.\/\@]+[\w\/])/i",
+		    "/([\w]+:\/\/[\w\-?&;#~=\.\/\@]+[\w\/])/i",
             "<a href=\"$1\" target=\"_blank\">$1</a>",
             $str
         );
 		$str = preg_replace(
-		    "/([\w-?&;#~=\.\/]+\@(\[?)[a-zA-Z0-9\-\.]+\.([a-zA-Z]{2,3}|[0-9]{1,3})(\]?))/i",
+		    "/([\w\-?&;#~=\.\/]+\@(\[?)[a-zA-Z0-9\-\.]+\.([a-zA-Z]{2,3}|[0-9]{1,3})(\]?))/i",
             "<a href=\"mailto:$1\">$1</a>",
             $str
         );

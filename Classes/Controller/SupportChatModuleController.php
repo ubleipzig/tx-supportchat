@@ -32,6 +32,7 @@ use TYPO3\CMS\Extbase\Exception;
 use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
 use TYPO3\CMS\Lang\LanguageService;
 
+use Ubl\Supportchat\Library\BackendUserHelper;
 use Ubl\Supportchat\Library\Chat;
 use Ubl\Supportchat\Library\ChatHelper;
 use Ubl\Supportchat\Library\ChatMarket;
@@ -130,44 +131,33 @@ class SupportChatModuleController extends BaseAbstractController
      * Initializes the module
      *
      * @return void
-     * @throws Exception    If no chat pid given.
+     * @throws \Exception    If no chat pid given.
      *
      */
     public function initializeAction()
     {
         $this->chatsPid = $this->getBackendUser()->userTS["supportchat."]["chatsPid"];
         if (!$this->chatsPid) {
-            throw new Exception(
-                'You must insert the BE-User TS-Config var "supportchat.chatsPid"!'
+            throw new \Exception(
+                'For your backend-user TS-Config variable: "supportchat.chatsPid" is missing.
+                Check if the variable is set and you have the right to access the chat.'
             );
         }
 
-        $this->defLang = ($this->getBackendUser()->userTS["supportchat."]["defLang"])
-            ? $this->getBackendUser()->userTS["supportchat."]["defLang"]
-            : $this->defLang;
-
-        /** 2012-04-11 Added to control typing indiator if it works. */
-        $this->useTypingIndicator = (isset($this->getBackendUser()->userTS["supportchat."]["useTypingIndicator"]))
-            ? $this->getBackendUser()->userTS["supportchat."]["useTypingIndicator"]
-            : $this->useTypingIndicator;
+        $this->defLang = ($this->getBackendUser()->userTS["supportchat."]["defLang"]) ?: $this->defLang;
+        $this->useTypingIndicator =
+            ($this->getBackendUser()->userTS["supportchat."]["useTypingIndicator"]) ?: $this->useTypingIndicator;
         $this->ajaxGetAllFreq = ($this->getBackendUser()->userTS["supportchat."]["ajaxGetAllFreq"])
             ? $this->getBackendUser()->userTS["supportchat."]["ajaxGetAllFreq"] * 1000
             : $this->ajaxGetAllFreq * 1000;
-        $this->timeToInactivateChat = (isset($this->getBackendUser()->userTS["supportchat."]["timeToInactivateChatIfNoMessages"]))
-            ? $this->getBackendUser()->userTS["supportchat."]["timeToInactivateChatIfNoMessages"]
-            : $this->timeToInactivateChat;
-        $this->playAlert = (isset($this->getBackendUser()->userTS["supportchat."]["playAlert"]))
-            ? $this->getBackendUser()->userTS["supportchat."]["playAlert"]
-            : $this->playAlert;
-        $this->showLogBox = (isset($this->getBackendUser()->userTS["supportchat."]["showLogBox"]))
-            ? $this->getBackendUser()->userTS["supportchat."]["showLogBox"]
-            : $this->showLogBox;
-        $this->beUserName = (isset($this->getBackendUser()->user["realName"]))
-            ? $this->getBackendUser()->user["realName"]
-            : $this->getBackendUser()->user["username"];
-        // general
+        $this->timeToInactivateChat = ($this->getBackendUser()->userTS["supportchat."]["timeToInactivateChatIfNoMessages"])
+                ?: $this->timeToInactivateChat;
+        $this->playAlert = ($this->getBackendUser()->userTS["supportchat."]["playAlert"]) ?: $this->playAlert;
+        $this->showLogBox = ($this->getBackendUser()->userTS["supportchat."]["showLogBox"]) ?: $this->showLogBox;
+        $this->beUserName = ($this->getBackendUser()->user["realName"]) ?: $this->getBackendUser()->user["username"];
+        // Get id
         $this->id = (int)GeneralUtility::_GET('id');
-        //The page will show only if there is a valid page and if this page may be viewed by the user
+        // The page will show only if there is a valid page and if this page may be viewed by the user
         $this->pageInformation =
             BackendUtility::readPageAccess($this->id, $this->getBackendUser()->getPagePermsClause(1));
     }
@@ -199,17 +189,21 @@ class SupportChatModuleController extends BaseAbstractController
     /**
      * Get chat ajax action
      *
-     * @return void  Return ajax request
+     * @return string  Return ajax request as json
      */
     public function getChatAction()
     {
+        $xmlArray = [];
         if (!$this->getBackendUser()->user["uid"]) {
             $xmlArray = [
                 "fromNoAccess" => [
                     "time" => ChatHelper::renderTstamp(time()),
                 ]
             ];
-            return ($xmlArray);
+            return ChatHelper::printResponse(
+                json_encode($xmlArray),
+                true
+            );
         }
         // user ts chatsPid
         $this->chatsPid = $this->getBackendUser()->userTS["supportchat."]["chatsPid"];
@@ -221,20 +215,17 @@ class SupportChatModuleController extends BaseAbstractController
         if ($this->getBackendUser()->userTS["supportchat."]["useTypingIndicator"]) {
             $this->useTypingIndicator = $this->getBackendUser()->userTS["supportchat."]["useTypingIndicator"];
         }
-        $this->lastRowArray = (GeneralUtility::_GP("lastRowArray"))
-            ? GeneralUtility::_GP("lastRowArray") : [];
+        $this->lastRowArray = (GeneralUtility::_GP("lastRowArray")) ?: [];
         if (GeneralUtility::_GP("cmd")) {
             $this->cmd = GeneralUtility::_GP("cmd");
         }
-        $this->lastLogRow = (intval(GeneralUtility::_GP("lastLogRow")))
-            ? intval(GeneralUtility::_GP("lastLogRow")) : 0;
-        $this->uid = intval(GeneralUtility::_GP("chatUid"))
-            ? intval(GeneralUtility::_GP("chatUid")) : 0;
+        $this->lastLogRow = ((int)(GeneralUtility::_GP("lastLogRow"))) ?: 0;
+        $this->uid = ((int)(GeneralUtility::_GP("chatUid"))) ?: 0;
         $chatMarket = new ChatMarket($this->logging, $this->lastLogRow);
         $chatMarket->initChat(
             $this->chatsPid,
             $this->getBackendUser()->user["uid"],
-            1,
+            true,
             $this->useTypingIndicator
         );
         switch($this->cmd) {
@@ -256,13 +247,16 @@ class SupportChatModuleController extends BaseAbstractController
                         ),
                         "log" => $chatMarket->getLogMessages(),
                         "lastLogRow" => $chatMarket->lastLogRow,
-                        "beUsers" => $chatMarket->getBeUsers(),
+                        "beUsers" => BackendUserHelper::getBackendUsers(
+                            $this->getBackendUser()->user["uid"]
+                        ),
                     ]
                 ];
-                $xml = ChatHelper::convert2xml($xmlArray);
-                ChatHelper::printResponse($xml);
-                break;
         }
+        return ChatHelper::printResponse(
+            json_encode($xmlArray),
+            true
+        );
     }
 
     /**
@@ -289,7 +283,6 @@ class SupportChatModuleController extends BaseAbstractController
             } else {
                 return false;
             }
-
     }
 
     /**
@@ -328,12 +321,19 @@ class SupportChatModuleController extends BaseAbstractController
 				var fixText = {
 					' . $this->createFixTextJsObj() . '
 				}
-
-				var theRequest = null;
 				var timer = null;
 				var strftime = "";
-
-				window.addEvent("domready", function() {
+                
+                function domReady(fn) {
+                    // see if DOM is already available
+                    if (document.readyState === "complete" || document.readyState === "interactive") {
+                        // call on next available tick
+                        setTimeout(fn, 1);
+                    } else {
+                        document.addEventListener("DOMContentLoaded", fn);
+                    }
+                }    
+				domReady(function() {
 					initChat(' . $this->ajaxGetAllFreq . ',' . $this->useTypingIndicator . ');
 				});
 			//-->
@@ -361,7 +361,6 @@ class SupportChatModuleController extends BaseAbstractController
                 ->setDisplayName('Shortcut');
             $buttonBar->addButton($shortcutButton, ButtonBar::BUTTON_POSITION_RIGHT);
         }
-
     }
 
     /**
@@ -409,7 +408,7 @@ class SupportChatModuleController extends BaseAbstractController
             $sessionData = $this->getSessionData('tx_supportchat');
             $alertSound = ($sessionData['alertsound'] && ($sessionData['alertsound'] != ""))
                 ? $sessionData['alertsound'] : reset($sounds);
-            echo "Das ist " . $alertSound;
+            //echo "Das ist " . $alertSound;
             foreach ($sounds as $sound) {
                 $options .= '<option value="' . $sound . '" ' . (($sound == $alertSound) ? 'selected="selected"' : '') . '>'. pathinfo($sound, PATHINFO_FILENAME) .'</option>';
             }
@@ -420,16 +419,17 @@ class SupportChatModuleController extends BaseAbstractController
                         . 'Resources/Public/media/'. $alertSound . '" type="audio/ogg"
 					/>
 				</audio>
-				<p class="alert">
-				    <label for="alert-select">' . $this->translate("module.selectAlertSound") . '</label>
+				<p class="support-chat-alert-options">
+				    <label for="alert-select">' . $this->translate("module.selectAlertSound") . ':</label>
 				    <select id="alert-select" name="alert-select">
 				        ' . $options . '
                     </select>
-				    <input type="checkbox" checked="checked" id="alert_check" /> ' . $this->translate("module.playAlert") . '
+                    <label for="alert_check" class="alert-check">' . $this->translate("module.playAlert") . ':</label>
+                    <input type="checkbox" checked="checked" id="alert_check" />
                 </p>
 			';
         }
-        return ($snippetPlayAlert) ? $snippetPlayAlert : '';
+        return ($snippetPlayAlert) ?: '';
     }
 
     /**
@@ -467,10 +467,6 @@ class SupportChatModuleController extends BaseAbstractController
         );
         $pageRenderer->loadRequireJsModule('TYPO3/CMS/Supportchat/SupportchatBackendAlert');
         $pathToJsLibrary = GeneralUtility::getIndpEnv('TYPO3_SITE_URL') . ExtensionManagementUtility::siteRelPath('supportchat') . 'Resources/Public/JavaScript/';
-        $pageRenderer->addJsFile($pathToJsLibrary . 'MootoolsCore.js');
-        $pageRenderer->addJsFile($pathToJsLibrary . 'MootoolsMore.js');
-        $pageRenderer->addJsFile($pathToJsLibrary . 'ElementForms.js');
-        $pageRenderer->addJsFile($pathToJsLibrary . 'UvumiDropdown.js');
         $pageRenderer->addJsFile($pathToJsLibrary . 'Smileys.js');
         $pageRenderer->addJsFile($pathToJsLibrary . 'SupportchatBackend.js');
 
