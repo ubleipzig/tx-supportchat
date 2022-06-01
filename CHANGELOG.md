@@ -1,5 +1,14 @@
 # Change Log
 
+## [v2.6.0](https://github.com/ubleipzig/tx-supportchat/tree/2.6.0)
+
+[Full Changelog](https://github.com/ubleipzig/tx-supportchat/compare/2.5.0...2.6.0)
+
+**Implemented enhancement**
+* adds scheduler task
+  * **Supportchat Cleanup: cleanupChatMessages** to removes outdated chat messages from table: `tx_supportchat_messages`
+  * **Supportchat Cleanup: cleanupChatLogs** to removes outdated chat logs from table: `tx_supportchat_logs`
+
 ## [v2.5.0](https://github.com/ubleipzig/tx-supportchat/tree/2.5.0)
 
 [Full Changelog](https://github.com/ubleipzig/tx-supportchat/compare/2.4.0...2.5.0)

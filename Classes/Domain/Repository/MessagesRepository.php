@@ -91,5 +91,4 @@ class MessagesRepository extends Repository
         $query->matching($query->logicalAnd($constraints));
         return $query->execute()->getFirst();
     }
-
 }

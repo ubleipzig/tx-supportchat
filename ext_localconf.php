@@ -21,6 +21,12 @@ $TYPO3_CONF_VARS['FE']['eID_include']['tx_supportchat']
     '<INCLUDE_TYPOSCRIPT: source="FILE:EXT:' . $_EXTKEY . '/Configuration/TypoScript/setup.txt">'
 );
 
+// register command line cleanup user routine
+if (TYPO3_MODE === 'BE') {
+    $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['extbase']['commandControllers'][$_EXTKEY] =
+        \Ubl\Supportchat\Command\CleanupCommandController::class;
+}
+
 /*
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addStaticFile(
     $_EXTKEY,
