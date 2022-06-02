@@ -28,6 +28,33 @@ Go to your page where do you like include the chat.
 * Create a new template e.g. ext: Support Chat
 * Edit template and load typoscript settings **Support Chat (supportchat)** at tab _Contains_
 
+### Cleanup chat messages
+
+There is a cleanup-command on typo3's commandline interface to remove chat messages from _tx_supportchat_messages_ table.
+
+Parameters:
+
+```
+-days int (Default: 7) Amount of days to keep chat message.
+```
+
+#### Instruction for setting up at backend
+
+Go to *Scheduler->Add Task*
+* At *Class* choose **Extbase-CommandController-Task**
+* At *Frequency* specify how often and in which period scheduler task should be run. (Seconds or cronjob settings required.)
+* At select box of *CommandController Command* choose **Supportchat Cleanup: cleanupChatMessages**
+* On next step save the task! This is important to display the form element for additional arguments of command line tool.
+* Scroll down and specify the amount of **days** to keep the record since last login of user. Default are _7_ days.
+* Save the task again!
+
+For developing issue it is also possible to run the task on a terminal. Go to typo3 root folder and try:
+
+```
+/usr/bin/php typo3/cli_dispatch.phpsh extbase cleanup:cleanupchatmessages -days=7
+```
+
+
 ## Hooks
 
 Supportchat extension includes a couple of hooks of former plugin provider. These hooks has been adjusted but not tested.
