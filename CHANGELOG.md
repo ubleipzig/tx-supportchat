@@ -1,5 +1,12 @@
 # Change Log
 
+## [v2.6.1](https://github.com/ubleipzig/tx-supportchat/tree/2.6.1)
+
+[Full Changelog](https://github.com/ubleipzig/tx-supportchat/compare/2.6.0...2.6.1)
+
+**Implemented enhancement**
+* anonymize ip addresses of clients and hosts
+
 ## [v2.6.0](https://github.com/ubleipzig/tx-supportchat/tree/2.6.0)
 
 [Full Changelog](https://github.com/ubleipzig/tx-supportchat/compare/2.5.0...2.6.0)

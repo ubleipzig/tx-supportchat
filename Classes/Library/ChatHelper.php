@@ -76,18 +76,35 @@ class ChatHelper {
 	}
 
     /**
+     * Get anonymized ip address
+     *
+     * @param string $ip Ip address
+     *
+     * @return string Anonymize ip address
+     * @access public
+     */
+    public static function getAnonymizedIpAddress($ip)
+    {
+        return preg_replace(
+            ['/\.\d{1,3}\.\d{1,3}$/', '/[\da-f]*:[\da-f]*$/'],
+            ['.0.0', 'XXXX:XXXX'],
+            $ip
+        );
+    }
+
+    /**
      * Prefer HTTP_X_FORWARDED_FOR IP towards originally programmed REMOTE_ADDR
      * due to use of proxy.
      *
      * @return string IP address
      * @access public
      */
-    public static function getIpAddressOfUser() {
-
+    public static function getIpAddressOfUser()
+    {
         if ($_SERVER['HTTP_X_FORWARDED_FOR']) {
-            return $_SERVER['HTTP_X_FORWARDED_FOR'];
+            return self::getAnonymizedIpAddress($_SERVER['HTTP_X_FORWARDED_FOR']);
         } else {
-            return $_SERVER["REMOTE_ADDR"];
+            return self::getAnonymizedIpAddress($_SERVER["REMOTE_ADDR"]);
         }
     }
 
