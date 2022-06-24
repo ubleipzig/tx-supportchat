@@ -65,28 +65,3 @@ For developing issue it is also possible to run the task on a terminal. Go to ty
 ```
 /usr/bin/php typo3/cli_dispatch.phpsh extbase cleanup:cleanupchatmessages -days=7
 ```
-
-## Hooks
-
-Supportchat extension includes a couple of hooks of former plugin provider. These hooks has been adjusted but not tested.
-
-### Library/Chat overwriteCreateChat
-
-Use this to overwrite settings data of created chat.
-
-### Library/Chat postProcessPostedMessage
-
-Use this to manipulate posted messages after entry at the chat box
-
-### Library/ChatHelper checkChatIsOnline
-
-Use this to implement a personal method to check if chat is online
-
-Method has to be of type _static_.
-
-### Library/ChatMarket additionalInfo
-
-Use this to add additional infos at backend chat box header
-
-
-

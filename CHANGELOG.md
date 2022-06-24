@@ -1,5 +1,13 @@
 # Change Log
 
+## [v2.6.2](https://github.com/ubleipzig/tx-supportchat/tree/2.6.2)
+
+[Full Changelog](https://github.com/ubleipzig/tx-supportchat/compare/2.6.1...2.6.2)
+
+**Minor changes**
+* adds LICENSE text 
+* cleaning up description of _hooks_ at [README.md](README.md) text. Hooks are already removed before
+
 ## [v2.6.1](https://github.com/ubleipzig/tx-supportchat/tree/2.6.1)
 
 [Full Changelog](https://github.com/ubleipzig/tx-supportchat/compare/2.6.0...2.6.1)
