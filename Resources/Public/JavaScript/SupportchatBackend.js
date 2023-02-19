@@ -40,6 +40,7 @@ class ChatBackend {
 		this.lastLogRow = 0; // the last log row uid
 		this.logMsgObj = new LogMessage();
 		this.backendUserStorage = new BackendUser(); // the current logged in be-users
+		this.isFirstChat = true; // initialize by first open chat
 	}
 
 	/**
@@ -159,9 +160,9 @@ class ChatBackend {
 					// Draw the chat (messages or whole chat)
 					theChat.draw();
 					// Cursor focus on first chat window
-					if (isFirstChat === true) {
+					if (this.isFirstChat === true) {
 						theChat.addFocus();
-						isFirstChat = false;
+						this.isFirstChat = false;
 					}
 
 					// Check if response claims to lock the chat
