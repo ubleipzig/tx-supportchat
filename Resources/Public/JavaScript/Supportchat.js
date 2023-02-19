@@ -406,7 +406,7 @@ class AjaxChat {
 		} else {
 			this.lastRow = json.lastRow; // update last Row
 			if (this.useTypingIndicator == 1) {
-				let typingElement = (json.typingStatus == 1) ? "display" : "inline";
+				let typingElement = (json.typingStatus == 1) ? "inline" : "none";
 				document.getElementById('typingPen').style.display = typingElement;
 			}
 			if (json.hasOwnProperty("messages") && json.messages.length > 0) {
@@ -485,7 +485,7 @@ class AjaxChat {
 				} else {
 					this.lastRow = root[0].childNodes[1].firstChild.nodeValue; // update last Row
 					if (this.useTypingIndicator == 1) {
-						var status = root[0].childNodes[3].firstChild.nodeValue; // get Status (is Typing ecc.)
+						let status = root[0].childNodes[3].firstChild.nodeValue; // get Status (is Typing ecc.)
 						if (status == 1) {
 							document.getElementById('typingPen').setAttribute("display", "inline");
 						} else {
@@ -553,7 +553,10 @@ class AjaxChat {
 	setTypingState() {
 		this.clearTimer(this.resetTimer);
 		this.typingStatus = 1;
-		this.resetTimer = this.resetTypingState.delay(this.freq + 500, this);
+		//this.resetTimer = this.resetTypingState.delay(this.freq + 500, this);
+		window.setTimeout(function() {
+			this.typingStatus = 0;
+		}.bind(this), this.freq || 2000);
 	}
 
 	/**

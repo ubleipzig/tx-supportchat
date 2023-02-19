@@ -1,5 +1,13 @@
 # Change Log
 
+## [v2.6.4](https://github.com/ubleipzig/tx-supportchat/tree/2.6.4)
+
+[Full Changelog](https://github.com/ubleipzig/tx-supportchat/compare/2.6.3...2.6.4)
+
+**Fixes**
+* fixes status of typing at both direction from client to backend and vice versa
+* fixes position of typing status buttons at frontend and backend chat
+
 ## [v2.6.3](https://github.com/ubleipzig/tx-supportchat/tree/2.6.3)
 
 [Full Changelog](https://github.com/ubleipzig/tx-supportchat/compare/2.6.2...2.6.3)

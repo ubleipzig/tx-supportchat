@@ -162,11 +162,6 @@ class ChatMarket extends Chat
                 // Set default language_uid
                 $languageUid = (int)$this->db["language_uid"];
 
-				// Added for typingStatus
-                // Note: Initialization is not comprehensible
-				$tmp_status = $this->db['type_status'];
-				$tmp_status = $tmp_status['feu_typing'];
-
 				$retArray[$i]["uid"] = $this->uid;
 				$retArray[$i]["lastRow"] = $this->lastRow;
 				$retArray[$i]["crdate"] =
@@ -179,8 +174,10 @@ class ChatMarket extends Chat
 				$retArray[$i]["language_label"] =
                     $localization->getLabelByLanguageUid($languageUid);
 				$retArray[$i]["messages"] = $messages;
-				/*added for typingStatus*/
-				$retArray[$i]["type_status"] = ($tmp_status === 1) ? true : false;
+				// Typing status
+                // Is client typing?
+                $ts = json_decode($this->db['type_status'], true);
+                $retArray[$i]["type_status"] = ($ts['feu_typing'] == 1) ? true : false;
                 // lock chat ?
                 if (isset($lockChats[$this->uid])) {
                     $this->lockChat((int)$lockChats[$this->uid]);

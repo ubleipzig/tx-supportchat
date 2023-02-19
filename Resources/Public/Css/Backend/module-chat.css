@@ -222,13 +222,12 @@ nav ul ul li > li:only-child:after { content: ''; }
     display: inline;
     float: right;
     margin: 3px 5px 0 0;
+    width: 1.8em;
 }
 
 .chat_single_wrap .not_typing {
     border: 0;
     display: none;
-    float: right;
-    margin: 3px 5px 0 0;
 }
 
 .chat_single_wrap .loading {

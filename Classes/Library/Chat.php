@@ -205,7 +205,7 @@ class Chat extends ChatAbstract
             "surfer_ip" => ChatHelper::getIpAddressOfUser(),
             "be_user" => '',
             "status" => '',
-            "type_status" => "[]"
+            "type_status" => "{}"
         ];
         // hook for manipulating the db entry of insert data
         if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXT']['supportchat']['Library/Chat.php']['overwriteCreateChat'])) {
@@ -396,8 +396,9 @@ class Chat extends ChatAbstract
     {
         /** tradem 2012-04-11 Added check of control variable. */
         if ($this->useTypingIndicator == 1) {
-            if ($this->db['uid']) {
-                $status_array = $this->db['type_status'];
+            if ($this->uid) {
+                $chat = $this->chatsRepository->findByUid($this->uid);
+                $status_array = json_decode($chat->getTypeStatus(), true);
                 if (!is_array($status_array)) {
                     $status_array = ['feu_typing' => 0, 'beu_typing' => 0];
                 }
@@ -434,9 +435,10 @@ class Chat extends ChatAbstract
      */
     public function getTypingStatus()
     {
-        if ($this->useTypingIndicator == 1) {
-            if ($this->db['uid'] && $this->db['active']) {
-                $status_array = $this->db['type_status'];
+        if (($this->useTypingIndicator == 1) && $this->uid) {
+            $chat = $this->chatsRepository->findByUid($this->uid);
+            if ($chat->getActive() === 1) {
+                $status_array = json_decode($chat->getTypeStatus(), true);
                 if (!is_array($status_array)) {
                     $status_array = ['feu_typing' => 0, 'beu_typing' => 0];
                 }

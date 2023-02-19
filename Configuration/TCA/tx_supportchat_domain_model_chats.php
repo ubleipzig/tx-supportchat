@@ -76,14 +76,14 @@ return [
             "exclude" => 1,
             "label" => $_LL . ".status",
             "config" => [
-                "type" => "none"
+                "type" => "passthrough"
             ]
         ],
         "type_status" => [
             "exclude" => 1,
             "label" => $_LL . ".type_status",
             "config" => [
-                "type" => "none"
+                "type" => "passthrough"
             ]
         ],
         "last_row_uid" => [
@@ -107,7 +107,7 @@ return [
         ]
     ],
     "types" => [
-        "0" => ["showitem" => "hidden, --palette--;;1;, be_user, session, active, last_row_uid, language_uid, surfer_ip"]
+        "0" => ["showitem" => "hidden, --palette--;;1;, be_user, session, active, last_row_uid, language_uid, surfer_ip, type_status, status"]
     ],
     "palettes" => [
         "1" => ["showitem" => ""]

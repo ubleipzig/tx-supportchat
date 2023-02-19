@@ -932,7 +932,7 @@ class Chats
 		// this.resetTimer = this.resetTypingState.delay(this.freq + 500, this);
 		this.resetTimer = setInterval(
 				this.resetTypingState.bind(this),
-				this.freq || 1000
+				this.freq || 3000
 		);
 	}
 

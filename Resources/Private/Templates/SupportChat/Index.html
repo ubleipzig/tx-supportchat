@@ -22,13 +22,14 @@
             <f:comment>
                 <!-- icon from GNOME Empathy 3.4 iconset: http://ftp.acc.umu.se/pub/GNOME/sources/empathy/3.4/ -->
             </f:comment>
-            <img src="typo3conf/ext/supportchat/Resources/Public/Images/icon-typing.svg" id="typingPen" style="display:none; float:right; border:0; margin-top:10px; margin-right:5px;" />
             <p id="message-label">
                 <f:translate key="{message-label}">[message-label]</f:translate>
             </p>
+            <img src="typo3conf/ext/supportchat/Resources/Public/Images/icon-typing.svg" id="typingPen" />
             <p>
                 <textarea id="{textbox-id}" aria-labelledby="message-label"></textarea>
             </p>
+
             <p class="close">
                 <input type="submit" id="{close-id}" value="<f:translate key='{close-label}'>[close-label]</f:translate>"/>
             </p>

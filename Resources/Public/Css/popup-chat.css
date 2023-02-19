@@ -121,6 +121,14 @@
     height: 1.125em;
 }
 
+.tx-supportchat #typingPen {
+    float:right;
+    width:2em;
+    margin-top:5em;
+    display:none;
+    border:0;
+}
+
 #sendMessage {
     background: lightgreen;
 }

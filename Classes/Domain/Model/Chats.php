@@ -86,7 +86,7 @@ class Chats extends AbstractEntity
      *
      * @var string
      **/
-    protected $type_status = "[]";
+    protected $typeStatus = "{}";
 
     /**
      * Returns backend user
@@ -231,11 +231,11 @@ class Chats extends AbstractEntity
     /**
      * Returns status of typing
      *
-     * @return array $status
+     * @return string $status
      */
     public function getTypeStatus()
     {
-        return json_decode($this->type_status, true);
+        return $this->typeStatus;
     }
 
     /**
@@ -245,7 +245,7 @@ class Chats extends AbstractEntity
      */
     public function setTypeStatus(array $type_status)
     {
-        $this->type_status = json_encode($type_status);
+        $this->typeStatus = json_encode($type_status);
     }
 
 }
