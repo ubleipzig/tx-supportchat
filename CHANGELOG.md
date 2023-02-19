@@ -1,5 +1,12 @@
 # Change Log
 
+## [v2.6.3](https://github.com/ubleipzig/tx-supportchat/tree/2.6.3)
+
+[Full Changelog](https://github.com/ubleipzig/tx-supportchat/compare/2.6.2...2.6.3)
+
+**Fixes**
+* fixes _autofocus_ of backend chat textarea field switching randomly between chat windows 
+
 ## [v2.6.2](https://github.com/ubleipzig/tx-supportchat/tree/2.6.2)
 
 [Full Changelog](https://github.com/ubleipzig/tx-supportchat/compare/2.6.1...2.6.2)
