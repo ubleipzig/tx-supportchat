@@ -92,10 +92,12 @@ class ChatBackend {
 			// Get all backend user
 			this.backendUserStorage.resetUpdate();
 			if (data.fromDoAll.hasOwnProperty('beUsers') && data.fromDoAll.beUsers.length > 0) {
-				for (let i = 0; i <	data.fromDoAll.beUsers.length; i++) {
-					let uid = data.fromDoAll.beUsers.uid;
-					let name = data.fromDoAll.beUsers.name;
-					this.backendUserStorage.addUser(uid, name);
+				for (let i = 0; i < data.fromDoAll.beUsers.length; i++) {
+					if (data.fromDoAll.beUsers[i].uid && data.fromDoAll.beUsers[i].name)
+					this.backendUserStorage.addUser(
+						data.fromDoAll.beUsers[i].uid,
+						data.fromDoAll.beUsers[i].name
+					);
 				}
 			} else {
 				this.backendUserStorage.empty();
@@ -951,6 +953,16 @@ class Chats
 	}
 
 	/**
+	 * Hand over a chat responsibility to another backend user
+	 *
+	 * @param {int} backendUserId
+	 *
+	 * @returns {null}
+	 * @todo Method has to be implemented 
+	 */
+	transferChatToUser(backendUserId){}
+
+	/**
 	 * Updates backend users
 	 *
 	 * @param {Object} backendUserStorage
@@ -968,7 +980,7 @@ class Chats
 							li.innerText = tmp[i];
 							li.addEventListener(
 								"click",
-								//this.assumeChatToUser.bind(this,i)
+								this.transferChatToUser.bind(this,i)
 							);
 						ul.appendChild(li);
 					}

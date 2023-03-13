@@ -1,5 +1,12 @@
 # Change Log
 
+## [v2.6.6](https://github.com/ubleipzig/tx-supportchat/tree/2.6.6)
+
+[Full Changelog](https://github.com/ubleipzig/tx-supportchat/compare/2.6.5...2.6.6)
+
+**Fixes**
+* fixes displaying other logged-in backend user below tab Options
+  
 ## [v2.6.5](https://github.com/ubleipzig/tx-supportchat/tree/2.6.5)
 
 [Full Changelog](https://github.com/ubleipzig/tx-supportchat/compare/2.6.4...2.6.5)
