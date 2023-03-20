@@ -395,6 +395,7 @@ class Chats
 		this.typingStatus = 0;
 		this.chatLocked = (be_user) ? 1 : 0;
 		this.hotkeyFixText = Array(); // fixText for Hotkeys [0] = text for Alt+0
+		this.delay = 50; // Frequency of scrolling text in message window to latest entry
 		// Define ids for single chat window
 		this.setHtmlIds();
 		// Play alert sound for every new chat
@@ -564,9 +565,8 @@ class Chats
 			);
 			// Insert message at DOM
 			document.getElementById(this.idChatbox).appendChild(msgObj.getNode());
-			// Scroll
-			this.scrollTextBoxObj(this.idChatbox);
-			this.scrollTextBox(this.idChatbox, 100);
+			// Scroll text messages to latest
+			this.scrollTextBox(this.idChatbox);
 			if (this.msgToSend.indexOf(msgObj.getNode()) === -1) {
 				this.msgToSend.push(msg.trim())
 			}
@@ -706,7 +706,7 @@ class Chats
 				this.lockChatDisplay(true);
 			}
 			// Scroll chat window to bottom
-			this.scrollTextBox(this.idChatbox, 100);
+			this.scrollTextBox(this.idChatbox);
 			// Add events
 			this.addEvents();
 		} else { // end if - if chat not visible
@@ -719,7 +719,7 @@ class Chats
 				}
 				// Play alert sound on every message
 				this.playAlertSound();
-				this.scrollTextBox(this.idTextarea, 100);
+				this.scrollTextBox(this.idChatbox);
 			}
 			if (this.beUserSelectNode) {
 				// delete the old select Menu and adopt the new one
@@ -880,14 +880,13 @@ class Chats
 	 * in time and second always after a indicated period.
 	 *
 	 * @param id					Id element of DOM
-	 * @param {int} delay	Difference of time in ms to request again
 	 */
-	scrollTextBox(id, delay) {
+	scrollTextBox(id) {
 		this.scrollTextBoxObj(id);
-		window.setTimeout(function periodic(delay) {
+		window.setTimeout(function periodic() {
 			this.scrollTextBoxObj(id);
-			window.setTimeout(periodic.bind(this), delay * 1000 || 1000)
-		}.bind(this), delay * 1000 || 1000);
+			window.setTimeout(periodic.bind(this), this.delay * 1000 || 1000)
+		}.bind(this), this.delay * 1000 || 1000);
 	}
 
 	/**

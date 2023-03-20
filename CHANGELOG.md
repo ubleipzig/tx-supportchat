@@ -1,5 +1,14 @@
 # Change Log
 
+## [v2.6.5](https://github.com/ubleipzig/tx-supportchat/tree/2.6.5)
+
+[Full Changelog](https://github.com/ubleipzig/tx-supportchat/compare/2.6.4...2.6.5)
+
+**Fixes**
+* fixes scrolling of text messages at chat window to latest
+  * creates _this.delay_ to define, keep and unify frequency of scroll request  
+  * fixes id for scrolling to last message if client send one
+
 ## [v2.6.4](https://github.com/ubleipzig/tx-supportchat/tree/2.6.4)
 
 [Full Changelog](https://github.com/ubleipzig/tx-supportchat/compare/2.6.3...2.6.4)
