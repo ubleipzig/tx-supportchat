@@ -1,5 +1,12 @@
 # Change Log
 
+## [v2.6.7](https://github.com/ubleipzig/tx-supportchat/tree/2.6.7)
+
+[Full Changelog](https://github.com/ubleipzig/tx-supportchat/compare/2.6.6...2.6.7)
+
+**Fixes**
+* fixes initializing extension configuration by new class _\TYPO3\CMS\Core\Configuration\ExtensionConfiguration_
+
 ## [v2.6.6](https://github.com/ubleipzig/tx-supportchat/tree/2.6.6)
 
 [Full Changelog](https://github.com/ubleipzig/tx-supportchat/compare/2.6.5...2.6.6)

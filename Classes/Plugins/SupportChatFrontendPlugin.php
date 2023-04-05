@@ -25,6 +25,7 @@ namespace Ubl\Supportchat\Plugin;
 
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility as Localization;
 use Ubl\Supportchat\Library\Chat;
 use Ubl\Supportchat\Library\ChatHelper;
@@ -99,9 +100,12 @@ class SupportChatFrontendPlugin
         $this->conf = $conf;
         $this->pi_setPiVarDefaults(); // @deprecated - not set not used properly
         $this->pi_loadLL();
-        $this->extConf = $this->getObjectManager()
-            ->get('TYPO3\\CMS\\Extensionmanager\\Utility\\ConfigurationUtility')
-            ->getCurrentConfiguration($this->extKey);
+        $this->extConf = (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '9.0', '<='))
+            ? $this->getObjectManager()
+                ->get('TYPO3\\CMS\\Extensionmanager\\Utility\\ConfigurationUtility')
+                ->getCurrentConfiguration($this->extKey)
+            : GeneralUtility::makeInstance(\TYPO3\CMS\Core\Configuration\ExtensionConfiguration::class)
+                ->get($this->extKey);
 
         $this->checkPids = $this->checkForOnlineOfflinePages(true);
         /** tradem 2012-04-11 Sets typing indicator */
