@@ -35,6 +35,14 @@
 				<source>Welcome to the Support Chat!</source>
 			</trans-unit>
 
+			<trans-unit id="dsgvo-warning" xml:space="preserve">
+				<source>Welcome to the UBL chat! By using this chat, you consent to data processing of your conversation in accordance with GDPR, Art. 6, para. 1, lit. a). The content of this chat communication will be stored for the purpose of possible follow-ups and will be deleted after 7 days. For further information, please refer to our</source>
+			</trans-unit>
+
+			<trans-unit id="dsgvo-link" xml:space="preserve">
+				<source>privacy policy</source>
+			</trans-unit>
+
 			<trans-unit id="new-chatbox-message-for-be-user" xml:space="preserve">
 				<source>A new Chatbox with Uid: %s was created!</source>
 			</trans-unit>

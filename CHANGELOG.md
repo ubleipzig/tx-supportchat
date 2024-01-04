@@ -1,5 +1,12 @@
 # Change Log
 
+## [v2.6.8](https://github.com/ubleipzig/tx-supportchat/tree/2.6.8)
+
+[Full Changelog](https://github.com/ubleipzig/tx-supportchat/compare/2.6.7...2.6.8)
+
+**Patches**
+* adds [GDPR](https://en.wikipedia.org/wiki/General_Data_Protection_Regulation) info text to frontend chat window at start 
+
 ## [v2.6.7](https://github.com/ubleipzig/tx-supportchat/tree/2.6.7)
 
 [Full Changelog](https://github.com/ubleipzig/tx-supportchat/compare/2.6.6...2.6.7)

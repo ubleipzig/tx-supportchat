@@ -43,6 +43,16 @@
 				<target>Herzlich Willkommen im Chat!</target>
 			</trans-unit>
 
+			<trans-unit id="dsgvo-warning" xml:space="preserve">
+				<source>Welcome to the UBL chat! By using this chat, you consent to data processing of your conversation in accordance with GDPR, Art. 6, para. 1, lit. a). The content of this chat communication will be stored for the purpose of possible follow-ups and will be deleted after 7 days. For further information, please refer to our</source>
+				<target>Mit der Nutzung dieses Chats stimmen Sie der datentechnischen Verarbeitung Ihrer Eingaben gemäß DSGVO, Art. 6 Abs. 1 lit. a) zu. Der Inhalt dieser Chatkommunikation wird zum Zwecke möglicher Nachbereitungen gespeichert und nach 7 Tagen gelöscht. Weitere Informationen entnehmen Sie bitte unserer</target>
+			</trans-unit>
+
+			<trans-unit id="dsgvo-link" xml:space="preserve">
+				<source>privacy policy</source>
+				<target>Datenschutzerklärung</target>
+			</trans-unit>
+
 			<trans-unit id="new-chatbox-message-for-be-user" xml:space="preserve">
 				<source>A new Chatbox with Uid: %s was created!</source>
 				<target>Eine neue Chatbox (uid: %s) wurde erzeugt!</target>

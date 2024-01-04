@@ -190,6 +190,8 @@ class SupportChatController extends BaseAbstractController
             'isChatbox' => true,
             'title' => 'chatbox-welcome',
             'title-id' => 'chatboxTitle',
+            'dsgvo-warning' => 'dsgvo-warning',
+            'dsgvo-link' => 'dsgvo-link',
             'chatbox-style' => 'display: none;',
             'message-label' => 'chatbox-messagelabel',
             'chatbox-id' => 'supportchatbox',
