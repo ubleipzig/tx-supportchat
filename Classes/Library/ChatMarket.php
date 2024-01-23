@@ -244,6 +244,7 @@ class ChatMarket extends Chat
                 'Parameter $key of ' . __METHOD__ . ' has to be set'
             );
         }
-        return ($GLOBALS['BE_USER']->userTS["supportchat."][$key]) ?: null;
+        $tsConfig = $GLOBALS['BE_USER']->getTSConfig();
+        return ($tsConfig["supportchat."][$key]) ?: null;
     }
 }

@@ -25,6 +25,8 @@ namespace Ubl\Supportchat\Controller;
 
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\PathUtility;
+use TYPO3\CMS\Extbase\Annotation as Extbase;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility as Localization;
 use Ubl\Supportchat\Library\Chat;
@@ -84,10 +86,9 @@ class SupportChatController extends BaseAbstractController
      * @var \TYPO3\CMS\Extbase\Object\ObjectManager
      * @access public
      *
-     * @inject
+     * @Extbase\Inject
      */
     protected $objectManager;
-
 
     /**
      * Initializes the module
@@ -107,9 +108,6 @@ class SupportChatController extends BaseAbstractController
 
     /**
      * The main method of the PlugIn
-     *
-     * @params string		$content: The PlugIn content
-     * @params array		$conf: The PlugIn configuration
      *
      * @return	The content that is displayed on the website
      */
@@ -222,7 +220,7 @@ class SupportChatController extends BaseAbstractController
         $jsCheckPids = $this->checkForOnlineOfflinePages();
 
         if ($jsCheckPids) {
-            $content .= '<script type="text/javascript" src="'.GeneralUtility::createVersionNumberedFilename(ExtensionManagementUtility::siteRelPath('supportchat') . 'Resources/Public/JavaScript/SupportchatIsOnline.js').'"></script>';
+            $content .= '<script type="text/javascript" src="'.GeneralUtility::createVersionNumberedFilename(PathUtility::stripPathSitePrefix(ExtensionManagementUtility::extPath('supportchat')) . 'Resources/Public/JavaScript/SupportchatIsOnline.js').'"></script>';
             $onLoad = '
                 window.addEventListener("load" () => {
                     initOnlineCheck("'.$this->getAbsUrl('index.php?eID=tx_supportchat').'");                    
@@ -260,8 +258,8 @@ class SupportChatController extends BaseAbstractController
                 : addslashes($GLOBALS["TSFE"]->fe_user->user["name"]))
             : addslashes(Localization::translate("chat-username", $this->extKey));
         $jsInHeader = '
-			<script type="text/javascript" src="'.GeneralUtility::createVersionNumberedFilename(ExtensionManagementUtility::siteRelPath('supportchat').'Resources/Public/JavaScript/Smileys.js').'"></script>
-			<script type="text/javascript" src="'.GeneralUtility::createVersionNumberedFilename(ExtensionManagementUtility::siteRelPath('supportchat').'Resources/Public/JavaScript/Supportchat.js').'"></script>
+			<script type="text/javascript" src="'.GeneralUtility::createVersionNumberedFilename(PathUtility::stripPathSitePrefix(ExtensionManagementUtility::extPath('supportchat')).'Resources/Public/JavaScript/Smileys.js').'"></script>
+			<script type="text/javascript" src="'.GeneralUtility::createVersionNumberedFilename(PathUtility::stripPathSitePrefix(ExtensionManagementUtility::extPath('supportchat')).'Resources/Public/JavaScript/Supportchat.js').'"></script>
 			<script type="text/javascript">
 			/*<![CDATA[*/
 			<!--
@@ -330,6 +328,7 @@ class SupportChatController extends BaseAbstractController
             $offlineClass = "";
         }
 
+        // removed since v9.0; it has to be replaced by MarkerBasedTemplateService if needed
         //$out = $this->cObj->getSubpart($this->templateCode, '###SHOW_SUPPORT_LOGO###');
         // get the offline Variant
         $image = '<img src="'.ChatHelper::getPath($this->settings["offlineLogo"]).'" alt="Support Chat Offline" title="Support Chat Offline" />';

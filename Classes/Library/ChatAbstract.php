@@ -25,6 +25,7 @@ namespace Ubl\Supportchat\Library;
 
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Annotation as Extbase;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use Ubl\Supportchat\Domain\Repository\ChatsRepository;
 use Ubl\Supportchat\Domain\Repository\LogsRepository;
@@ -57,7 +58,7 @@ abstract class ChatAbstract
      * chatsRepository
      *
      * @var \Ubl\Supportchat\Domain\Repository\ChatsRepository
-     * @inject
+     * @Exbase\Inject
      */
     protected $chatsRepository;
 
@@ -65,7 +66,7 @@ abstract class ChatAbstract
      * logsRepository
      *
      * @var \Ubl\Supportchat\Domain\Repository\LogsRepository
-     * @inject
+     * @Exbase\Inject
      */
     protected $logsRepository;
 
@@ -73,7 +74,7 @@ abstract class ChatAbstract
      * messagesRepository
      *
      * @var \Ubl\Supportchat\Domain\Repository\MessagesRepository
-     * @inject
+     * @Exbase\Inject
      */
     protected $messagesRepository;
 

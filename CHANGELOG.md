@@ -14,6 +14,8 @@
 * fixin' deprecated _userTS_ to _getTSConfig_ method cmp. [84984](https://docs.typo3.org/c/typo3/cms-core/main/en-us/Changelog/9.3/Deprecation-84984-ProtectedUserTSconfigPropertiesInBackendUserAuthentication.html) 
 * refactoring scheduler tasks _cleanupCommand_ to Symfony console command [85977](https://docs.typo3.org/c/typo3/cms-core/main/en-us/Changelog/9.4/Deprecation-85977-ExtbaseCommandControllersAndCliAnnotation.html)
   * splits and creates two commands: _supportchat:cleanupChats_ and _supportchat:cleanupLogs_  
+* adapts table names at command line clean up scripts to domain model scheme 
+* introduces PSR-7 _ResponseInterface_ for AJAX requests
 
 ## [v2.6.8](https://github.com/ubleipzig/tx-supportchat/tree/2.6.8)
 

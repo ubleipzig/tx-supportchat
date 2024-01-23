@@ -23,6 +23,9 @@
 
 namespace Ubl\Supportchat\Ajax;
 
+use Psr\Http\Message\ResponseInterface;
+use TYPO3\CMS\Core\Http\JsonResponse;
+use TYPO3\CMS\Core\Http\HmtlResponse;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use Ubl\Supportchat\Library\Chat;
 use Ubl\Supportchat\Library\ChatHelper;
@@ -89,11 +92,15 @@ class FrontendListener
     /**
      * Call chat frontend action listener
      *
-     * @return string xml
+     * @return ResponseInterface
      * @access public
      */
-    public function getAjaxResponse()
+    public function getAjaxResponse() : ResponseInterface
     {
+        /**
+         * @to-do class EidUtility is deprecated and has to be replaced by a PSR-15 middleware solution of class
+         * TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication with Typo3 v10
+         */
         $feUserObj = \TYPO3\CMS\Frontend\Utility\EidUtility::initFeUser();
         $this->identification = $feUserObj->id;
         $this->uid = (int)(GeneralUtility::_GET("chat")) ?: 0;
@@ -111,6 +118,10 @@ class FrontendListener
         }
         switch ($this->cmd) {
             case "checkIfOnline":
+                // no case detected for use
+                // functionality could be replaced by extension supportchat-switch
+                // further inspections needed before marking as deprecated
+                // @to-do return have to be part of ResponseInterface
                 $chatPids = GeneralUtility::_GET("chatPids");
                 $onlineArray = ChatHelper::checkIfChatIsOnline($chatPids);
                 $xml = ChatHelper::convert2xml($onlineArray);
@@ -118,12 +129,21 @@ class FrontendListener
                 break;
             case "createChat":
                 $chatUid = $chat->createChat($this->lang);
-                return ChatHelper::printResponse($chatUid);
+                return GeneralUtility::makeInstance(
+                    JsonResponse::class,
+                    [$chatUid],
+                    200
+                );
                 break;
             case "destroyChat":
                 if ($chat->hasUserRights()) {
                     $chat->destroyChat();
                 }
+                return GeneralUtility::makeInstance(
+                    JsonResponse::class,
+                    [],
+                    200
+                );
                 break;
             case "getAll":
                 /* get and send messages*/
@@ -152,10 +172,10 @@ class FrontendListener
                         "status" => $chat->chatStatus()
                     ];
                 }
-                //$xml = ChatHelper::convert2xml($xmlArray);
-                return ChatHelper::printResponse(
-                    json_encode($xmlArray),
-                    true
+                return GeneralUtility::makeInstance(
+                    JsonResponse::class,
+                    $xmlArray,
+                    200
                 );
                 break;
             case "createChatLog":

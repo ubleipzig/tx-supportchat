@@ -23,12 +23,16 @@
 
 namespace Ubl\Supportchat\Plugin;
 
+use TYPO3\CMS\Core\Service\MarkerBasedTemplateService;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\PathUtility;
 use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility as Localization;
+use TYPO3\CMS\Frontend\Resource\FilePathSanitizer;
 use Ubl\Supportchat\Library\Chat;
 use Ubl\Supportchat\Library\ChatHelper;
+
 
 /**
  * Class FrontendPlugin
@@ -78,15 +82,28 @@ class SupportChatFrontendPlugin
     public $pi_checkCHash = true;
 
     /**
+     * Marker-based template service
+     *
+     * @var MarkerBasedTemplateService
+     * @access protected
+     */
+    protected $markerBasedTemplateService = null;
+
+    /**
      * Object manager
      *
      * @var \TYPO3\CMS\Extbase\Object\ObjectManager
-     * @access public
-     *
-     * @inject
+     * @access protected
      */
-    protected $objectManager;
+    protected $objectManager = null;
 
+    /**
+     * The template html code
+     *
+     * @var string
+     * @access protected
+     */
+    protected $templateCode;
 
     /**
      * The main method of the plugIn
@@ -149,6 +166,20 @@ class SupportChatFrontendPlugin
     }
 
     /**
+     * Return object marker based template service
+     *
+     * @return object|MarkerBasedTemplateService
+     */
+    public function getMarkerBasedTemplateService()
+    {
+        if (!$this->markerBasedTemplateService) {
+            $this->markerBasedTemplateService =
+                GeneralUtility::makeInstance(MarkerBasedTemplateService::class);
+        }
+        return $this->markerBasedTemplateService;
+    }
+
+    /**
      * Return object manager object
      *
      * @return object|\TYPO3\CMS\Extbase\Object\ObjectManager
@@ -163,6 +194,24 @@ class SupportChatFrontendPlugin
     }
 
     /**
+     * Gets the template html code
+     *
+     * @return string the html code
+     */
+    public function getTemplateCode()
+    {
+        if (empty($this->templateCode)) {
+            $filePathSanitizer = GeneralUtility::makeInstance(FilePathSanitizer::class);
+            $templateFile = $filePathSanitizer->sanitize($this->conf['templateFile']);
+            $this->templateCode = '';
+            if ($templateFile && file_exists($templateFile)) {
+                $this->templateCode = file_get_contents($templateFile);
+            }
+        }
+        return $this->templateCode;
+    }
+
+    /**
      * Render template with message that the Chat is offline
      *
      * @return string $content  Html output
@@ -170,13 +219,14 @@ class SupportChatFrontendPlugin
      */
     public function showChatIsOfflineMessage()
     {
-        $out = $this->cObj->getSubpart($this->templateCode, '###CHAT_BOX_OFFLINE###');
+        // $out = $this->cObj->getSubpart($this->templateCode, '###CHAT_BOX_OFFLINE###'); removed since v9.0 refs #80700
+        $out = $this->getMarkerBasedTemplateService()->getSubpart($this->getTemplateCode(), '###CHAT_BOX_OFFLINE###');
         $markerArray = [
             "###TITLE###" => Localization::translate("chat-offline-title", $this->extKey),
             "###MESSAGE###" => Localization::translate("chat-offline-message", $this->extKey),
         ];
-        $content = $this->cObj->substituteMarkerArrayCached($out,$markerArray);
-        return ($content);
+        // $content = $this->cObj->substituteMarkerArrayCached($out,$markerArray); removed since v9.0 refs #80700
+        return $this->getMarkerBasedTemplateService()->substituteMarkerArrayCached($out, $markerArray);
     }
 
     /**
@@ -186,7 +236,8 @@ class SupportChatFrontendPlugin
      */
     public function generateChatBox()
     {
-        $out = $this->cObj->getSubpart($this->templateCode, '###CHAT_BOX###');
+        // $out = $this->cObj->getSubpart($this->templateCode, '###CHAT_BOX###'); removed since v9.0 refs #80700
+        $out = $this->getMarkerBasedTemplateService()->getSubpart($this->getTemplateCode(), '###CHAT_BOX###');
         $markerArray = [
             "###TITLE###" =>
                 Localization::translate("chatbox-welcome", $this->extKey),
@@ -210,8 +261,8 @@ class SupportChatFrontendPlugin
             "###EXPORT_ACTION_URL###" =>
                 $this->getAbsUrl('index.php?eID=tx_supportchat_pi1&cmd=createChatLog')
         ];
-        $content = $this->cObj->substituteMarkerArrayCached($out,$markerArray);
-        return $content;
+        //$content = $this->cObj->substituteMarkerArrayCached($out,$markerArray); removed since v9.0 refs #80700
+        return $this->getMarkerBasedTemplateService()->substituteMarkerArrayCached($out, $markerArray);
     }
 
     /**
@@ -224,12 +275,17 @@ class SupportChatFrontendPlugin
 
         $onload = '';
 
-        $GLOBALS['TSFE']->additionalHeaderData['tx_supportchat_pi1'] = '<script type="text/javascript" src="'.ExtensionManagementUtility::siteRelPath('supportchat').'Resources/Public/JavaScript/Prototype.js"></script>';
+        $GLOBALS['TSFE']->additionalHeaderData['tx_supportchat_pi1'] =
+            '<script type="text/javascript" src="'
+            . PathUtility::stripPathSitePrefix(ExtensionManagementUtility::extPath('supportchat'))
+            . 'Resources/Public/JavaScript/Prototype.js"></script>';
         $jsCheckPids = $this->checkForOnlineOfflinePages();
 
         if ($jsCheckPids) {
-
-            $GLOBALS['TSFE']->additionalHeaderData['tx_supportchat_pi1'] .= '<script type="text/javascript" src="'.GeneralUtility::createVersionNumberedFilename(ExtensionManagementUtility::siteRelPath('supportchat') . 'Resources/Public/JavaScript/SupportchatIsOnline.js').'"></script>';
+            $GLOBALS['TSFE']->additionalHeaderData['tx_supportchat_pi1'] .=
+                '<script type="text/javascript" src="'
+                . GeneralUtility::createVersionNumberedFilename(PathUtility::stripPathSitePrefix(ExtensionManagementUtility::extPath('supportchat'))
+                . 'Resources/Public/JavaScript/SupportchatIsOnline.js').'"></script>';
             $onLoad = '
                 Event.observe(window, "load", function() { initOnlineCheck("'.$this->getAbsUrl('index.php?eID=tx_supportchat_pi1').'"); });
             ';
@@ -270,10 +326,10 @@ class SupportChatFrontendPlugin
                 : addslashes($GLOBALS["TSFE"]->fe_user->user["name"]))
             : addslashes(Localization::translate("chat-username", $this->extKey));
         $GLOBALS['TSFE']->additionalHeaderData['tx_supportchat_pi1'] = '
-			<script type="text/javascript" src="'.ExtensionManagementUtility::siteRelPath('supportchat') . 'Resources/Public/JavaScript/MootoolsCore.js"></script>
-			<script type="text/javascript" src="'.ExtensionManagementUtility::siteRelPath('supportchat') . 'Resources/Public/JavaScript/MootoolsMore.js"></script>
-			<script type="text/javascript" src="'.GeneralUtility::createVersionNumberedFilename(ExtensionManagementUtility::siteRelPath('supportchat') . 'Resources/Public/JavaScript/Smileys.js').'"></script>
-			<script type="text/javascript" src="'.GeneralUtility::createVersionNumberedFilename(ExtensionManagementUtility::siteRelPath('supportchat') . 'Resources/Public/JavaScript/Supportchat.js').'"></script>
+			<script type="text/javascript" src="'.PathUtility::stripPathSitePrefix(ExtensionManagementUtility::extPath('supportchat')) . 'Resources/Public/JavaScript/MootoolsCore.js"></script>
+			<script type="text/javascript" src="'.PathUtility::stripPathSitePrefix(ExtensionManagementUtility::extPath('supportchat')) . 'Resources/Public/JavaScript/MootoolsMore.js"></script>
+			<script type="text/javascript" src="'.GeneralUtility::createVersionNumberedFilename(PathUtility::stripPathSitePrefix(ExtensionManagementUtility::extPath('supportchat')) . 'Resources/Public/JavaScript/Smileys.js').'"></script>
+			<script type="text/javascript" src="'.GeneralUtility::createVersionNumberedFilename(PathUtility::stripPathSitePrefix(ExtensionManagementUtility::extPath('supportchat')) . 'Resources/Public/JavaScript/Supportchat.js').'"></script>
 			<script type="text/javascript">
 			/*<![CDATA[*/
 			<!--
@@ -323,7 +379,8 @@ class SupportChatFrontendPlugin
     {
         // check if Chat is online or offline (if page where chat is stored is hidden or not)
         $chatIsOnline = ChatHelper::checkIfChatIsOnline($this->checkPids);
-        $out = $this->cObj->getSubpart($this->templateCode, '###SHOW_SUPPORT_LOGO###');
+        // $out = $this->cObj->getSubpart($this->templateCode, '###SHOW_SUPPORT_LOGO###'); removed since v9.0
+        $out = $this->getMarkerBasedTemplateService()->getSubpart($this->getTemplateCode(), '###SHOW_SUPPORT_LOGO###');
         // get the offline Variant
         $image = '<img src="'.ChatHelper::getPath($this->conf["offlineLogo"]).'" alt="Support Chat Offline" title="Support Chat Offline" />';
         $markerArray = [
@@ -341,7 +398,7 @@ class SupportChatFrontendPlugin
             $onlineClass = 'class="hidden"';
             $offlineClass = "";
         }
-        $offline = '<div '.$offlineClass.' id="tx_supportchat_pi1_offlineLogo_'.$this->conf["chatPluginPid"].'">'.$this->cObj->substituteMarkerArrayCached($out,$markerArray).'</div>';
+        $offline = '<div '.$offlineClass.' id="tx_supportchat_pi1_offlineLogo_'.$this->conf["chatPluginPid"].'">'.$this->getMarkerBasedTemplateService()->substituteMarkerArrayCached($out,$markerArray).'</div>';
         // get the online Variant
         $image = '<img src="'.ChatHelper::getPath($this->conf["onlineLogo"]).'" alt="Support Chat Online" title="Support Chat Online" />';
         $linkConf = [
@@ -356,9 +413,8 @@ class SupportChatFrontendPlugin
             "###IMAGE###" => '<a href="'.$this->pi_getPageLink($this->conf["chatNotSupportedPage"]).'" onclick="supportChatOpenWindow(\''.$openChatLink.'\',\'supportchatwindow\',\''.$this->conf["chatWindowJsParams"].'\'); return false;" target="_blank">'.$image.'</a>',
             "###STATUS_MSG###" => $this->pi_getLL("status_msg_online")
         ];
-        $online = '<div '.$onlineClass.' id="tx_supportchat_onlineLogo_'.$this->conf["chatPluginPid"].'">'.$this->cObj->substituteMarkerArrayCached($out,$markerArray).'</div>';
-        $content = $online.$offline;
-        return $content;
+        $online = '<div '.$onlineClass.' id="tx_supportchat_onlineLogo_'.$this->conf["chatPluginPid"].'">'.$this->getMarkerBasedTemplateService()->substituteMarkerArrayCached($out,$markerArray).'</div>';
+        return $online.$offline;
     }
 
     /**
@@ -409,13 +465,14 @@ class SupportChatFrontendPlugin
      */
     public function noJsOrCookie()
     {
-        $out = $this->cObj->getSubpart($this->templateCode, '###NO_JS_OR_COOKIES_ENABLED###');
+        // $out = $this->cObj->getSubpart($this->templateCode, '###NO_JS_OR_COOKIES_ENABLED###'); removed since v9.0
+        $out = $this->getMarkerBasedTemplateService()->getSubpart($this->getTemplateCode(), '###NO_JS_OR_COOKIES_ENABLED###');
         $markerArray = [
             "###TITLE###" => Localization::translate("noJsOrCookies-title", $this->extKey),
             "###TEXT###" => Localization::translate("noJsOrCookies-text", $this->extKey),
         ];
-        $content = $this->cObj->substituteMarkerArrayCached($out,$markerArray);
-        return $content;
+        // $content = $this->cObj->substituteMarkerArrayCached($out,$markerArray); removed since v9.0 #80700
+        return $this->getMarkerBasedTemplateService()->substituteMarkerArrayCached($out, $markerArray);
     }
 
     /**

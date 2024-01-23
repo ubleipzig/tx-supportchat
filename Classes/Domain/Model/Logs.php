@@ -22,6 +22,7 @@
 
 namespace Ubl\Supportchat\Domain\Model;
 
+use TYPO3\CMS\Extbase\Annotation as Extbase;
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 
 /**
@@ -34,8 +35,8 @@ class Logs extends AbstractEntity
     /**
      * Creation date
      *
-     * @var int
-     * @validate notEmpty
+     * @var int $crdate
+     * @Extbase\Validate("NotEmpty");
      */
     protected $crdate = 0;
 

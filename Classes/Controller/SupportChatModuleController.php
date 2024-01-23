@@ -23,11 +23,15 @@
 
 namespace Ubl\Supportchat\Controller;
 
+use Psr\Http\Message\ResponseInterface;
+use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Backend\Template\Components\ButtonBar;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
+use TYPO3\CMS\Core\Http\JsonResponse;
 use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+use TYPO3\CMS\Core\Utility\PathUtility;
 use TYPO3\CMS\Extbase\Exception;
 use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
 use TYPO3\CMS\Lang\LanguageService;
@@ -136,7 +140,8 @@ class SupportChatModuleController extends BaseAbstractController
      */
     public function initializeAction()
     {
-        $this->chatsPid = $this->getBackendUser()->userTS["supportchat."]["chatsPid"];
+        $tsConfig = $this->getBackendUser()->getTSConfig();
+        $this->chatsPid = $tsConfig["supportchat."]["chatsPid"];
         if (!$this->chatsPid) {
             throw new \Exception(
                 'For your backend-user TS-Config variable: "supportchat.chatsPid" is missing.
@@ -144,16 +149,16 @@ class SupportChatModuleController extends BaseAbstractController
             );
         }
 
-        $this->defLang = ($this->getBackendUser()->userTS["supportchat."]["defLang"]) ?: $this->defLang;
+        $this->defLang = ($tsConfig["supportchat."]["defLang"]) ?: $this->defLang;
         $this->useTypingIndicator =
-            ($this->getBackendUser()->userTS["supportchat."]["useTypingIndicator"]) ?: $this->useTypingIndicator;
-        $this->ajaxGetAllFreq = ($this->getBackendUser()->userTS["supportchat."]["ajaxGetAllFreq"])
-            ? $this->getBackendUser()->userTS["supportchat."]["ajaxGetAllFreq"] * 1000
+            ($tsConfig["supportchat."]["useTypingIndicator"]) ?: $this->useTypingIndicator;
+        $this->ajaxGetAllFreq = ($tsConfig["supportchat."]["ajaxGetAllFreq"])
+            ? $tsConfig["supportchat."]["ajaxGetAllFreq"] * 1000
             : $this->ajaxGetAllFreq * 1000;
-        $this->timeToInactivateChat = ($this->getBackendUser()->userTS["supportchat."]["timeToInactivateChatIfNoMessages"])
+        $this->timeToInactivateChat = ($tsConfig["supportchat."]["timeToInactivateChatIfNoMessages"])
                 ?: $this->timeToInactivateChat;
-        $this->playAlert = ($this->getBackendUser()->userTS["supportchat."]["playAlert"]) ?: $this->playAlert;
-        $this->showLogBox = ($this->getBackendUser()->userTS["supportchat."]["showLogBox"]) ?: $this->showLogBox;
+        $this->playAlert = ($tsConfig["supportchat."]["playAlert"]) ?: $this->playAlert;
+        $this->showLogBox = ($tsConfig["supportchat."]["showLogBox"]) ?: $this->showLogBox;
         $this->beUserName = ($this->getBackendUser()->user["realName"]) ?: $this->getBackendUser()->user["username"];
         // Get id
         $this->id = (int)GeneralUtility::_GET('id');
@@ -171,15 +176,18 @@ class SupportChatModuleController extends BaseAbstractController
         $chat = new Chat();
         $chat->initChat($this->chatsPid, "");
         $chat->destroyInactiveChats($this->timeToInactivateChat);
-        // deprecated method call getModTSconfig
-        BackendUtility::getModTSconfig($this->id, "mod." . $GLOBALS["MCONF"]["name"]);
+        // @to-do check functionality of migrated method
+        BackendUtility::getPagesTSconfig($this->id)["mod."][($GLOBALS["MCONF"]["name"])];
 
         $content = $this->getAudioAlertViewSnippet(); // $contentPlayAlert;
         $content .= $this->addJsInlineCode();
 
+        $uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
+        $moduleUrl = $uriBuilder->buildUriFromRoute($this->request->getPluginName());
+
         $this->view->assignMultiple([
             'content' => $content,
-            'moduleUrl' => BackendUtility::getModuleUrl($this->request->getPluginName()),
+            'moduleUrl' => $moduleUrl,
             'frequencyOfChatRequest' => $this->ajaxGetAllFreq,
             'isTypeIndicator' => $this->useTypingIndicator,
             'showLogBox' => $this->showLogBox
@@ -189,9 +197,10 @@ class SupportChatModuleController extends BaseAbstractController
     /**
      * Get chat ajax action
      *
-     * @return string  Return ajax request as json
+     * @return ResponseInterface
+     * @access public
      */
-    public function getChatAction()
+    public function getChatAction() : ResponseInterface
     {
         $xmlArray = [];
         if (!$this->getBackendUser()->user["uid"]) {
@@ -200,20 +209,22 @@ class SupportChatModuleController extends BaseAbstractController
                     "time" => ChatHelper::renderTstamp(time()),
                 ]
             ];
-            return ChatHelper::printResponse(
-                json_encode($xmlArray),
-                true
+            return GeneralUtility::makeInstance(
+                JsonResponse::class,
+                $xmlArray,
+                200
             );
         }
+        $tsConfig = $this->getBackendUser()->getTSConfig();
         // user ts chatsPid
-        $this->chatsPid = $this->getBackendUser()->userTS["supportchat."]["chatsPid"];
+        $this->chatsPid = $tsConfig["supportchat."]["chatsPid"];
         // user ts enableLogging
-        if ($this->getBackendUser()->userTS["supportchat."]["enableLogging"] != "") {
-            $this->logging = $this->getBackendUser()->userTS["supportchat."]["enableLogging"];
+        if ($tsConfig["supportchat."]["enableLogging"] != "") {
+            $this->logging = $tsConfig["supportchat."]["enableLogging"];
         }
         // user ts useTypingIndicator
-        if ($this->getBackendUser()->userTS["supportchat."]["useTypingIndicator"]) {
-            $this->useTypingIndicator = $this->getBackendUser()->userTS["supportchat."]["useTypingIndicator"];
+        if ($tsConfig["supportchat."]["useTypingIndicator"]) {
+            $this->useTypingIndicator = $tsConfig["supportchat."]["useTypingIndicator"];
         }
         $this->lastRowArray = (GeneralUtility::_GP("lastRowArray")) ?: [];
         if (GeneralUtility::_GP("cmd")) {
@@ -253,32 +264,33 @@ class SupportChatModuleController extends BaseAbstractController
                     ]
                 ];
         }
-        return ChatHelper::printResponse(
-            json_encode($xmlArray),
-            true
+        return GeneralUtility::makeInstance(
+            JsonResponse::class,
+            $xmlArray,
+            200
         );
     }
 
     /**
      * Set alert sound to cache
      *
-     * @params string $alertSound
-     *
-     * @return boolean
+     * @return ResponseInterface
      * @access public
      */
-    public function setAlertSoundAction()
+    public function setAlertSoundAction() : ResponseInterface
     {
             if ($alertSound = (GeneralUtility::_GP("alertSound"))) {
                 $this->getBackendUser()->getSessionData('tx_supportchat');
                 $sessionData['alertsound'] = $alertSound;
                 $this->getBackendUser()->setAndSaveSessionData('tx_supportchat', $sessionData);
-                return ChatHelper::printResponse(
-                    json_encode([
-                        "sound" => $alertSound,
-                        "success" => "true"
-                    ]),
-                    true
+                $data = [
+                    "sound" => $alertSound,
+                    "success" => "true"
+                ];
+                return GeneralUtility::makeInstance(
+                    JsonResponse::class,
+                    $data,
+                    200
                 );
             } else {
                 return false;
@@ -370,7 +382,8 @@ class SupportChatModuleController extends BaseAbstractController
      */
     private function createFixTextJsObj()
     {
-        $fixText = $this->getBackendUser()->userTS["supportchat."]["fixText."];
+        $tsConfig = $this->getBackendUser()->getTSConfig();
+        $fixText = $tsConfig["supportchat."]["fixText."];
         $jsCode = '';
         if (is_array($fixText)) {
             foreach ($fixText as $key => $val) {
@@ -415,7 +428,7 @@ class SupportChatModuleController extends BaseAbstractController
             $snippetPlayAlert = '
 				<audio id="beep_alert" class="flash" width="1" height="1">
 					<source src="' . GeneralUtility::getIndpEnv('TYPO3_SITE_URL')
-                        . ExtensionManagementUtility::siteRelPath('supportchat')
+                        . PathUtility::stripPathSitePrefix(ExtensionManagementUtility::extPath('supportchat'))
                         . 'Resources/Public/media/'. $alertSound . '" type="audio/ogg"
 					/>
 				</audio>
@@ -455,7 +468,7 @@ class SupportChatModuleController extends BaseAbstractController
         $view->getModuleTemplate()->getDocHeaderComponent()->setMetaInformation([]);
         $pageRenderer = $this->view->getModuleTemplate()->getPageRenderer();
         $pageRenderer->setTitle($this->translate("title"));
-        $pathToCssLibrary = GeneralUtility::getIndpEnv('TYPO3_SITE_URL') . ExtensionManagementUtility::siteRelPath('supportchat') . 'Resources/Public/Css/Backend/';
+        $pathToCssLibrary = GeneralUtility::getIndpEnv('TYPO3_SITE_URL') . PathUtility::stripPathSitePrefix(ExtensionManagementUtility::extPath('supportchat')) . 'Resources/Public/Css/Backend/';
         $pageRenderer->addCssFile($pathToCssLibrary . 'module-chat.css');
         $pageRenderer->addJsInlineCode(
             'assets',
@@ -463,10 +476,10 @@ class SupportChatModuleController extends BaseAbstractController
             function jumpToUrl(URL)	{
                 document.location = URL;
             }
-            let assetsPath = "' . GeneralUtility::getIndpEnv('TYPO3_SITE_URL') . ExtensionManagementUtility::siteRelPath('supportchat') . 'Resources/Public/' . '"'
+            let assetsPath = "' . GeneralUtility::getIndpEnv('TYPO3_SITE_URL') . PathUtility::stripPathSitePrefix(ExtensionManagementUtility::extPath('supportchat')) . 'Resources/Public/' . '"'
         );
         $pageRenderer->loadRequireJsModule('TYPO3/CMS/Supportchat/SupportchatBackendAlert');
-        $pathToJsLibrary = GeneralUtility::getIndpEnv('TYPO3_SITE_URL') . ExtensionManagementUtility::siteRelPath('supportchat') . 'Resources/Public/JavaScript/';
+        $pathToJsLibrary = GeneralUtility::getIndpEnv('TYPO3_SITE_URL') . PathUtility::stripPathSitePrefix(ExtensionManagementUtility::extPath('supportchat')) . 'Resources/Public/JavaScript/';
         $pageRenderer->addJsFile($pathToJsLibrary . 'Smileys.js');
         $pageRenderer->addJsFile($pathToJsLibrary . 'SupportchatBackend.js');
 

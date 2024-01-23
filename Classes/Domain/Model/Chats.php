@@ -22,7 +22,9 @@
 
 namespace Ubl\Supportchat\Domain\Model;
 
+use TYPO3\CMS\Extbase\Annotation as Extbase;
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
+
 
 /**
  * Class Model Chats
@@ -41,8 +43,8 @@ class Chats extends AbstractEntity
     /**
      * Creation date
      *
-     * @var int
-     * @validate notEmpty
+     * @var int $crdate
+     * @Extbase\Validate("NotEmpty");
      */
     protected $crdate = 0;
 

@@ -898,9 +898,12 @@ class Chats
 	 */
 	scrollTextBoxObj(id) {
 		let elem = document.getElementById(id);
-		let shouldScroll = elem.scrollTop + elem.clientHeight === elem.scrollHeight;
-		if (!shouldScroll) {
-			elem.scrollTop = elem.scrollHeight;
+		if (elem) {
+			let shouldScroll = elem.scrollTop + elem.clientHeight ===
+					elem.scrollHeight;
+			if (!shouldScroll) {
+				elem.scrollTop = elem.scrollHeight;
+			}
 		}
 	}
 
