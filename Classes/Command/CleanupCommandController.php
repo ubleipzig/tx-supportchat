@@ -31,7 +31,7 @@ use \TYPO3\CMS\Extbase\Mvc\Controller\CommandController;
 /**
  * Class ChatCleanupCommandController
  *
- * Provides commandline interface to cleanup past bookings
+ * Provides commandline interface to clean up past bookings
  *
  * @package Ubl\Booking\Command
  */
@@ -132,29 +132,29 @@ class CleanupCommandController extends CommandController
     public function findChatsBeforeTime(\DateTimeInterface $time)
     {
         try {
-            $queryBuilder = $this->getConnectionForTable('tx_supportchat_chats');
+            $queryBuilder = $this->getConnectionForTable('tx_supportchat_domain_model_chats');
             return $queryBuilder
-                ->select('tx_supportchat_chats.uid')
-                ->from('tx_supportchat_chats')
+                ->select('tx_supportchat_domain_model_chats.uid')
+                ->from('tx_supportchat_domain_model_chats')
                 ->rightJoin(
-                    'tx_supportchat_chats',
-                    'tx_supportchat_messages',
+                    'tx_supportchat_domain_model_chats',
+                    'tx_supportchat_domain_model_messages',
                     'm',
-                    $queryBuilder->expr()->eq('m.chat_pid', $queryBuilder->quoteIdentifier('tx_supportchat_chats.uid'))
+                    $queryBuilder->expr()->eq('m.chat_pid', $queryBuilder->quoteIdentifier('tx_supportchat_domain_model_chats.uid'))
                 )
                 ->where(
                     $queryBuilder->expr()->eq(
-                        'tx_supportchat_chats.active',
+                        'tx_supportchat_domain_model_chats.active',
                         $queryBuilder->createNamedParameter(0, \PDO::PARAM_INT)
                     )
                 )
                 ->andWhere(
                     $queryBuilder->expr()->lt(
-                        'tx_supportchat_chats.crdate',
+                        'tx_supportchat_domain_model_chats.crdate',
                         $time->getTimestamp()
                     )
                 )
-                ->groupBy('tx_supportchat_chats.uid')
+                ->groupBy('tx_supportchat_domain_model_chats.uid')
                 ->execute()
                 ->fetchAll();
         } catch (\Exception $e) {
@@ -180,9 +180,9 @@ class CleanupCommandController extends CommandController
                 },
                     $uids)
             );
-            $queryBuilder = $this->getConnectionForTable('tx_supportchat_messages');
+            $queryBuilder = $this->getConnectionForTable('tx_supportchat_domain_model_messages');
             return $queryBuilder
-                ->delete('tx_supportchat_messages')
+                ->delete('tx_supportchat_domain_model_messages')
                 ->where(
                     $queryBuilder->expr()->in('chat_pid', $deleteList)
                 )

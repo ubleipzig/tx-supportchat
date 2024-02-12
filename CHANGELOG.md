@@ -1,11 +1,26 @@
 # Change Log
 
+## [v2.7.0](https://github.com/ubleipzig/tx-supportchat/tree/2.6.9)
+
+[Full Changelog](https://github.com/ubleipzig/tx-supportchat/compare/2.6.8...2.7.0)
+
+**Fixes**
+* fixin' deprecated @inject annotation cmp. [82869](https://docs.typo3.org/c/typo3/cms-core/main/en-us/Changelog/9.0/Feature-82869-ReplaceInjectWithTYPO3CMSExtbaseAnnotationInject.html)
+* fixin' deprecated @validate annotation cmp. [83167](https://docs.typo3.org/c/typo3/cms-core/main/en-us/Changelog/9.3/Deprecation-83167-ReplaceValidateWithTYPO3CMSExtbaseAnnotationValidate.html)
+* fixin' deprecated _contentObjectRenderer_ replaced by class _TYPO3\CMS\Core\Service\MarkerBasedTemplateService_ cmp. [80527](https://docs.typo3.org/c/typo3/cms-core/main/en-us/Changelog/8.7/Deprecation-80527-Marker-relatedMethodsInContentObjectRenderer.html) concerning following methods:
+  * getSubpart()
+  * substituteMarkerArrayCached()
+* fixin' deprecated _siteRelPath_ to _PathUtility_ class cmp. [82899](https://docs.typo3.org/c/typo3/cms-core/main/en-us/Changelog/9.0/Deprecation-82899-ExtensionManagementUtilityMethods.html)
+* fixin' deprecated _userTS_ to _getTSConfig_ method cmp. [84984](https://docs.typo3.org/c/typo3/cms-core/main/en-us/Changelog/9.3/Deprecation-84984-ProtectedUserTSconfigPropertiesInBackendUserAuthentication.html) 
+* refactoring scheduler tasks _cleanupCommand_ to Symfony console command [85977](https://docs.typo3.org/c/typo3/cms-core/main/en-us/Changelog/9.4/Deprecation-85977-ExtbaseCommandControllersAndCliAnnotation.html)
+  * splits and creates two commands: _supportchat:cleanupChats_ and _supportchat:cleanupLogs_  
+
 ## [v2.6.8](https://github.com/ubleipzig/tx-supportchat/tree/2.6.8)
 
 [Full Changelog](https://github.com/ubleipzig/tx-supportchat/compare/2.6.7...2.6.8)
 
 **Patches**
-* adds [GDPR](https://en.wikipedia.org/wiki/General_Data_Protection_Regulation) info text to frontend chat window at start 
+* adds [GDPR](https://en.wikipedia.org/wiki/General_Data_Protection_Regulation) info text to frontend chat window at start
 
 ## [v2.6.7](https://github.com/ubleipzig/tx-supportchat/tree/2.6.7)
 
