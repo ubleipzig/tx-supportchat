@@ -128,7 +128,7 @@ class ChatMarket extends Chat
         $hookObjectsArr = [];
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXT']['supportchat']['Library/ChatMarket.php']['additionalInfo'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXT']['supportchat']['Library/ChatMarket.php']['additionalInfo'] as $classRef) {
-				$hookObjectsArr[] = GeneralUtility::getUserObj($classRef);
+				$hookObjectsArr[] = GeneralUtility::makeInstance($classRef);
 			}
 		}
         $res = $this->chatsRepository->findActiveChatsByPid($this->pid);

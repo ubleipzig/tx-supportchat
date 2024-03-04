@@ -1,6 +1,13 @@
 # Change Log
 
-## [v2.7.0](https://github.com/ubleipzig/tx-supportchat/tree/2.6.9)
+## [v2.7.1](https://github.com/ubleipzig/tx-supportchat/tree/2.7.1)
+
+[Full Changelog](https://github.com/ubleipzig/tx-supportchat/compare/2.7.0...2.7.1)
+
+**Fixes**
+* replaces deprecated method _GeneralUtility::getUserObj()_ by _::makeInstance_ at _Ubl\Supportchat\\Library\ChatMarket_ cmp. [80993](https://docs.typo3.org/c/typo3/cms-core/main/en-us/Changelog/9.0/Deprecation-80993-GeneralUtilitygetUserObj.html#deprecation-80993-generalutility-getuserobj)
+
+## [v2.7.0](https://github.com/ubleipzig/tx-supportchat/tree/2.7.0)
 
 [Full Changelog](https://github.com/ubleipzig/tx-supportchat/compare/2.6.8...2.7.0)
 
