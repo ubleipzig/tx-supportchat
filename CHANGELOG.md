@@ -1,5 +1,13 @@
 # Change Log
 
+## [v2.7.2](https://github.com/ubleipzig/tx-supportchat/tree/2.7.2)
+
+[Full Changelog](https://github.com/ubleipzig/tx-supportchat/compare/2.7.1...2.7.2)
+
+**Fixes**
+* fixes downloadable chat log at frontend by replacing it with a response of the type of _ResponseInterface_
+* removes version parameter from composer.json 
+
 ## [v2.7.1](https://github.com/ubleipzig/tx-supportchat/tree/2.7.1)
 
 [Full Changelog](https://github.com/ubleipzig/tx-supportchat/compare/2.7.0...2.7.1)

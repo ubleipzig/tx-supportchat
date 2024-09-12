@@ -26,6 +26,7 @@ namespace Ubl\Supportchat\Ajax;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Core\Http\JsonResponse;
 use TYPO3\CMS\Core\Http\HmtlResponse;
+use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use Ubl\Supportchat\Library\Chat;
 use Ubl\Supportchat\Library\ChatHelper;
@@ -186,10 +187,17 @@ class FrontendListener
                     $this->data = htmlspecialchars_decode(strip_tags(str_replace('</p>', "\r\n", trim($this->data))));
                     //add intro-text
                     $intro = "Chat-Log : " . date("l, j. M Y H:i:s") . "\r\n\r\n";
-                    ob_clean();
-                    header('Content-Type: text/plain');
-                    header('Content-Disposition: attachment; filename="ChatLog'.time().'.txt"');
+                    $response = GeneralUtility::makeInstance(
+                        Response::class,
+                        $intro . $this->data,
+                        200,
+                        [
+                            "Content-Type" => "text/plain",
+                            "Content-Disposition" => 'attachment; filename="ChatLog-' . time() . '.txt"'
+                        ]
+                    );
                     print $intro . $this->data;
+                    throw new \TYPO3\CMS\Core\Http\ImmediateResponseException($response);
                 }
                 break;
         }
