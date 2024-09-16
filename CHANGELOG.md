@@ -1,5 +1,12 @@
 # Change Log
 
+## [v2.7.3](https://github.com/ubleipzig/tx-supportchat/tree/2.7.3)
+
+[Full Changelog](https://github.com/ubleipzig/tx-supportchat/compare/2.7.2...2.7.3)
+
+**Fixes**
+* adds target _blank to the link of the GDPR (general data protection regulation)
+
 ## [v2.7.2](https://github.com/ubleipzig/tx-supportchat/tree/2.7.2)
 
 [Full Changelog](https://github.com/ubleipzig/tx-supportchat/compare/2.7.1...2.7.2)
