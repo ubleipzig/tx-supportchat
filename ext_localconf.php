@@ -2,7 +2,7 @@
 if (!defined ('TYPO3_MODE')) 	die ('Access denied.');
 
 \TYPO3\CMS\Extbase\Utility\ExtensionUtility::configurePlugin(
-    'Ubl.' . $_EXTKEY,
+    'Ubl.supportchat',
     'tx_supportchat',
     [
         'SupportChat' => 'index'
@@ -18,7 +18,7 @@ $TYPO3_CONF_VARS['FE']['eID_include']['tx_supportchat']
 
 
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPageTSConfig(
-    '<INCLUDE_TYPOSCRIPT: source="FILE:EXT:' . $_EXTKEY . '/Configuration/TypoScript/setup.txt">'
+    '<INCLUDE_TYPOSCRIPT: source="FILE:EXT:supportchat/Configuration/TypoScript/setup.txt">'
 );
 
 /*
