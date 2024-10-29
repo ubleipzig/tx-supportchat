@@ -325,7 +325,7 @@ class AjaxChat {
 
 		if (code !== "system") {
 			for (let [key, img] of Object.entries(supportChatSmilies)) {
-				let theImg = '<img src="typo3conf/ext/supportchat/pics/smiley/' + img + '" />';
+				let theImg = '<img src="typo3conf/ext/supportchat/Resources/Public/Images/smileys/' + img + '" />';
 				message = this.strReplace(key, theImg, message);
 			}
 		}
