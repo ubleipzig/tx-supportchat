@@ -1,5 +1,12 @@
 # Change Log
 
+## [v2.7.4](https://github.com/ubleipzig/tx-supportchat/tree/2.7.4)
+ 
+[Full Changelog](https://github.com/ubleipzig/tx-supportchat/compare/2.7.3...2.7.4)
+ 
+ **Fixes**
+* adjusts path to smilies at chat frontend
+
 ## [v2.7.3](https://github.com/ubleipzig/tx-supportchat/tree/2.7.3)
 
 [Full Changelog](https://github.com/ubleipzig/tx-supportchat/compare/2.7.2...2.7.3)
