@@ -22,7 +22,6 @@ return [
         "fe_admin_fieldList" => "message",
     ],
     "interface" => [
-        "showRecordFieldList" => "message"
     ],
     "columns" => [
         "message" => [

@@ -24,8 +24,11 @@
 namespace Ubl\Supportchat\Controller;
 
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
-use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
+use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
+
 
 /**
  * Class AbstractController
@@ -83,6 +86,7 @@ abstract class BaseAbstractController extends ActionController
      *
      * @return void
      * @access public
+     * @deprecated Method is not be used.
      */
     public function setSessionData($key, $data, $persist = null)
     {
@@ -127,7 +131,7 @@ abstract class BaseAbstractController extends ActionController
     {
         $message = \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate(
             $key,
-            strtolower($this->extensionName)
+            strtolower($this->request->getControllerExtensionName())
         );
         return ($message === null) ? $defaultMessage : $message;
     }

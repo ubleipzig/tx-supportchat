@@ -1,5 +1,13 @@
 # Change Log
 
+## [v2.8.0](https://github.com/ubleipzig/tx-supportchat/tree/2.8.0)
+
+[Full Changelog](https://github.com/ubleipzig/tx-supportchat/compare/2.7.4...2.8.0)
+
+**Fixes**
+* replaces deprecated _EIDUtility::initFeUser_ method by new _FrontendUserMiddleware_ to create new FrontendUser
+* renames _*.ts_ files in _*.typoscript_
+
 ## [v2.7.4](https://github.com/ubleipzig/tx-supportchat/tree/2.7.4)
  
 [Full Changelog](https://github.com/ubleipzig/tx-supportchat/compare/2.7.3...2.7.4)

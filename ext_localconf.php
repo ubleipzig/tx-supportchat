@@ -13,12 +13,11 @@ if (!defined ('TYPO3_MODE')) 	die ('Access denied.');
     ]
 );
 
-$TYPO3_CONF_VARS['FE']['eID_include']['tx_supportchat']
+$GLOBALS['TYPO3_CONF_VARS']['FE']['eID_include']['tx_supportchat']
     = \Ubl\Supportchat\Ajax\FrontendListener::class . '::getAjaxResponse';
 
-
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPageTSConfig(
-    '<INCLUDE_TYPOSCRIPT: source="FILE:EXT:supportchat/Configuration/TypoScript/setup.txt">'
+    '<INCLUDE_TYPOSCRIPT: source="FILE:EXT:supportchat/Configuration/TypoScript/setup.typoscript">'
 );
 
 /*

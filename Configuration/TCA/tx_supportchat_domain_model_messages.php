@@ -22,7 +22,6 @@ return [
         "fe_admin_fieldList" => "chat_pid, name, message",
     ],
     "interface" => [
-        "showRecordFieldList" => "chat_pid,name,message"
     ],
     "columns" => [
         "chat_pid" => [

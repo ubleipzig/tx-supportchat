@@ -26,7 +26,6 @@ return [
         "fe_admin_fieldList" => "hidden, fe_user, session, active, last_row_uid",
     ],
     "interface" => [
-        "showRecordFieldList" => "hidden,be_user,session,active,last_row_uid,language_uid,surfer_ip,status,type_status"
     ],
     "columns" => [
         "hidden" => [

@@ -24,10 +24,14 @@
 namespace Ubl\Supportchat\Ajax;
 
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Http\JsonResponse;
 use TYPO3\CMS\Core\Http\HmtlResponse;
 use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
+use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 use Ubl\Supportchat\Library\Chat;
 use Ubl\Supportchat\Library\ChatHelper;
 
@@ -89,29 +93,33 @@ class FrontendListener
      */
     protected $cmd = "getAll";
 
-
     /**
      * Call chat frontend action listener
+     *
+     * @param ServerRequestInterface $request
      *
      * @return ResponseInterface
      * @access public
      */
-    public function getAjaxResponse() : ResponseInterface
+    public function getAjaxResponse(ServerRequestInterface $request) : ResponseInterface
     {
-        /**
-         * @to-do class EidUtility is deprecated and has to be replaced by a PSR-15 middleware solution of class
-         * TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication with Typo3 v10
-         */
-        $feUserObj = \TYPO3\CMS\Frontend\Utility\EidUtility::initFeUser();
-        $this->identification = $feUserObj->id;
         $this->uid = (int)(GeneralUtility::_GET("chat")) ?: 0;
         $this->lang = (int)(GeneralUtility::_GET("L")) ?: 0;
         $this->pid = (int)(GeneralUtility::_GET("pid")) ?: 0;
-        /** 2012-04-11 tradem Initialize useTypingIndicator */
         $this->useTypingIndicator = (int)(GeneralUtility::_GET("useTypingIndicator")) ?: 0;
         $this->cmd = (GeneralUtility::_GP("cmd")) ?: null;
-        // initialize the chat Object
         $lastRow = (int)(GeneralUtility::_GP("lastRow")) ?: 0;
+
+        /**
+         * Class EidUtility is removed and has to be replaced by a PSR-15 middleware solution of class
+         * TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication with Typo3 v10
+         * // $feUserObj = \TYPO3\CMS\Frontend\Utility\EidUtility::initFeUser();
+         * // $this->identification = $feUserObj->id;
+         */
+        $frontendCookieName = FrontendUserAuthentication::getCookieName();
+        $this->identification = $request->getCookieParams()[$frontendCookieName];
+
+        // Initialize the chat object
         $chat = new Chat();
         $chat->initChat($this->pid, $this->identification,false, $this->useTypingIndicator);
         if ($this->uid) {
