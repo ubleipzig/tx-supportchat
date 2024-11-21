@@ -1,5 +1,12 @@
 # Change Log
 
+## [v2.8.1](https://github.com/ubleipzig/tx-supportchat/tree/2.8.1)
+
+[Full Changelog](https://github.com/ubleipzig/tx-supportchat/compare/2.8.0...2.8.1)
+
+**Fixes**
+* adjusts namespace at _Classes\Plugins\SupportChatFrontendPlugin.php_ throwing an exception w/ this version
+
 ## [v2.8.0](https://github.com/ubleipzig/tx-supportchat/tree/2.8.0)
 
 [Full Changelog](https://github.com/ubleipzig/tx-supportchat/compare/2.7.4...2.8.0)

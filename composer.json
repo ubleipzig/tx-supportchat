@@ -41,7 +41,7 @@
     "url": "https://composer.typo3.org/"
   }],
   "require": {
-    "typo3/cms": "^8.7 || ^9.5"
+    "typo3/cms": "^9.5 || ^10.4"
   },
   "autoload": {
     "psr-4": {
