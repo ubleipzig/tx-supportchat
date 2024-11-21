@@ -6,8 +6,8 @@ This typo3 extension was created to manage support requests of library clients.
 Library stuff answers to clients at typo3 backend module in single chat windows. 
 
 ## Requirements
-* Typo3 > 8.7 < 9.5.99
-* PHP >= 7.2
+* Typo3 > 9.5 < 10.4.99
+* PHP >= 7.4
 
 It's not tested with higher versions but codebase should be sufficient.
 
