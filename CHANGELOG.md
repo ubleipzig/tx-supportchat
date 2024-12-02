@@ -1,5 +1,12 @@
 # Change Log
 
+## [v2.8.2](https://github.com/ubleipzig/tx-supportchat/tree/2.8.2)
+
+[Full Changelog](https://github.com/ubleipzig/tx-supportchat/compare/2.8.1...2.8.2)
+
+**Fixes**
+* adjusts changed types of parameters of inherited method _addPItoST43()_ at _Classes/Hooks/ExtensionManagementUtility.php_ 
+
 ## [v2.8.1](https://github.com/ubleipzig/tx-supportchat/tree/2.8.1)
 
 [Full Changelog](https://github.com/ubleipzig/tx-supportchat/compare/2.8.0...2.8.1)

@@ -36,25 +36,33 @@ class ExtensionManagementUtility extends BaseExtensionManagementUtility
      * @see \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPItoST43()
      *
      * @param string $key: The extension key
-     * @param string $class: The qualified class name
+     * @param string $class: The qualified class name | unused since TYPO3 CMS 8
      * @param string $suffix: The uid of the record
      * @param string $type: Determines the type of the frontend plugin
-     * @param bool $cached: Should we created a USER object instead of USER_INT?
+     * @param bool $cacheable: Should we created a USER object instead of USER_INT?
      *
      * @return void
      * @access public
     */
-    public static function addPItoST43($key, $class, $suffix = '', $type = 'list_type', $cached = false)
+    public static function addPItoST43($key, $class = '', $suffix = '', $type = 'list_type', $cacheable = false)
     {
-        $internalName = 'tx_' . $key . '_' . strtolower(self::getUnqualifiedClassName($class));
+        //$internalName = 'tx_' . $key . '_' . strtolower(self::getUnqualifiedClassName($class));
+        $cN = self::getCN($key);
         // General plugin
-        $typoscript = 'plugin.' . $internalName . ' = USER' . ($cached ? '' : '_INT') . "\n";
-        $typoscript .= 'plugin.' . $internalName . '.userFunc = ' . $class . '->main' . "\n";
-        parent::addTypoScript($key, 'setup', $typoscript);
+        //$typoscript = 'plugin.' . $internalName . ' = USER' . ($cachable ? '' : '_INT') . "\n";
+        //$typoscript .= 'plugin.' . $internalName . '.userFunc = ' . $class . '->main' . "\n";
+        $pluginContent = trim('
+plugin.' . $cN . $suffix . ' = USER' . ($cacheable ? '' : '_INT') . '
+plugin.' . $cN . $suffix . '.userFunc = ' . $cN . $suffix . '->main
+        ');
+        //parent::addTypoScript($key, 'setup', $typoscript);
+        self::addTypoScript($key, 'setup', '
+# Setting ' . $key . ' plugin TypoScript
+' . $pluginContent);
         // Add after defaultContentRendering
         switch ($type) {
             case 'list_type':
-                $addLine = 'tt_content.list.20.' . $key . $suffix . ' = < plugin.' . $internalName;
+                $addLine = 'tt_content.list.20.' . $key . $suffix . ' = < plugin.' . $cN . $suffix;
                 break;
             default:
                 $addLine = '';
