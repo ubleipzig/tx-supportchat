@@ -1,5 +1,11 @@
 # Change Log
 
+## [v2.9.0](https://github.com/ubleipzig/tx-supportchat/tree/2.9.0)
+
+[Full Changelog](https://github.com/ubleipzig/tx-supportchat/compare/2.8.2...2.9.0)
+
+* adds support for Typo3 v11
+
 ## [v2.8.2](https://github.com/ubleipzig/tx-supportchat/tree/2.8.2)
 
 [Full Changelog](https://github.com/ubleipzig/tx-supportchat/compare/2.8.1...2.8.2)
