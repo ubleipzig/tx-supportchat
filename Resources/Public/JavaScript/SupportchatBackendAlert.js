@@ -32,7 +32,7 @@ define([
                 );
                 // Reload page to load new sound
                 window.location.href = window.location.href;
-                $('#beep_alert').get(0).play(1);
+                $('#beep_alert').get(0).play();
                 Notification.success(
                     'Alert sound',
                     'Alert sound successfully changed to ' + response.sound

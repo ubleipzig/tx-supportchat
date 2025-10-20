@@ -26,16 +26,18 @@ namespace Ubl\Supportchat\Controller;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Backend\Template\Components\ButtonBar;
+use TYPO3\CMS\Backend\Template\ModuleTemplate;
+use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Http\JsonResponse;
 use TYPO3\CMS\Core\Imaging\IconFactory;
+use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\PathUtility;
 use TYPO3\CMS\Extbase\Exception;
-use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
 use TYPO3\CMS\Lang\LanguageService;
-
+use TYPO3Fluid\Fluid\View\ViewInterface;
 use Ubl\Supportchat\Library\BackendUserHelper;
 use Ubl\Supportchat\Library\Chat;
 use Ubl\Supportchat\Library\ChatHelper;
@@ -50,15 +52,6 @@ use Ubl\Supportchat\Library\ChatMarket;
  */
 class SupportChatModuleController extends BaseAbstractController
 {
-
-    /**
-     * Backend Template Container
-     *
-     * @var string
-     */
-    protected $defaultViewObjectName
-        = \TYPO3\CMS\Backend\View\BackendTemplateView::class;
-
     /**
      * The period of the AJAX Request
      *
@@ -132,6 +125,32 @@ class SupportChatModuleController extends BaseAbstractController
     private $useTypingIndicator = 1;
 
     /**
+     * ModuleTemplate
+     *
+     * @var ModuleTemplate
+     * @access protected
+     */
+    protected ModuleTemplate $moduleTemplate;
+
+    /**
+     * ModulTemplateFactory
+     *
+     * @var ModuleTemplateFactory
+     * @access private
+     */
+    private ModuleTemplateFactory $moduleTemplateFactory;
+
+    /**
+     * Constructor for dependency injection
+     *
+     */
+    public function __construct(
+        ModuleTemplateFactory $moduleTemplateFactory
+    ){
+        $this->moduleTemplateFactory = $moduleTemplateFactory;
+    }
+
+    /**
      * Initializes the module
      *
      * @return void
@@ -149,16 +168,19 @@ class SupportChatModuleController extends BaseAbstractController
             );
         }
 
-        $this->defLang = ($tsConfig["supportchat."]["defLang"]) ?: $this->defLang;
-        $this->useTypingIndicator =
-            ($tsConfig["supportchat."]["useTypingIndicator"]) ?: $this->useTypingIndicator;
-        $this->ajaxGetAllFreq = ($tsConfig["supportchat."]["ajaxGetAllFreq"])
+        $this->defLang = (isset($tsConfig["supportchat."]["defLang"]))
+            ? $tsConfig["supportchat."]["defLang"] : $this->defLang;
+        $this->useTypingIndicator = (isset($tsConfig["supportchat."]["useTypingIndicator"]))
+            ? $tsConfig["supportchat."]["useTypingIndicator"] : $this->useTypingIndicator;
+        $this->ajaxGetAllFreq = (isset($tsConfig["supportchat."]["ajaxGetAllFreq"]))
             ? $tsConfig["supportchat."]["ajaxGetAllFreq"] * 1000
             : $this->ajaxGetAllFreq * 1000;
-        $this->timeToInactivateChat = ($tsConfig["supportchat."]["timeToInactivateChatIfNoMessages"])
-                ?: $this->timeToInactivateChat;
-        $this->playAlert = ($tsConfig["supportchat."]["playAlert"]) ?: $this->playAlert;
-        $this->showLogBox = ($tsConfig["supportchat."]["showLogBox"]) ?: $this->showLogBox;
+        $this->timeToInactivateChat = (isset($tsConfig["supportchat."]["timeToInactivateChatIfNoMessages"]))
+            ? $tsConfig["supportchat."]["timeToInactivateChatIfNoMessages"] : $this->timeToInactivateChat;
+        $this->playAlert = (isset($tsConfig["supportchat."]["playAlert"]))
+            ? $tsConfig["supportchat."]["playAlert"] : $this->playAlert;
+        $this->showLogBox = (isset($tsConfig["supportchat."]["showLogBox"]))
+            ? $tsConfig["supportchat."]["showLogBox"] : $this->showLogBox;
         $this->beUserName = ($this->getBackendUser()->user["realName"]) ?: $this->getBackendUser()->user["username"];
         // Get id
         $this->id = (int)GeneralUtility::_GET('id');
@@ -170,14 +192,18 @@ class SupportChatModuleController extends BaseAbstractController
     /**
      * Index action
      *
+     * @return ResponseInterface
+     * @access public
      */
-    public function indexAction()
+    public function indexAction(): ResponseInterface
     {
-        $chat = new Chat();
+        $chat = new Chat($this->chatsRepository, $this->logsRepository, $this->messagesRepository);
         $chat->initChat($this->chatsPid, "");
         $chat->destroyInactiveChats($this->timeToInactivateChat);
         // @to-do check functionality of migrated method
-        BackendUtility::getPagesTSconfig($this->id)["mod."][($GLOBALS["MCONF"]["name"])];
+        //BackendUtility::getPagesTSconfig($this->id)["mod."][($GLOBALS["MCONF"]["name"])];
+        // $moduleName = $this->request->getAttribute('moduleName');
+        // BackendUtility::getPagesTSconfig($this->id)["mod."][$moduleName];
 
         $content = $this->getAudioAlertViewSnippet(); // $contentPlayAlert;
         $content .= $this->addJsInlineCode();
@@ -192,6 +218,9 @@ class SupportChatModuleController extends BaseAbstractController
             'isTypeIndicator' => $this->useTypingIndicator,
             'showLogBox' => $this->showLogBox
         ]);
+        $this->moduleTemplate->setContent($this->view->render());
+        return $this->htmlResponse($this->moduleTemplate->renderContent());
+
     }
 
     /**
@@ -219,9 +248,7 @@ class SupportChatModuleController extends BaseAbstractController
         // user ts chatsPid
         $this->chatsPid = $tsConfig["supportchat."]["chatsPid"];
         // user ts enableLogging
-        if ($tsConfig["supportchat."]["enableLogging"] != "") {
-            $this->logging = $tsConfig["supportchat."]["enableLogging"];
-        }
+        $this->logging = ($tsConfig["supportchat."]["enableLogging"] != "") ? true : false;
         // user ts useTypingIndicator
         if ($tsConfig["supportchat."]["useTypingIndicator"]) {
             $this->useTypingIndicator = $tsConfig["supportchat."]["useTypingIndicator"];
@@ -232,7 +259,11 @@ class SupportChatModuleController extends BaseAbstractController
         }
         $this->lastLogRow = ((int)(GeneralUtility::_GP("lastLogRow"))) ?: 0;
         $this->uid = ((int)(GeneralUtility::_GP("chatUid"))) ?: 0;
-        $chatMarket = new ChatMarket($this->logging, $this->lastLogRow);
+        $chatMarket = new ChatMarket($this->chatsRepository, $this->logsRepository, $this->messagesRepository);
+        $chatMarket->setLogging($this->logging);
+        $chatMarket->setLastLogRow($this->lastLogRow);
+        $chatMarket->setLanguageFlag();
+        $chatMarket->setLanguageLabel();
         $chatMarket->initChat(
             $this->chatsPid,
             $this->getBackendUser()->user["uid"],
@@ -257,7 +288,7 @@ class SupportChatModuleController extends BaseAbstractController
                             $typingStatus
                         ),
                         "log" => $chatMarket->getLogMessages(),
-                        "lastLogRow" => $chatMarket->lastLogRow,
+                        "lastLogRow" => $chatMarket->getLastLogRow(),
                         "beUsers" => BackendUserHelper::getBackendUsers(
                             $this->getBackendUser()->user["uid"]
                         ),
@@ -363,13 +394,16 @@ class SupportChatModuleController extends BaseAbstractController
      */
     private function createButtons()
     {
-        $buttonBar = $this->view->getModuleTemplate()->getDocHeaderComponent()->getButtonBar();
+        $buttonBar =  $this->moduleTemplate->getDocHeaderComponent()->getButtonBar();
+        $pageId = (int)($this->request->getQueryParams()['id'] ?? 0);
 
         // Shortcut
         if ($this->getBackendUser()->mayMakeShortcut()) {
             $shortcutButton = $buttonBar->makeShortcutButton()
-                ->setModuleName('tx_supportchat_M1')
-                ->setGetVariables(['route', 'module', 'id'])
+                // Replaced by setRouteIdentifier concerning deprecation of method cmp. ref. 93093
+                //->setModuleName('tx_supportchat_M1')
+                ->setRouteIdentifier('user_SupportchatTxSupportchatM1')
+                ->setArguments(['id' => $pageId])
                 ->setDisplayName('Shortcut');
             $buttonBar->addButton($shortcutButton, ButtonBar::BUTTON_POSITION_RIGHT);
         }
@@ -456,21 +490,30 @@ class SupportChatModuleController extends BaseAbstractController
     }
 
     /**
+     * Returns PageRenderer class
+     *
+     * @return \TYPO3\CMS\Core\Page\PageRenderer
+     */
+    protected static function getPageRenderer(): PageRenderer
+    {
+        return GeneralUtility::makeInstance(PageRenderer::class);
+    }
+
+    /**
      * Set up the doc header properly here
      *
      * @param ViewInterface $view
      */
-    protected function initializeView(ViewInterface $view)
+    protected function initializeView($view)
     {
         $this->iconFactory = GeneralUtility::makeInstance(IconFactory::class);
-        /** @var BackendTemplateView $view */
-        parent::initializeView($view);
-        $view->getModuleTemplate()->getDocHeaderComponent()->setMetaInformation([]);
-        $pageRenderer = $this->view->getModuleTemplate()->getPageRenderer();
-        $pageRenderer->setTitle($this->translate("title"));
+        $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
+        $this->moduleTemplate->getDocHeaderComponent()->setMetaInformation([]);
+        //$pageRenderer = $this->view->getModuleTemplate()->getPageRenderer();
+        self::getPageRenderer()->setTitle($this->translate("title"));
         $pathToCssLibrary = GeneralUtility::getIndpEnv('TYPO3_SITE_URL') . PathUtility::stripPathSitePrefix(ExtensionManagementUtility::extPath('supportchat')) . 'Resources/Public/Css/Backend/';
-        $pageRenderer->addCssFile($pathToCssLibrary . 'module-chat.css');
-        $pageRenderer->addJsInlineCode(
+        self::getPageRenderer()->addCssFile($pathToCssLibrary . 'module-chat.css');
+        self::getPageRenderer()->addJsInlineCode(
             'assets',
             'script_ended = 0;
             function jumpToUrl(URL)	{
@@ -478,35 +521,22 @@ class SupportChatModuleController extends BaseAbstractController
             }
             let assetsPath = "' . GeneralUtility::getIndpEnv('TYPO3_SITE_URL') . PathUtility::stripPathSitePrefix(ExtensionManagementUtility::extPath('supportchat')) . 'Resources/Public/' . '"'
         );
-        $pageRenderer->loadRequireJsModule('TYPO3/CMS/Supportchat/SupportchatBackendAlert');
+        self::getPageRenderer()->loadRequireJsModule('TYPO3/CMS/Supportchat/SupportchatBackendAlert');
         $pathToJsLibrary = GeneralUtility::getIndpEnv('TYPO3_SITE_URL') . PathUtility::stripPathSitePrefix(ExtensionManagementUtility::extPath('supportchat')) . 'Resources/Public/JavaScript/';
-        $pageRenderer->addJsFile($pathToJsLibrary . 'Smileys.js');
-        $pageRenderer->addJsFile($pathToJsLibrary . 'SupportchatBackend.js');
-
+        self::getPageRenderer()->addJsFile($pathToJsLibrary . 'Smileys.js');
+        self::getPageRenderer()->addJsFile($pathToJsLibrary . 'SupportchatBackend.js');
         $this->createButtons();
-        $this->menuConfig();
+        $this->getModuleMenu();
     }
 
     /**
-     * Menu config
+     * Disable module menu
      *
-     * @deprecated
+     * @return void
      * @access private
      */
-    private function menuConfig()
+    private function getModuleMenu(): void
     {
-        $this->MOD_MENU = [
-            'function' => [
-                '1' => $GLOBALS['LANG']->getLL('function1'),
-            ]
-        ];
-        $MCONF = [];
-        $MCONF['name'] = $this->getBackendUser()->groupData['modules'];
-        $MCONF['script'] = '_DISPATCH';
-        $MCONF['_'] = 'mod.php?M=' .  $this->getBackendUser()->groupData['modules'];
-        $MCONF['access'] = 'user,group';
-        if (!$this->MCONF['name']) {
-            $this->MCONF = $MCONF;
-        }
+        $this->moduleTemplate->getDocHeaderComponent()->disable();
     }
 }

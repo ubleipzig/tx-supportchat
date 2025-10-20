@@ -7,3 +7,6 @@ services:
   Ubl\Supportchat\:
     resource: '../Classes/*'
     exclude: '../Classes/Domain/Model/*'
+
+  Ubl\Supportchat\Library\Chat:
+    public: true

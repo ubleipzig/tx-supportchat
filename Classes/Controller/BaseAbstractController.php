@@ -23,11 +23,17 @@
 
 namespace Ubl\Supportchat\Controller;
 
+use TYPO3\CMS\Core\Authentication\AbstractUserAuthentication;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Context\Context;
+use TYPO3\CMS\Core\Http\ApplicationType;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
+use Ubl\Supportchat\Domain\Repository\ChatsRepository;
+use Ubl\Supportchat\Domain\Repository\LogsRepository;
+use Ubl\Supportchat\Domain\Repository\MessagesRepository;
 
 
 /**
@@ -39,6 +45,74 @@ use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
  */
 abstract class BaseAbstractController extends ActionController
 {
+    /**
+     * chatsRepository
+     *
+     * @var ChatsRepository
+     */
+    protected ?ChatsRepository $chatsRepository = null;
+
+    /**
+     * logsRepository
+     *
+     * @var LogsRepository
+     */
+    protected ?LogsRepository $logsRepository = null;
+
+    /**
+     * messagesRepository
+     *
+     * @var MessagesRepository
+     */
+    protected ?MessagesRepository $messagesRepository = null;
+
+    /**
+     * URI Builder
+     *
+     * @var uriBuilder
+     */
+    protected $uriBuilder = null;
+
+    /**
+     * Inject ChatsRepository
+     *
+     * @param ChatsRepository $chatsRepository
+     */
+    public function injectChatsRepository(ChatsRepository $chatsRepository): void
+    {
+        $this->chatsRepository = $chatsRepository;
+    }
+
+    /**
+     * Inject LogsRepository
+     *
+     * @param LogsRepository $logsRepository
+     */
+    public function injectLogsRepository(LogsRepository $logsRepository): void
+    {
+        $this->logsRepository = $logsRepository;
+    }
+
+    /**
+     * Inject MessagesRepository
+     *
+     * @param MessagesRepository $messagesRepository
+     */
+    public function injectMessagesRepository(MessagesRepository $messagesRepository): void
+    {
+        $this->messagesRepository = $messagesRepository;
+    }
+
+    /**
+     * Inject UriBuilder
+     *
+     * @param UriBuilder $uriBuilder
+     */
+    public function injectUriBuilder(UriBuilder $uriBuilder): void
+    {
+        $this->uriBuilder = $uriBuilder;
+    }
+
     /**
      * Get backend user
      *
@@ -53,19 +127,25 @@ abstract class BaseAbstractController extends ActionController
     /**
      * Get session data
      *
+     * Only references to backend module!
+     *
      * @param string $key
      *
      * @return array $sessionData
      * @access public
      */
-    public function getSessionData($key)
+    public function getSessionData($key): array
     {
         $userGlobals = $this->getUserGlobals();
-        $sessionData = $userGlobals->getSessionData($key);
+        $sessionData = ($userGlobals->getSessionData($key)) ?
+            $userGlobals->getSessionData($key) : [];
 
-        if (TYPO3_MODE === 'BE') {
-            $ucData = $userGlobals->uc['moduleData']['supportchat'];
-            $configurationData = $ucData[$key];
+        // deprecated because class will only be called ar SupportChatModulController -> getAudioAlertViewSnippet
+        //if (TYPO3_MODE === 'BE') {
+            $ucData = (isset($userGlobals->uc['moduleData']['supportchat']))
+                ? $userGlobals->uc['moduleData']['supportchat'] : [];
+            $configurationData = (isset($ucData[$key]))
+                ? $ucData[$key] : [];
             if (!empty($configurationData) && !(empty($sessionData))) {
                 // merge session and configuration data
                 ArrayUtility::mergeRecursiveWithOverrule($sessionData, $configurationData);
@@ -73,7 +153,7 @@ abstract class BaseAbstractController extends ActionController
                 // there seems to be only configuration data (after fresh login)
                 $sessionData = $configurationData;
             }
-        }
+        //}
         return $sessionData;
     }
 
@@ -86,33 +166,34 @@ abstract class BaseAbstractController extends ActionController
      *
      * @return void
      * @access public
-     * @deprecated Method is not be used.
+     * @deprecated Method is not be used in v11. Please remove at v12.
      */
-    public function setSessionData($key, $data, $persist = null)
+    public function setSessionData($key, $data, $persist = null): void
     {
         $userGlobals = $this->getUserGlobals();
 
         // write data to user configuration to persist over sessions
-        if ($persist === true && TYPO3_MODE === 'BE') {
+        if ($persist === true /*&& TYPO3_MODE === 'BE'*/) {
             $ucData = $userGlobals->uc['moduleData']['supportchat'];
             $ucData[$key] = $data;
             $userGlobals->uc['moduleData']['supportchat'] = $ucData;
-            $userGlobals->writeUC($userGlobals->uc);
+            $userGlobals->writeUC();
+            // uncommented Typo3 v11 due to ref. 95320 deprecation of VariousMethodArgumentsInAuthenticationObjects
+            //$userGlobals->writeUC($userGlobals->uc);
         }
         $userGlobals->setAndSaveSessionData($key, $data);
-        return;
     }
 
     /**
      * Return the corresponding user GLOBALS for FE/BE
      *
-     * @return array $userGlobals
+     * @return mixed $userGlobals
      */
-    protected function getUserGlobals()
+    protected function getUserGlobals(): mixed
     {
-        if (TYPO3_MODE === 'BE') {
+        if (ApplicationType::fromRequest($GLOBALS['TYPO3_REQUEST'])->isBackend()) {
             $userGlobals = $this->getBackendUser();
-        } else if (TYPO3_MODE === 'FE') {
+        } else if (ApplicationType::fromRequest($GLOBALS['TYPO3_REQUEST'])->isFrontend()) {
             $userGlobals = $GLOBALS['TSFE']->fe_user;
         }
         return $userGlobals;
@@ -127,7 +208,7 @@ abstract class BaseAbstractController extends ActionController
      * @return string
      * @access protected
      */
-    protected function translate($key, $defaultMessage = '')
+    protected function translate($key, $defaultMessage = ''): string
     {
         $message = \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate(
             $key,

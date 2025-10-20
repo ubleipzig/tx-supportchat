@@ -25,8 +25,6 @@ namespace Ubl\Supportchat\Library;
 
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Annotation as Extbase;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 use Ubl\Supportchat\Domain\Repository\ChatsRepository;
 use Ubl\Supportchat\Domain\Repository\LogsRepository;
 use Ubl\Supportchat\Domain\Repository\MessagesRepository;
@@ -41,13 +39,6 @@ abstract class ChatAbstract
     const TABLE_CHATS = 'tx_supportchat_domain_model_chats';
 
     /**
-     * Constant for table tx_supportchat_domain_model_messages
-     *
-     * @var string
-     */
-    const TABLE_MESSAGES = 'tx_supportchat_domain_model_messages';
-
-    /**
      * Constant for table tx_supportchat_domain_model_logs
      *
      * @var string
@@ -55,28 +46,32 @@ abstract class ChatAbstract
     const TABLE_LOGS = 'tx_supportchat_domain_model_logs';
 
     /**
+     * Constant for table tx_supportchat_domain_model_messages
+     *
+     * @var string
+     */
+    const TABLE_MESSAGES = 'tx_supportchat_domain_model_messages';
+
+    /**
      * chatsRepository
      *
      * @var \Ubl\Supportchat\Domain\Repository\ChatsRepository
-     * @Exbase\Inject
      */
-    protected $chatsRepository;
+    protected ?ChatsRepository $chatsRepository = null;
 
     /**
      * logsRepository
      *
      * @var \Ubl\Supportchat\Domain\Repository\LogsRepository
-     * @Exbase\Inject
      */
-    protected $logsRepository;
+    protected ?LogsRepository $logsRepository = null;
 
     /**
      * messagesRepository
      *
      * @var \Ubl\Supportchat\Domain\Repository\MessagesRepository
-     * @Exbase\Inject
      */
-    protected $messagesRepository;
+    protected ?MessagesRepository $messagesRepository = null;
 
     /**
      * Database connection handle for table chats
@@ -103,24 +98,21 @@ abstract class ChatAbstract
     protected $dbConnectionInstanceForLogs;
 
     /**
-     * Object Manager
+     * Constructor
      *
-     * @var \TYPO3\CMS\Extbase\Object\ObjectManager
-     */
-    protected $objectManager;
-
-    /**
-     * Constructor initialize repositories
+     * @param ChatsRepository $chatsRepository
+     * @param LogsRepository $logsRepository
+     * @param MessagesRepository $messagesRepository
      *
-     * @return void
-     * @access public
      */
-    public function __construct()
-    {
-        $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $this->chatsRepository = $this->objectManager->get(ChatsRepository::class);
-        $this->logsRepository = $this->objectManager->get(LogsRepository::class);
-        $this->messagesRepository = $this->objectManager->get(MessagesRepository::class);
+    public function __construct(
+        ChatsRepository $chatsRepository,
+        LogsRepository $logsRepository,
+        MessagesRepository $messagesRepository,
+    ){
+        $this->chatsRepository = $chatsRepository;
+        $this->logsRepository = $logsRepository;
+        $this->messagesRepository = $messagesRepository;
     }
 
     /**

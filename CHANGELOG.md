@@ -5,6 +5,19 @@
 [Full Changelog](https://github.com/ubleipzig/tx-supportchat/compare/2.8.2...2.9.0)
 
 * adds support for Typo3 v11
+* migrates TYPO3_MODE clauses for back- and frontend request [92947](https://docs.typo3.org/c/typo3/cms-core/main/en-us/Changelog/11.0/Deprecation-92947-DeprecateTYPO3_MODEAndTYPO3_REQUESTTYPEConstants.html)
+* replacing ViewInterface [95222](https://docs.typo3.org/c/typo3/cms-core/main/en-us/Changelog/11.5/Deprecation-95222-ExtbaseViewInterface.html)
+* introducing of concept of [Backend Template View](https://docs.typo3.org/m/typo3/reference-coreapi/11.5/en-us/ExtensionArchitecture/HowTo/BackendModule/BackendModulesWithExtbase/BackendTemplateViewWithExtbase.html#backend-template-view-extbase)
+* adjusts method of class PageRenderer to Typo3 v11
+* replaces deprecated ObjectManager, ObjectManagerInterface objects and extbase property injection for Repositories by DI methods [94619](https://docs.typo3.org/c/typo3/cms-core/main/en-us/Changelog/11.4/Deprecation-94619-ExtbaseObjectManager.html)
+* moves _Classes\Ajax\FrontendListener_ class in _Classes\Controller_ as _AjaxFrontendController.php_ 
+* removes no longer used and partly duplicated class _Classes\Plugins\SupportChatFrontendPlugin.php_
+* removes constructor at _Classes\Library\ChatMarket.php_ and replaces setting default variables by setter methods
+* removes outdated top.fsMod state due to no recognizable current use [94762](https://docs.typo3.org/c/typo3/cms-core/main/en-us/Changelog/11.4/Deprecation-94762-DeprecateJavaScriptTopfsModState.html) 
+* replaces shortcut button parameter _setGetVariables()_ by _setArguments()_ [92132](https://docs.typo3.org/c/typo3/cms-core/main/en-us/Changelog/11.0/Deprecation-92132-DeprecatedShortcutPHPAPI.html) 
+* replaces shortcut button parameter _setModuleName()_ by _setRouteIdentifier()_ [93093](https://docs.typo3.org/c/typo3/cms-core/main/en-us/Changelog/11.0/Deprecation-93093-DeprecateMethodNameInShortcutPHPAPI.html)
+* removes deprecated class _ControllerContext_ and replaced used UriBuilder method by DI [95139](https://docs.typo3.org/c/typo3/cms-core/main/en-us/Changelog/11.5/Deprecation-95139-ExtbaseControllerContext.html)
+* removes parameter for _userGlobals->writeUc()_ method at _Classes\Controller\BaseAbstractController_ [95320](https://docs.typo3.org/c/typo3/cms-core/main/en-us/Changelog/11.5/Deprecation-95320-VariousMethodArgumentsInAuthenticationObjects.html) 
 
 ## [v2.8.2](https://github.com/ubleipzig/tx-supportchat/tree/2.8.2)
 

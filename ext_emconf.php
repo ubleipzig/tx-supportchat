@@ -15,7 +15,7 @@ $EM_CONF[$_EXTKEY] = [
 	'description' => 'A Support Chat for Typo3',
 	'category' => 'misc',
 	'shy' => 0,
-	'version' => '2.8.2',
+	'version' => '2.9.0',
 	'dependencies' => '',
 	'conflicts' => '',
 	'priority' => '',
@@ -33,7 +33,7 @@ $EM_CONF[$_EXTKEY] = [
 	'CGLcompliance_note' => '',
 	'constraints' => [
 		'depends' => [
-			'typo3' => '10.0.0-11.5.99',
+			'typo3' => '10.4.0-11.5.99',
 		],
 		'conflicts' => [
 		],

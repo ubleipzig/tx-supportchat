@@ -28,6 +28,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\PathUtility;
 use TYPO3\CMS\Extbase\Annotation as Extbase;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
+use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder as MvcUriBuilder;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility as Localization;
 use Ubl\Supportchat\Library\Chat;
 use Ubl\Supportchat\Library\ChatHelper;
@@ -128,7 +129,7 @@ class SupportChatController extends BaseAbstractController
                     $chatIsOnline = ChatHelper::checkIfChatIsOnline($this->checkPids);
                     if($chatIsOnline[$this->settings["chatPluginPid"]]) {
                         // tx_chat_functions::destroyInactiveChats($this->conf["timeToInactivateChatIfNoMessages"],$this->conf["chatsPid"]);
-                        $chat = new Chat();
+                        $chat = new Chat($this->chatsRepository, $this->logsRepository, $this->messagesRepository);
                         $chat->initChat($this->settings["chatsPid"], "", false, $this->useTypingIndicator);
                         $chat->destroyInactiveChats($this->settings["timeToInactivateChatIfNoMessages"]);
                         $this->addJsInHeader();
@@ -156,6 +157,7 @@ class SupportChatController extends BaseAbstractController
      * Return object manager object
      *
      * @return object|\TYPO3\CMS\Extbase\Object\ObjectManager
+     * @deprecated Method does not appear in use at v11. Remove it at v12.
      */
     public function getObjectManager()
     {
@@ -350,8 +352,9 @@ class SupportChatController extends BaseAbstractController
             "returnLast" => "url"
         ];
         $openChatLink = $this->getAbsUrl($this->cObj->typoLink("", $linkConf));
-
-        $link = $this->controllerContext->getUriBuilder()->reset()->setTargetPageUid($this->settings["chatNotSupportedPage"])->buildFrontendUri();
+        // Replaces controller context by DI injected uriBuilder
+        //$link = $this->controllerContext->getUriBuilder()->reset()->setTargetPageUid($this->settings["chatNotSupportedPage"])->buildFrontendUri();
+        $link = $this->uriBuilder()->reset()->setTargetPageUid($this->settings["chatNotSupportedPage"])->buildFrontendUri();
         $link = '<a href="'.$link.'" onclick="supportChatOpenWindow(\''.$openChatLink.'\',\'supportchatwindow\',\''.$this->conf["chatWindowJsParams"].'\'); return false;" target="_blank">'.$image.'</a>';
 
         $offlineOnline[] = [
@@ -403,6 +406,8 @@ class SupportChatController extends BaseAbstractController
 
     /**
      * Checks if the Surfer has JS enabled and if a sessionID exists
+     *
+     * There isn't a direct replacement for $GLOBALS['TSFE']->fe_user->id at the moment.
      *
      * @return string   SessionId or zero if no javascript or no sessionId
      * @access public

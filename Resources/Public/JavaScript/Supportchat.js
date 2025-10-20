@@ -612,5 +612,3 @@ class AjaxChat {
 		return parseInt(number,base||10);
 	}
 }
-
-

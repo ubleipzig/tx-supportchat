@@ -42,7 +42,7 @@ class ChatMarket extends Chat
      * @var boolean $logging  Default false
      * @access public
      */
-	public $logging = 0;
+	public $logging = false;
 
     /**
      * Limit of log messages to displayed
@@ -59,7 +59,7 @@ class ChatMarket extends Chat
      * @access public
      * @deprecated Variable seems to have not apparently any use case; replaced by $logLimit in function.
      */
-	public $lastLogRow = null;
+	public $lastLogRow;
 
     /**
      * Path to default language flag
@@ -68,7 +68,7 @@ class ChatMarket extends Chat
      * @access public
      * @deprecated Implementation not works w/ typo3 v7 onwards
      */
-	public $defaultLImg = "typo3/gfx/flags/gb.gif";
+	public $defaultLImg = "";
 
     /**
      * Default language label
@@ -76,30 +76,74 @@ class ChatMarket extends Chat
      * @var string $defaultLLabel Default. "english"
      * @access public
      */
-	public $defaultLLabel = "english";
+	public $defaultLLabel;
 
     /**
-	 * Constructor initializes variables
+     * Get last logged row
      *
-     * @param boolean $logging
      * @param int $lastLogRow
+     * @return void
      *
      * @access public
-	 */
-	public function __construct()
+     */
+    public function getLastLogRow(): int
     {
-        parent::__construct();
-        $this->logging = func_get_arg(0);
-		$this->lastLogRow = (int)(func_get_arg(1));
-		if ($this->getBackendUserTypoScript("defLangImg")) {
-			$this->defaultLImg = $this->getBackendUserTypoScript("defLangImg");
-		}
-		if ($this->getBackendUserTypoScript("defLangLabel")) {
-			$this->defaultLLabel = $this->getBackendUserTypoScript("defLangLabel");
-		}
-	}
-	
-	/**
+        return $this->lastLogRow;
+    }
+
+    /**
+     * Set last logged row
+     *
+     * @param int $lastLogRow
+     *
+     * @return void
+     * @access public
+     */
+    public function setLastLogRow(int $lastLogRow): void
+    {
+        $this->lastLogRow = $lastLogRow;
+    }
+
+    /**
+     * Sets logging or not
+     *
+     * @param bool $logging
+     *
+     * @return void
+     * @acccess public
+     */
+    public function setLogging(bool $logging): void
+    {
+        $this->logging = $logging;
+    }
+
+    /**
+     * Sets language flag
+     *
+     * @return void
+     * @acccess public
+     */
+    public function setLanguageFlag(): void
+    {
+        $this->defaultLImg = ($this->getBackendUserTypoScript("defLangImg") !== null)
+                    ? (string)$this->getBackendUserTypoScript("defLangImg") : "typo3/gfx/flags/gb.gif";
+    }
+
+    /**
+     * Sets language label
+     *
+     * @param string $defaultLanguage
+     *
+     * @return void
+     * @acccess public
+     */
+    public function setLanguageLabel(string $defaultLanguage = "english"): void
+    {
+        $this->defaultLLabel = ($this->getBackendUserTypoScript("defLangLabel"))
+            ? (string)$this->getBackendUserTypoScript("defLangLabel") : $defaultLanguage;
+    }
+
+    /**
 	 * Get all chats and messages and return it as an array, store msg's to DB if any,
      * lock/unlock a chat or destroy one
 	 *
@@ -188,13 +232,13 @@ class ChatMarket extends Chat
 					$this->destroyChat();
 					$retArray[$i]["from_destroy_chat"] = 1;
 				}
-				/*added for typingStatus*/
-				// set typing status
+				// Added for typingStatus
+				// Set typing status
                 if (isset($typingStatus[$this->uid])) {
                     $this->saveTypingStatus((int)$typingStatus[$this->uid]);
                 }
 
-                // process hook for additional info
+                // Process hook for additional info
                 foreach ($hookObjectsArr as $hookObj) {
                     $array = [];
                     $retArray[$i]["additionalInfo"] =
@@ -220,7 +264,7 @@ class ChatMarket extends Chat
 			$i = 0;
             $retArray = [];
             foreach ($result as $row) {
-				$this->lastLogRow = $row->getUid();
+				$this->setLastLogRow($row->getUid());
 				$retArray[$i]["crdate"] = ChatHelper::renderTstamp($row->getCrdate());
 				$retArray[$i]["message"] = $row->getMessage();
 				$i++;

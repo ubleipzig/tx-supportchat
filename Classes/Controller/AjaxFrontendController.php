@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-namespace Ubl\Supportchat\Ajax;
+namespace Ubl\Supportchat\Controller;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -42,7 +42,7 @@ use Ubl\Supportchat\Library\ChatHelper;
  *
  * @package Ubl\SupportChat\Ajax
  */
-class FrontendListener
+class AjaxFrontendController extends BaseAbstractController
 {
 
     /**
@@ -120,8 +120,8 @@ class FrontendListener
         $this->identification = $request->getCookieParams()[$frontendCookieName];
 
         // Initialize the chat object
-        $chat = new Chat();
-        $chat->initChat($this->pid, $this->identification,false, $this->useTypingIndicator);
+        $chat = new Chat($this->chatsRepository, $this->logsRepository, $this->messagesRepository);
+        $chat->initChat($this->pid, $this->identification, false, $this->useTypingIndicator);
         if ($this->uid) {
             $chat->loadChatFromDB($this->uid, $lastRow);
         }
@@ -164,7 +164,7 @@ class FrontendListener
                     $chat->saveTypingStatus(GeneralUtility::_GP("isTyping"));
                     if ($msgToSend) {
                         $userName = htmlspecialchars(GeneralUtility::_POST("chatUsername"));
-                        for ($i=0; $i < sizeOf($msgToSend); $i++) {
+                        for ($i = 0; $i < sizeOf($msgToSend); $i++) {
                             $chat->insertMessage($msgToSend[$i], "feuser", $userName);
                         }
                     }

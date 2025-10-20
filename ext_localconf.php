@@ -5,16 +5,16 @@ if (!defined ('TYPO3_MODE')) 	die ('Access denied.');
     'Ubl.supportchat',
     'tx_supportchat',
     [
-        'SupportChat' => 'index'
+        \Ubl\Supportchat\Controller\SupportChatController::class => 'index'
     ],
     // non cache actions
     [
-        'SupportChat' => 'index'
+        \Ubl\Supportchat\Controller\SupportChatController::class => 'index'
     ]
 );
 
 $GLOBALS['TYPO3_CONF_VARS']['FE']['eID_include']['tx_supportchat']
-    = \Ubl\Supportchat\Ajax\FrontendListener::class . '::getAjaxResponse';
+    = \Ubl\Supportchat\Controller\AjaxFrontendController::class . '::getAjaxResponse';
 
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPageTSConfig(
     '<INCLUDE_TYPOSCRIPT: source="FILE:EXT:supportchat/Configuration/TypoScript/setup.typoscript">'

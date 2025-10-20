@@ -26,6 +26,7 @@ namespace Ubl\Supportchat\Library;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
+use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
 
 class Chat extends ChatAbstract
 {
@@ -299,7 +300,7 @@ class Chat extends ChatAbstract
      */
     public function destroyChat()
     {
-        $persistenceManager = $this->objectManager->get(PersistenceManager::class);
+        $persistenceManager =  GeneralUtility::makeInstance(PersistenceManager::class);
         $destroy = $this->chatsRepository->findByUid($this->uid);
         $destroy->setActive(0);
         if ($this->getBackendUserUid()) {
@@ -328,7 +329,7 @@ class Chat extends ChatAbstract
      */
     public function lockChat($lock = 1)
     {
-        $persistenceManager = $this->objectManager->get(PersistenceManager::class);
+        $persistenceManager =  GeneralUtility::makeInstance(PersistenceManager::class);
         $locked = $this->chatsRepository->findByUid($this->uid);
         $locked->setBackendUser(
             ($lock) ? $this->getBackendUserUid() : ""
@@ -361,7 +362,7 @@ class Chat extends ChatAbstract
         foreach ($res as $row) {
             $message = $this->messagesRepository->findMessagesWithinPeriod($row->getUid(), $limit);
             if (!$message && $row->getCrdate() < $limit) {
-                $persistenceManager = $this->objectManager->get(PersistenceManager::class);
+                $persistenceManager = GeneralUtility::makeInstance(PersistenceManager::class);
                 $destroy = $this->chatsRepository->findByUid($row->getUid());
                 $destroy->setActive(0);
                 $destroy->setStatus("timeout");
@@ -411,7 +412,7 @@ class Chat extends ChatAbstract
                 }
                 $updateArray = ['type_status' => json_encode($status_array)];
                 if ($updateArray['type_status'] != $this->db['type_status']) {
-                    $persistenceManager = $this->objectManager->get(PersistenceManager::class);
+                    $persistenceManager =  GeneralUtility::makeInstance(PersistenceManager::class);
                     $save = $this->chatsRepository->findByUid($this->uid);
                     $save->setTypeStatus($status_array);
                     $this->chatsRepository->update($save);
