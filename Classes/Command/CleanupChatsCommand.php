@@ -113,7 +113,7 @@ class CleanupChatsCommand extends Command
         $io->writeln(
             sprintf('%d chats removed before %s', $cnt, $ts->format('d.m.Y H:i:s'))
         );
-        return 0;
+        return Command::SUCCESS;
     }
 
     /**

@@ -10,3 +10,15 @@ services:
 
   Ubl\Supportchat\Library\Chat:
     public: true
+
+  Ubl\Supportchat\Command\CleanupChatLogsCommand:
+    tags:
+      - name: 'console.command'
+        command: 'supportchat:cleanupLogs'
+        description: 'Removes logs of chat after a certain period of days.'
+
+  Ubl\Supportchat\Command\CleanupChatsCommand:
+    tags:
+      - name: 'console.command'
+        command: 'supportchat:cleanupChats'
+        description: 'Removes passed chats after a certain period of days.'

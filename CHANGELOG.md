@@ -1,5 +1,12 @@
 # Change Log
 
+## [v2.9.1](https://github.com/ubleipzig/tx-supportchat/tree/2.9.1)
+
+[Full Changelog](https://github.com/ubleipzig/tx-supportchat/compare/2.9.0...2.9.1)
+
+* adds supportchat commands definitions at _Services.yaml_
+* replaces 0 by _Command::SUCCESS_ for successful returns of command tasks
+
 ## [v2.9.0](https://github.com/ubleipzig/tx-supportchat/tree/2.9.0)
 
 [Full Changelog](https://github.com/ubleipzig/tx-supportchat/compare/2.8.2...2.9.0)
