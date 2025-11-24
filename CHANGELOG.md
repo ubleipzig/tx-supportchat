@@ -1,5 +1,12 @@
 # Change Log
 
+## [v2.9.1](https://github.com/ubleipzig/tx-supportchat/tree/2.9.1)
+
+[Full Changelog](https://github.com/ubleipzig/tx-supportchat/compare/2.9.0...2.9.1)
+
+**Fixes**
+* adds extension key _supportchat_ to composer.json
+
 ## [v2.9.0](https://github.com/ubleipzig/tx-supportchat/tree/2.9.0)
 
 [Full Changelog](https://github.com/ubleipzig/tx-supportchat/compare/2.8.2...2.9.0)
