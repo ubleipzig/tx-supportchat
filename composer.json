@@ -52,5 +52,10 @@
     "psr-4": {
       "Ubl\\Supportchat\\Tests\\": "Tests/"
     }
+  },
+  "extra": {
+    "typo3/cms": {
+      "extension-key": "supportchat"
+    }
   }
 }
